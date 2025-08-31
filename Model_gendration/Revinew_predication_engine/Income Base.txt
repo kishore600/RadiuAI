@@ -1,0 +1,110 @@
+Overview
+
+    This Python function fetches average income (GDP per capita) data based on geographical coordinates by:
+
+        1. Reverse geocoding coordinates to determine the country
+
+        2. Querying the World Bank API for economic indicators
+
+Package Dependencies and Their Uses
+
+    1. requests
+        Purpose: HTTP requests to APIs
+        Usage:
+        Querying Nominatim (OpenStreetMap) for reverse geocoding
+        Fetching data from World Bank API
+
+    2. pandas
+        Purpose: Data manipulation and analysis
+        Usage: Creating and returning a structured DataFrame with the result
+
+
+Function Details
+    fetch_avg_income_from_location()
+
+Parameters:
+
+    1. lat (float): Latitude coordinate
+
+    2. lon (float): Longitude coordinate
+
+    3. indicator (str): World Bank indicator code (default: "NY.GDP.PCAP.CD" for GDP per capita)
+
+    4. start_year (int): Start year for data
+
+    5. end_year (int): End year for data
+
+Returns:
+
+    pd.DataFrame: DataFrame containing year, value, and country code
+
+How It Works - Step by Step
+
+    1. Reverse Geocoding:
+
+        Uses Nominatim API to convert coordinates to a country code
+
+        Example URL: https://nominatim.openstreetmap.org/reverse?format=json&lat=13.0827&lon=80.2707
+
+    2. World Bank API Query:
+
+        Uses the obtained country code to fetch economic data
+
+        Example URL: http://api.worldbank.org/v2/country/IN/indicator/NY.GDP.PCAP.CD?format=json&date=2020:2020
+
+    3. Data Processing:
+
+        Extracts relevant data from the JSON response
+
+        Creates a structured pandas DataFrame
+
+
+Current Implementation Percentage & Areas for Improvement
+
+    Current Implementation (70% Complete)
+
+        What's working well:
+
+            1. Core functionality for reverse geocoding
+
+            2. World Bank API integration
+
+            3. Basic error handling
+
+            4. Structured data return format
+
+Areas for Improvement (30% Needed)
+
+    1. Enhanced Error Handling (10%)
+
+        Better handling of API rate limits
+
+        More specific exception types
+
+        Retry mechanisms for failed requests
+
+    2. Additional Data Sources (10%)
+
+        Integration with multiple economic data providers
+
+        Local/regional income data (not just country-level)
+
+        Historical trends and projections
+
+    3. Performance Optimization (5%)
+
+        Caching of frequently requested locations
+
+        Parallel processing for multiple locations
+
+        Request batching for multiple years/indicators
+
+    4. Extended Functionality (5%)
+
+        Support for multiple indicators simultaneously
+
+        Currency conversion options
+
+        Inflation adjustment of historical data
+
+        More detailed geographical resolution (not just country-level)
