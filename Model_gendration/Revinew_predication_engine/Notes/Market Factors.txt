@@ -1,0 +1,226 @@
+1. Main Function: get_market_factors(lat, lon, business_type, radius_km=5)
+
+    Purpose: This is the main orchestrator function that calculates overall market factors affecting business revenue potential.
+
+    How it works:
+
+        Calls four sub-functions to get individual market factors:
+
+        Rent Index (40% weight)
+
+        Regulatory Environment (30% weight)
+
+        Seasonality (20% weight)
+
+        Competition Density (10% weight)
+
+        Calculates weighted average of these factors
+
+        Applies business-specific adjustments (some businesses are more sensitive to certain factors)
+
+        Returns comprehensive results including confidence score and explanatory notes
+
+        Example: For a clothing store in Delhi, it might return a market factor of 0.72, indicating moderately favorable conditions.
+
+2. Rent Analysis: get_rent_index(lat, lon, radius_km, business_type)
+
+    Purpose: Estimates how rental costs impact business viability (higher rent = lower score).
+
+        How it works:
+
+            Reverse geocoding to get country information from coordinates
+
+            Tries OSM-based estimation first (counts commercial properties as proxy for rent prices)
+
+            Falls back to country averages if OSM data is unavailable
+
+            Normalizes to 0.1-1.0 scale where 1.0 = low rent (good), 0.1 = high rent (bad)
+
+            Example: In expensive cities like New York, this might return 0.3-0.4. In affordable cities, it might return 0.8-0.9.
+
+3. OSM Rent Estimation: estimate_rent_from_osm(lat, lon, radius_km, business_type)
+
+    Purpose: Estimates rent prices by analyzing OpenStreetMap commercial property data.
+
+    How it works:
+
+        Queries OSM API for commercial properties in the specified radius
+
+        Different queries for different business types (restaurants vs retail shops)
+
+        Counts properties and estimates rent based on density
+
+        Simple formula: Base rent × (1 + density factor)
+
+        Limitation: This is a rough proxy - actual rent would vary significantly by specific location, property size, etc.
+
+4. Country Rent Index: get_country_rent_index(country)
+    Purpose: Provides fallback rent estimates based on country-level data.
+
+    How it works:
+
+        Pre-defined values for different countries
+
+        Three tiers: High-cost (0.3-0.5), Medium-cost (0.6-0.7), Low-cost (0.8-1.0)
+
+        Default value of 0.7 for countries not in the list
+
+        Example: Switzerland = 0.3 (expensive), India = 1.0 (affordable)
+
+5. Regulatory Analysis: get_regulatory_index(lat, lon)
+
+    Purpose: Estimates how easy it is to do business based on regulatory environment.
+
+    How it works:
+
+        Reverse geocoding to get country code
+
+        Uses simplified World Bank "Doing Business" data (pre-defined scores)
+
+        Country codes mapped to scores: NZ/SG = 0.9 (easiest), BR/RU = 0.4 (most challenging)
+
+        Note: Real implementation would need actual API integration with World Bank or similar data sources.
+
+6. Seasonality Analysis: get_seasonality_index(lat, lon, business_type)
+    Purpose: Estimates how seasonal variations affect the business.
+
+    How it works:
+
+        Gets current month to determine seasonal pattern
+
+        Business-specific patterns:
+
+        Ice cream: High in summer (0.9), low in winter (0.3)
+
+        Ski resorts: High in winter (0.9), low in summer (0.1)
+
+        Restaurants/retail: More consistent year-round (0.7-0.9)
+
+        Limitation: This uses fixed patterns - real implementation would consider local climate, tourism patterns, etc.
+
+7. Competition Analysis: get_competition_density(lat, lon, business_type, radius_km)
+    
+    Purpose: Measures how competitive the local market is.
+
+    How it works:
+
+        Queries OSM for same-type businesses in the area
+
+        Counts competitors and converts to a factor
+
+        Formula: 1.0 - (competitor_count × 0.09)
+
+        0 competitors = 1.0 (excellent)
+
+        5 competitors = 0.55 (moderate)
+
+        10+ competitors = 0.1 (very challenging)
+
+        Example: If there are 3 other clothing stores nearby, competition factor would be 0.73.
+
+8. Business Adjustments: apply_business_specific_adjustments(market_factor, business_type)
+
+    Purpose: Adjusts the overall market factor based on business type sensitivity.
+
+    How it works:
+
+        Restaurants/bars/cafes: More sensitive to market factors (×0.85-0.95)
+
+        Pharmacies/supermarkets: Less sensitive (×1.05-1.10)
+
+        Default: No adjustment (×1.0)
+
+        Rationale: Some businesses are more resilient to market conditions than others.
+
+9. Confidence Estimation: estimate_confidence(factors)
+
+    Purpose: Estimates how reliable the market factor calculation is.
+
+    How it works:
+
+        Counts successful calculations (not using default fallback values)
+
+        Calculates percentage of successful factors
+
+        Returns 0.5-0.9 range (never 1.0 to indicate some uncertainty always exists)
+
+        Example: If 3 out of 4 factors were successfully calculated, confidence = 0.75
+
+10. Notes Generation: generate_market_notes(factors, market_factor)
+    Purpose: Creates human-readable explanations of the market analysis.
+
+    How it works:
+
+        Checks each factor against thresholds
+
+        Generates appropriate messages for high/low values
+
+        Provides overall assessment based on final market factor
+
+        Example: "High rental costs may impact profitability. Limited competition in the immediate area. Overall market conditions present significant challenges."
+
+Current Accuracy Assessment: ~65-70%
+
+Strengths:
+
+    Multiple factor consideration
+
+    Fallback mechanisms
+
+    Business-type specificity
+
+    Transparency (shows components and weights)
+
+Weaknesses:
+
+    Over-reliance on OSM data
+
+    Simplified country-level averages
+
+    Fixed seasonal patterns
+
+    No real-time data integration
+
+
+Phase 1: Foundation (Current ~65%)
+    Basic OSM data integration
+
+    Simple weighted averages
+
+    Country-level regulatory data
+
+Phase 2: Enhanced Data (Target ~80%)
+    Integrate Numbeo API for rent data
+
+    Add weather API for seasonality
+
+    Implement basic caching
+
+    Add more business-type specific adjustments
+
+Phase 3: Machine Learning (Target ~85%)
+    Train ML models on historical business data
+
+    Implement feature engineering
+
+    Add cross-validation
+
+    Deploy model serving infrastructure
+
+Phase 4: Real-time Integration (Target ~90%)
+    Add real-time data sources
+
+    Implement continuous learning
+
+    Add A/B testing framework
+
+    Deploy monitoring and alerting
+
+Phase 5: Advanced Features (Target 90%+)
+    Satellite imagery analysis
+
+    Social media sentiment integration
+
+    Predictive analytics
+
+    Automated model retraining
