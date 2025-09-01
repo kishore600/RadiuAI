@@ -1,0 +1,132 @@
+    1. get_population_within_radius()
+
+        What it does: This is like playing "count the houses" from a helicopter! It looks at an area on a map and counts how many homes and apartments are there. For each home it finds, it imagines about 4 people live there (like a mom, dad, and two kids).
+
+        How it works: It asks a special map computer (called Overpass API) to find all the buildings where people might live, then multiplies that number by 4 to guess how many people are in the area.
+
+    2. get_income_index()
+
+        What it does: This tries to guess if people in the area have lots of money or not much money. It does this by counting how many shops and businesses are nearby.
+
+        How it works: It thinks: "If there are many fancy shops and businesses, people probably have more money to spend. If there aren't many shops, people might have less money."
+
+    3. get_nearby_places()
+
+        What it does: This looks around the neighborhood to see what other similar businesses already exist. It's like playing "I spy" for coffee shops, restaurants, or gyms.
+
+        How it works: It searches the map for businesses that match what you want to open and makes a list of all the competitors nearby.
+
+    4. calculate_confidence()
+
+        What it does: This gives a "confidence score" that tells us how sure we are about our guesses. It's like when you're guessing how many jellybeans are in a jar - if you can see most of the jar, you're more confident than if you can only see the top.
+
+        How it works: It looks at how much information we found - if we found lots of houses and many competitors, we're more confident. If we found very little information, we're less confident.
+
+    5. get_business_type_multiplier() (The Main Function)
+
+        What it does: This is the boss function that puts everything together! It's like making a recipe for deciding if a business will do well in a certain location.
+
+        The recipe:
+
+            1. Start with a basic guess - How well does this type of business usually do? (The "global baseline")
+
+            2. Check how many customers might come - Count people in the area and guess how much money they have
+
+            3. Check the competition - See how many similar businesses already exist
+
+            4. Adjust the guess - If there are many people but few competitors → good location! If there are few people but many competitors → not so good
+
+            5. Tell you how sure we are - Give a confidence score
+
+        Example: If you want to open a lemonade stand:
+
+            1. Basic guess: Lemonade stands usually do pretty well in summer (baseline = 1.2)
+
+            2. Check the neighborhood: Are there many kids? Do they get allowance money?
+
+            3. Check competition: Are there other lemonade stands nearby?
+
+            4. Final decision: Good neighborhood with no other stands = great idea!
+        
+
+🔑 Why Current Accuracy is Low
+
+    Population estimates → Based on residential building counts × 4 people = too rough. Real population density maps are needed.
+
+    Income index → Derived from landuse counts. Doesn’t reflect true disposable income.
+
+    Competition strength → Defaulting to “10 reviews × price level 1” is basically noise.
+
+    No ground-truth calibration → You aren’t training against actual business revenue data.
+
+
+✅ Steps to Push Accuracy >90%
+
+    1. Get Better Input Data
+
+        1. Population → Use real population density maps:
+
+        2. WorldPop, Facebook Data for Good, or Indian census block data.
+
+        3. Income → Use regional disposable income datasets (gov census, CMIE, World Bank sub-national data).
+
+        4. Competition → Pull actual places + ratings + review counts from:
+
+            Google Places API / Yelp / JustDial / TripAdvisor (scraping or API).
+
+            These provide real popularity signals.
+
+        5. Cultural Fit → Use search trend data (Google Trends: coffee vs chai by region).
+
+        6. Seasonality → Pull actual sales proxies (e.g., Diwali retail spikes from market reports).
+
+    2. Ground Truth Dataset (Gold Standard)
+
+        You must train with real business revenue samples:
+
+            1. Get historical data of 1,000–10,000 businesses:
+
+                1. Public filings (big chains like Starbucks, Barista, etc.).
+
+                2. Market reports (Euromonitor, Statista).
+
+                3. Survey/scraped data from local businesses (many list daily avg sales on forums).
+
+            2. Features: [lat, lon, business_type, population, income, competition, cultural_fit, investment]
+
+            3. Label: actual_monthly_revenue.
+
+    3. Switch to ML (Calibrated Model)
+
+        1. Instead of returning baseline * local_adjustment, train a model:
+
+        2. RandomForestRegressor / XGBoost → good for tabular + non-linear interactions.
+
+        3. Train on features above, target = actual multiplier or revenue.
+
+        4. This way the model learns how population, income, and competition interact in real-world settings.
+
+
+📊 Example Evolution
+
+        Today (MVP):
+        Multiplier = baseline × (population proxy ÷ competition proxy) → ~50–60%.
+
+        Step 1 (Data Upgrade):
+        Add census population, income per ward, real Google Places competition. Accuracy jumps to ~70–80%.
+
+        Step 2 (ML Calibration):
+        Train ML model on 5k+ labeled businesses → Accuracy 85–90%.
+
+        Step 3 (Continuous Learning):
+        Live feedback loop from actual revenues (crowdsourced / survey) → Stabilizes >90%.
+
+✅ So the roadmap for your function:
+
+        Replace heuristic proxies with real datasets (population, income, competition).
+
+        Collect a training dataset of actual revenues.
+
+        Train & deploy a supervised ML model.
+
+        Use heuristics only as fallback when no data is available.
