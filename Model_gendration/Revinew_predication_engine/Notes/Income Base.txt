@@ -199,3 +199,114 @@ Phase 2: Advanced Estimation & Modeling (Accuracy: 90%+)
         Result: This model can provide a hyper-local estimate, far surpassing the accuracy of any single national number.
 
     Refinement and Validation
+
+
+Phase 1: Foundation & Data Collection (Accuracy: ~80%)
+
+Step 1: Implement a Premium Geocoder (Google Maps)
+Effort: 1-2 Days
+
+Breakdown:
+
+1/2 Day: Research Google Maps Geocoding API, create account, set up billing, get API key.
+
+1 Day: Implement the _geocode_google_maps() method, handle API response parsing to extract country, state, and city.
+
+1/2 Day: Integrate it as the primary service in the reverse_geocode_with_fallback() method, ensuring it gracefully falls back to free services if the API key isn't provided or the request fails.
+
+Cost: Google's pricing is ~$5 per 1000 requests. For development and initial testing (~10,000 requests), expect to spend ~$50.
+
+Step 2: Integrate Sub-National Data
+Effort: 3-5 Weeks (This is the most time-consuming part)
+
+Breakdown:
+
+Week 1-2: Data Sourcing & Research
+
+Identify and compile a list of reliable sources for sub-national data (OECD, World Bank subnational, key national statistical offices for US, UK, DE, FR, IN, CN, etc.).
+
+This involves a significant amount of web research and data formatting.
+
+Week 2-4: Data Acquisition & Processing
+
+Manual Downloading: For many sources, this will be a manual process of downloading CSV/Excel files.
+
+Scraping/Automation (Optional): For some well-structured government sites, you might write scripts to automate downloads. This could add 1-2 weeks.
+
+Data Cleaning: Standardizing country/region names, handling currency conversions (to USD), filling gaps, and formatting into a consistent structure (e.g., a CSV or database table). This is very labor-intensive.
+
+Week 4-5: System Integration
+
+1-2 Days: Design a simple database schema (e.g., SQLite table: country_code, region_name, year, income).
+
+3-4 Days: Build the get_regional_data(country_code, region_name) function that queries this database.
+
+1 Day: Modify the main data-fetching logic to prefer regional data over national World Bank data.
+
+Cost: Primarily developer time. Data itself is usually free.
+
+Phase 2: Advanced Estimation & Modeling (Accuracy: 90%+)
+Total Estimated Time: 8-12 Weeks (Requires data science skills)
+
+Step 3 & 4: Implement Proxy Data Sources (Nighttime Lights, Population Density)
+Effort: 2-3 Weeks
+
+Breakdown:
+
+Week 1: Research & Setup
+
+Identify specific datasets (e.g., NASA's Black Marble for lights, WorldPop for density).
+
+Understand how to access them (often via bulk download or API).
+
+Week 2-3: Implementation & Testing
+
+Write functions to download and preprocess these large geospatial datasets (using libraries like rasterio or geopandas).
+
+Create functions get_nighttime_light_value(lat, lon) and get_population_density(lat, lon) that can sample these datasets for any given coordinate.
+
+This involves working with GeoTIFF files and spatial interpolation.
+
+Step 5: Implement OSM Data Collection
+Effort: 1-2 Weeks
+
+Breakdown:
+
+2-3 Days: Learn the Overpass API query language.
+
+1 Week: Develop a function get_osm_amenity_score(lat, lon, radius_km) that queries OSM for counts of specific amenities (cafes, banks, universities) and infrastructure (paved roads) within a radius and converts them into a normalized "development score."
+
+Step 6: Build and Integrate the Machine Learning Model
+Effort: 4-6 Weeks
+
+Breakdown:
+
+Week 1: Training Data Creation
+
+This is crucial. You need a "ground truth" dataset of (lat, lon, actual_income) pairs.
+
+Source this from the sub-national data collected in Phase 1. For each region, you might generate several random points within its borders and label them with the region's income.
+
+Week 2: Feature Engineering & Model Training
+
+For each point in your training set, extract all its features: regional income, nighttime light value, population density, OSM score.
+
+Experiment with different models (Random Forest, Gradient Boosting) to predict actual_income based on these features. This involves standard data science workflow: train-test split, hyperparameter tuning, and evaluation.
+
+Week 3: Integration & API Development
+
+Package the trained model (e.g., using joblib or pickle).
+
+Create a predict_local_income(lat, lon) function that:
+
+Gets the regional income baseline.
+
+Gets the proxy data features for the point.
+
+Runs the model to get a final, hyper-local prediction.
+
+Week 4: Validation & Refinement
+
+Rigorously test the model's predictions against known data.
+
+Iterate on the model and feature set to improve accuracy.
