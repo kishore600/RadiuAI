@@ -159,68 +159,33 @@
 
         Example: "High rental costs may impact profitability. Limited competition in the immediate area. Overall market conditions present significant challenges."
 
-Current Accuracy Assessment: ~65-70%
 
-Strengths:
+How to Achieve >90% Reliability (The Roadmap)
 
-    Multiple factor consideration
+Step 1: Integrate High-Quality, Localized Data APIs
 
-    Fallback mechanisms
+Commercial Real Estate APIs (Critical for Rent): This is the top priority. APIs like Reonomy, Costar, or Zillow Commercial (where available) provide actual asking rent prices per square foot/meter for specific properties and neighborhoods. This instantly replaces the flawed OSM proxy.
 
-    Business-type specificity
+Local Government & Chamber of Commerce Data (Critical for Regulation): Instead of country-level scores, you need city or county-level data.
 
-    Transparency (shows components and weights)
+    Fee Schedules: Published costs for various business licenses.
 
-Weaknesses:
+    Zoning Laws: APIs or databases that can indicate if a location is zoned for a specific business type (e.g., is a bar allowed here?).
 
-    Over-reliance on OSM data
+    Time-to-Permit Data: Many municipalities publish average processing times for business licenses and health permits.
 
-    Simplified country-level averages
+Tourism & Foot Traffic APIs (Critical for Seasonality): Services like SafeGraph or Google Popular Times provide actual historical data on how many people visit an area throughout the year. This allows you to build a real, location-specific seasonality profile, not a hardcoded one.
 
-    Fixed seasonal patterns
+Google Places API (Enhance Competition): As before, use this to get data on competitor quality (ratings, popularity) to create a "competitive intensity" score, not just a "competitor count" score.
 
-    No real-time data integration
+Data Source	What to Collect	How It Increases Accuracy	Priority
 
+    1. Commercial Real Estate APIs	:- Actual asking rents per sq ft/meter for specific properties and neighborhoods.	(Replaces the completely unreliable OSM property count heuristic with factual cost data.)	CRITICAL
 
-Phase 1: Foundation (Current ~65%)
-    Basic OSM data integration
+    2. Municipal Government Portals :-	Business license fees, permit processing times, zoning maps.	(Replaces the useless country-level regulatory score with actionable, local compliance costs.)	CRITICAL
 
-    Simple weighted averages
+    3. Foot Traffic APIs (SafeGraph) :-	Historical, monthly visitor counts for a specific area. (Replaces hardcoded seasonality patterns with real, localized demand volatility data.)	HIGH
 
-    Country-level regulatory data
+    4. Labor Data APIs (e.g., BLS) :- 	Local average wages for specific job titles.	(Adds a crucial cost factor (labor) that is currently missing from the model entirely.)	MEDIUM
 
-Phase 2: Enhanced Data (Target ~80%)
-    Integrate Numbeo API for rent data
-
-    Add weather API for seasonality
-
-    Implement basic caching
-
-    Add more business-type specific adjustments
-
-Phase 3: Machine Learning (Target ~85%)
-    Train ML models on historical business data
-
-    Implement feature engineering
-
-    Add cross-validation
-
-    Deploy model serving infrastructure
-
-Phase 4: Real-time Integration (Target ~90%)
-    Add real-time data sources
-
-    Implement continuous learning
-
-    Add A/B testing framework
-
-    Deploy monitoring and alerting
-
-Phase 5: Advanced Features (Target 90%+)
-    Satellite imagery analysis
-
-    Social media sentiment integration
-
-    Predictive analytics
-
-    Automated model retraining
+    5. Google Places API	:- Competitor quality data (ratings, popularity).	(Enhances the competition factor from a simple count to a measure of competitive intensity.)	MEDIUM
