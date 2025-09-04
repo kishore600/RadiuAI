@@ -107,55 +107,12 @@ How It Works - Step by Step
 
     7. Insight Generation: Creates human-readable insights from the analysis
 
-Current Implementation Percentage & Areas for Improvement
+Summary: How to Collect Data to Get Above 90%
 
-        Current Implementation (80% Complete)
+1. Google Places API :-	Competitor count, average ratings, review text, price levels.	(Provides direct, real-world signals of demand, quality, and saturation  This is the #1 factor.)	CRITICAL
 
-            What's working well:
+2. Manual Benchmarking :- 	A list of real businesses with known outcomes (success/failure).  (Creates a "report card" to measure and improve your algorithm's performance. Allows you to tune weights ).	HIGH
 
-                1. Comprehensive keyword database covering 12 business categories
+3. Foursquare / Yelp APIs :-	Additional venue details, categories, and reviews.	(Provides redundancy and enriches data, especially if one API is missing information.) MEDIUM
 
-                2. Reverse geocoding with detailed location information
-
-                3. Wikipedia integration for local content
-
-                4. Sophisticated scoring system with multiple adjustments
-
-                5. Seasonal and regional adjustments
-
-                6. Insight generation with human-readable explanations
-
-
-        Areas for Improvement (20% Needed)
-
-            1. Additional Data Sources (8%)
-
-                Integrate more free APIs (Google Trends, local news, social media)
-
-                Add more country-specific cultural databases
-
-                Include demographic and economic data
-
-            2. Enhanced Sentiment Analysis (5%)
-
-                Implement more sophisticated NLP techniques
-
-                Add context-aware sentiment analysis
-
-                Include emotion detection beyond positive/negative
-
-            3. Visualization & Reporting (4%)
-
-                Generate visual reports with charts and graphs
-
-                Create comparative analysis across multiple locations
-
-                Export functionality for business plans
-
-            4. Performance Optimization (3%)
-
-                Implement caching for frequently analyzed locations
-
-                Add parallel processing for faster analysis
-
-                Optimize API request patterns
+4 OpenStreetMap API	:- Raw density of specific amenity types.	(Good free source for basic density checks without strict rate limits.)	LOW

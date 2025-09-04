@@ -1,145 +1,65 @@
-This Python tool helps businesses find and analyze competitors in a specific geographical area using OpenStreetMap data and provides integration with Google Maps.
+How to Increase Accuracy Above 90% and Data Collection Methods
 
-1. json
-    Purpose: Handling JSON data format
-    Usage: Serializing/deserializing data from APIs and for output
+1. Leverage Multiple Data Sources (Key to >90% Accuracy)
 
-2. requests
-    Purpose: HTTP requests to APIs
-    Usage:
-        Querying Overpass API for business data
-        Geocoding place names using Nominatim
+The biggest improvement comes from querying several APIs and merging the results. This compensates for the shortcomings of any single source.
 
-3. time
-    Purpose: Time-related functions
-    Usage: Implementing rate limiting between API requests
+    1. Google Places API: The gold standard for comprehensiveness and accuracy for businesses. It has the most extensive database.
 
-4. sys
-    Purpose: System-specific parameters
-    Usage: Accessing Python executable for package installation
+        Endpoint: https://maps.googleapis.com/maps/api/place/nearbysearch/json
 
-5. urllib.parse
-    Purpose: URL parsing and manipulation
-    Usage: Encoding URL parameters (though not explicitly used in current code)
+        How: Use the type parameter (e.g., cafe, restaurant) and the radius parameter.
 
-6. typing
-    Purpose: Type hints for better code documentation
-    Usage: Defining function parameter and return types
+    2. OpenStreetMap (Overpass API): You are already using this. It's free and good, but incomplete.
 
-7. dataclasses
-    Purpose: Creating classes primarily for storing data
-    Usage: Defining the Competitor data structure
+    3. Foursquare / Places API: Another excellent source for rich venue data with categories.
 
-8. haversine (external package)
-    Purpose: Calculating geographical distances
-    Usage: Computing distances between coordinates
+    4. Yelp Fusion API: Great for user-reviewed businesses, especially in the US and Canada.
 
-1. Code Structure and Functionality
-    
-    @dataclass
-    class Competitor:
-        name: str
-        type: str
-        distance: float
-        latitude: float
-        longitude: float
-        osm_id: str
-        osm_type: str
-        address: str = ""
-        google_maps_url: str = ""
+    Implementation Strategy:
 
-        Stores all relevant information about a competitor
-        Includes Google Maps URL for easy navigation
+    1. Create a function for each API (e.g., fetch_from_google_places(), fetch_from_foursquare()).
 
-2. CompetitorAnalyzer Class
+    2. Run these APIs concurrently using asyncio or concurrent.futures to avoid slowing down.
 
-    2.1 Key Methods:
+    3. Merge the results into a single list.
 
-    a. User Input Handling
+    4. Deduplicate entries by checking if the business names and coordinates are very close to each other (using fuzzy name matching and distance thresholding).
 
-        get_user_input(): Comprehensive input collection
+2 Ways to Collect Data
 
-        _get_location_input(): Flexible location input (coordinates or place name)
+    1. OpenStreetMap (Free, current approach)
 
-        _get_radius_input(): Search radius specification
+        Strength: Free, global.
 
-        _get_business_types_input(): Business type selection with categories
+        Weakness: Incomplete in some areas.
 
-    b. API Interaction
+    2. Google Places API (Paid)
 
-        search_competitors(): Queries Overpass API for business data
+        Very high accuracy.
 
-        _build_query(): Constructs specialized Overpass query based on business types
+        Rich metadata (ratings, photos, opening hours).
 
-    c. Data Processing
+        Expensive if you need lots of requests.
 
-        process_results(): Converts API response to Competitor objects
+    3. Yelp / Foursquare API
 
-        _process_element(): Processes individual OSM elements
+        Great for food, retail, nightlife.
 
-    d. Output Generation
+        Regional coverage varies.
 
-        display_results(): Console output with formatting
+    4. Government / Open Data
 
-        get_results_json(): JSON output for frontend consumption
+        Many cities release business registries (licensed businesses).
 
-        export_results(): Text file export capability
+        Can be imported and cross-checked.
 
-    2.2 How It Works - Step by Step
+    5. Web Scraping
 
-        Input Collection: Gets location (coordinates or place name), radius, and business types
+        Scrape local directories (Yellow Pages, JustDial, TripAdvisor).
 
-        Geocoding: Converts place names to coordinates using Nominatim
+        Needs legality check and maintenance.
 
-        API Query: Builds and executes Overpass query to find businesses
+    6. Crowdsourcing
 
-        Data Processing: Converts raw API data to structured Competitor objects
-
-        Distance Calculation: Uses haversine formula to compute distances
-
-        Results Presentation: Displays formatted results with Google Maps links
-
-        Export Option: Saves results to text file
-
-Current Implementation Percentage & Areas for Improvement
-Current Implementation (75% Complete)
-
-    What's working well:
-
-        Core functionality for finding competitors
-
-        Multiple input methods (coordinates, place names)
-
-        Comprehensive business type selection
-
-        Distance calculations and sorting
-
-        Google Maps integration
-
-        Basic export functionality
-
-    Areas for Improvement (25% Needed)
-
-        Mapping Visualization (15%)
-
-            Integrate with Folium or similar to generate interactive maps
-
-            Plot competitors with different markers based on type/distance
-
-            Add heatmaps for business density visualization
-
-        Enhanced Business Intelligence (5%)
-
-            Add more detailed analytics (market share estimation)
-
-            Integration with demographic data APIs
-
-            Competitor strength analysis (reviews, ratings if available)
-
-        Performance Optimization (3%)
-
-            Implement caching for frequently searched locations
-
-            Add parallel processing for large radius searches
-
-            Better error handling for API rate limits
+        Let users contribute corrections ("This shop is closed", "New cafe opened").
