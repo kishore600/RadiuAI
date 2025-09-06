@@ -1,474 +1,501 @@
 {
-  "Traffic_Score": {
-    "coordinates": {
-      "latitude": 40.7128,
-      "longitude": -74.006
-    },
-    "traffic_score": 0.6,
-    "top_poi_categories": [
-      {
-        "rank": 1,
-        "category": "transport",
-        "count": 18
-      },
-      {
-        "rank": 2,
-        "category": "public",
-        "count": 14
-      },
-      {
-        "rank": 3,
-        "category": "commercial",
-        "count": 13
-      }
-    ]
-  },
-  "Market_Factor": {
-    "market_factor": 0.714,
-    "confidence": 0.9,
-    "notes": "High rental costs may impact profitability. Business-friendly regulatory environment. Limited competition in the immediate area. Moderate market conditions with balanced opportunities and challenges."
-  },
-  "Population_Analysis": {
-    "multiplier": 1.6,
-    "confidence": 0.9,
-    "population_estimate": 12566,
-    "competition_count": 46,
-    "income_index": 0.5,
-    "notes": "High competition (46 competitors). Consider differentiation."
-  },
-  "Income_Data": {
-    "data": [
-      {
-        "year": "2020",
-        "value": 64401.5074354212,
-        "country": "US"
-      }
-    ]
-  },
-  "Existing_Competitors": {
-    "data": {
-      "status": "success",
-      "total_competitors": 42,
-      "search_parameters": {
-        "latitude": 40.7128,
-        "longitude": -74.006,
-        "radius": 2000,
-        "business_types": [
-          "supermarket"
+    "Traffic_Score": {
+        "coordinates": {
+            "latitude": 40.7128,
+            "longitude": -74.006
+        },
+        "traffic_score": 0.6,
+        "top_poi_categories": [
+            {
+                "rank": 1,
+                "category": "commercial",
+                "count": 18
+            },
+            {
+                "rank": 2,
+                "category": "retail",
+                "count": 15
+            },
+            {
+                "rank": 3,
+                "category": "entertainment",
+                "count": 9
+            }
         ]
-      },
-      "competitors": [
-        {
-          "name": "55 Fulton Market",
-          "type": "supermarket",
-          "distance": 466.06088644378724,
-          "latitude": 40.7087325,
-          "longitude": -74.0046656,
-          "address": "Fulton Street, 55",
-          "google_maps_url": "https://www.google.com/maps?q=40.7087325,-74.0046656"
+    },
+    "Market_Factor": {
+        "market_factor": 0.714,
+        "components": {
+            "rent_index": 0.4,
+            "regulatory_index": 0.8,
+            "seasonality_index": 0.9,
+            "competition_density": 1
         },
-        {
-          "name": "Superfresh",
-          "type": "supermarket",
-          "distance": 528.9120389480071,
-          "latitude": 40.7109067,
-          "longitude": -74.0002433,
-          "address": "Saint James Place, 5",
-          "google_maps_url": "https://www.google.com/maps?q=40.7109067,-74.0002433"
+        "weights": {
+            "rent_index": 0.4,
+            "regulatory_index": 0.3,
+            "seasonality_index": 0.2,
+            "competition_density": 0.1
         },
-        {
-          "name": "Gourmet Garage",
-          "type": "supermarket",
-          "distance": 564.6102680950233,
-          "latitude": 40.7174565,
-          "longitude": -74.0033287,
-          "address": "Broadway, 366",
-          "google_maps_url": "https://www.google.com/maps?q=40.7174565,-74.0033287"
-        },
-        {
-          "name": "Whole Foods Market",
-          "type": "supermarket",
-          "distance": 575.8161568552389,
-          "latitude": 40.7156112,
-          "longitude": -74.0117376,
-          "address": "Greenwich Street, 270",
-          "google_maps_url": "https://www.google.com/maps?q=40.7156112,-74.0117376"
-        },
-        {
-          "name": "Eataly",
-          "type": "supermarket",
-          "distance": 584.8938835612747,
-          "latitude": 40.7100561,
-          "longitude": -74.0119204,
-          "address": "Liberty Street, 101",
-          "google_maps_url": "https://www.google.com/maps?q=40.7100561,-74.0119204"
-        },
-        {
-          "name": "Sun Vin Grocery",
-          "type": "supermarket",
-          "distance": 692.1576524323052,
-          "latitude": 40.7163077,
-          "longitude": -73.9992157,
-          "address": "Address not specified",
-          "google_maps_url": "https://www.google.com/maps?q=40.7163077,-73.9992157"
-        },
-        {
-          "name": "Up Market",
-          "type": "supermarket",
-          "distance": 696.5565017020566,
-          "latitude": 40.7071196,
-          "longitude": -74.0094839,
-          "address": "Address not specified",
-          "google_maps_url": "https://www.google.com/maps?q=40.7071196,-74.0094839"
-        },
-        {
-          "name": "City Acres Market",
-          "type": "supermarket",
-          "distance": 734.3884855476254,
-          "latitude": 40.7062836,
-          "longitude": -74.0074184,
-          "address": "Pine Street, 70",
-          "google_maps_url": "https://www.google.com/maps?q=40.7062836,-74.0074184"
-        },
-        {
-          "name": "Bayard Market",
-          "type": "supermarket",
-          "distance": 739.6912306568142,
-          "latitude": 40.7153268,
-          "longitude": -73.9978815,
-          "address": "Address not specified",
-          "google_maps_url": "https://www.google.com/maps?q=40.7153268,-73.9978815"
-        },
-        {
-          "name": "Lucky Star Bamboo Depot",
-          "type": "supermarket",
-          "distance": 743.4518246954678,
-          "latitude": 40.7155467,
-          "longitude": -73.9979578,
-          "address": "Bayard Street, 64A",
-          "google_maps_url": "https://www.google.com/maps?q=40.7155467,-73.9979578"
-        },
-        {
-          "name": "Tokyo Mart",
-          "type": "supermarket",
-          "distance": 744.8795931441696,
-          "latitude": 40.7167954,
-          "longitude": -73.9989061,
-          "address": "Mulberry Street, 91",
-          "google_maps_url": "https://www.google.com/maps?q=40.7167954,-73.9989061"
-        },
-        {
-          "name": "Brookfield Place",
-          "type": "supermarket",
-          "distance": 765.7637606432927,
-          "latitude": 40.7129846,
-          "longitude": -74.0150822,
-          "address": "Address not specified",
-          "google_maps_url": "https://www.google.com/maps?q=40.7129846,-74.0150822"
-        },
-        {
-          "name": "Kam Man",
-          "type": "supermarket",
-          "distance": 785.0813538183396,
-          "latitude": 40.7168494,
-          "longitude": -73.9983694,
-          "address": "Canal Street, 200",
-          "google_maps_url": "https://www.google.com/maps?q=40.7168494,-73.9983694"
-        },
-        {
-          "name": "Whole Foods Market",
-          "type": "supermarket",
-          "distance": 807.5270022930349,
-          "latitude": 40.7070866,
-          "longitude": -74.0119141,
-          "address": "Broadway, 66",
-          "google_maps_url": "https://www.google.com/maps?q=40.7070866,-74.0119141"
-        },
-        {
-          "name": "Le District",
-          "type": "supermarket",
-          "distance": 818.1156362359392,
-          "latitude": 40.7123705,
-          "longitude": -74.01569,
-          "address": "Address not specified",
-          "google_maps_url": "https://www.google.com/maps?q=40.7123705,-74.01569"
-        },
-        {
-          "name": "Gristedes",
-          "type": "supermarket",
-          "distance": 910.768152076529,
-          "latitude": 40.7105762,
-          "longitude": -74.0163998,
-          "address": "South End Avenue, 325",
-          "google_maps_url": "https://www.google.com/maps?q=40.7105762,-74.0163998"
-        },
-        {
-          "name": "\u5bf6\u69ae\u884c\u98df\u54c1\u4e2d\u5fc3",
-          "type": "supermarket",
-          "distance": 913.9285000510351,
-          "latitude": 40.7171212,
-          "longitude": -73.9967759,
-          "address": "Elizabeth Street, 49",
-          "google_maps_url": "https://www.google.com/maps?q=40.7171212,-73.9967759"
-        },
-        {
-          "name": "Chao Hui Grocery Store",
-          "type": "supermarket",
-          "distance": 953.8721311361465,
-          "latitude": 40.7135422,
-          "longitude": -73.9947251,
-          "address": "Market Street, 9",
-          "google_maps_url": "https://www.google.com/maps?q=40.7135422,-73.9947251"
-        },
-        {
-          "name": "Christmas in New York",
-          "type": "supermarket",
-          "distance": 983.8924263970567,
-          "latitude": 40.7188032,
-          "longitude": -73.9974238,
-          "address": "Mulberry Street, 142",
-          "google_maps_url": "https://www.google.com/maps?q=40.7188032,-73.9974238"
-        },
-        {
-          "name": "Hong Kong Supermarket",
-          "type": "supermarket",
-          "distance": 996.6337710777548,
-          "latitude": 40.71761,
-          "longitude": -73.996022,
-          "address": "Hester Street, 157",
-          "google_maps_url": "https://www.google.com/maps?q=40.71761,-73.996022"
-        },
-        {
-          "name": "iFresh Market",
-          "type": "supermarket",
-          "distance": 1014.0255908966653,
-          "latitude": 40.7184953,
-          "longitude": -73.9966034,
-          "address": "Mott Street, 128",
-          "google_maps_url": "https://www.google.com/maps?q=40.7184953,-73.9966034"
-        },
-        {
-          "name": "New York Supermarket",
-          "type": "supermarket",
-          "distance": 1017.2327979905724,
-          "latitude": 40.7132849,
-          "longitude": -73.9939479,
-          "address": "Address not specified",
-          "google_maps_url": "https://www.google.com/maps?q=40.7132849,-73.9939479"
-        },
-        {
-          "name": "Super A Mart",
-          "type": "supermarket",
-          "distance": 1057.6905679384377,
-          "latitude": 40.7175,
-          "longitude": -73.9950895,
-          "address": "Address not specified",
-          "google_maps_url": "https://www.google.com/maps?q=40.7175,-73.9950895"
-        },
-        {
-          "name": "Gristedes",
-          "type": "supermarket",
-          "distance": 1092.5161107538395,
-          "latitude": 40.7084281,
-          "longitude": -74.0176079,
-          "address": "South End Avenue",
-          "google_maps_url": "https://www.google.com/maps?q=40.7084281,-74.0176079"
-        },
-        {
-          "name": "Chinatown Supermarket of Manhattan",
-          "type": "supermarket",
-          "distance": 1109.9767857901745,
-          "latitude": 40.713697,
-          "longitude": -73.9928838,
-          "address": "East Broadway, 109",
-          "google_maps_url": "https://www.google.com/maps?q=40.713697,-73.9928838"
-        },
-        {
-          "name": "Tan Tin Hung Supermarket",
-          "type": "supermarket",
-          "distance": 1111.9857442148011,
-          "latitude": 40.7180786,
-          "longitude": -73.994794,
-          "address": "Address not specified",
-          "google_maps_url": "https://www.google.com/maps?q=40.7180786,-73.994794"
-        },
-        {
-          "name": "Battery Place Market",
-          "type": "supermarket",
-          "distance": 1119.8297436777464,
-          "latitude": 40.7072236,
-          "longitude": -74.0170631,
-          "address": "Battery Place",
-          "google_maps_url": "https://www.google.com/maps?q=40.7072236,-74.0170631"
-        },
-        {
-          "name": "Sunrise Mart",
-          "type": "supermarket",
-          "distance": 1198.2073621700642,
-          "latitude": 40.7232585,
-          "longitude": -74.0025757,
-          "address": "Broome Street, 494",
-          "google_maps_url": "https://www.google.com/maps?q=40.7232585,-74.0025757"
-        },
-        {
-          "name": "Genkiya Mart",
-          "type": "supermarket",
-          "distance": 1291.6815046543481,
-          "latitude": 40.7220123,
-          "longitude": -73.9966638,
-          "address": "Spring Street, 54",
-          "google_maps_url": "https://www.google.com/maps?q=40.7220123,-73.9966638"
-        },
-        {
-          "name": "Mulberry Market",
-          "type": "supermarket",
-          "distance": 1437.662135240288,
-          "latitude": 40.7232089,
-          "longitude": -73.9958812,
-          "address": "Mulberry Street, 251",
-          "google_maps_url": "https://www.google.com/maps?q=40.7232089,-73.9958812"
-        },
-        {
-          "name": "Trader Joe's",
-          "type": "supermarket",
-          "distance": 1438.7380761557388,
-          "latitude": 40.7257088,
-          "longitude": -74.0048369,
-          "address": "Spring Street, 233",
-          "google_maps_url": "https://www.google.com/maps?q=40.7257088,-74.0048369"
-        },
-        {
-          "name": "Bulletin Nolita",
-          "type": "supermarket",
-          "distance": 1487.7525971634961,
-          "latitude": 40.7229886,
-          "longitude": -73.994558,
-          "address": "Prince Street, 27",
-          "google_maps_url": "https://www.google.com/maps?q=40.7229886,-73.994558"
-        },
-        {
-          "name": "Fine Fare Supermarket",
-          "type": "supermarket",
-          "distance": 1616.0888031394913,
-          "latitude": 40.7155895,
-          "longitude": -73.9871819,
-          "address": "Clinton Street, 175",
-          "google_maps_url": "https://www.google.com/maps?q=40.7155895,-73.9871819"
-        },
-        {
-          "name": "Food Stop",
-          "type": "supermarket",
-          "distance": 1633.2661957340924,
-          "latitude": 40.7195194,
-          "longitude": -73.9887677,
-          "address": "Ludlow Street, 117",
-          "google_maps_url": "https://www.google.com/maps?q=40.7195194,-73.9887677"
-        },
-        {
-          "name": "Trader Joe's",
-          "type": "supermarket",
-          "distance": 1666.8637409150685,
-          "latitude": 40.7161587,
-          "longitude": -73.9867257,
-          "address": "Grand Street, 400",
-          "google_maps_url": "https://www.google.com/maps?q=40.7161587,-73.9867257"
-        },
-        {
-          "name": "Whole Foods Market",
-          "type": "supermarket",
-          "distance": 1681.8244093885462,
-          "latitude": 40.7238482,
-          "longitude": -73.9923711,
-          "address": "East Houston Street, 95",
-          "google_maps_url": "https://www.google.com/maps?q=40.7238482,-73.9923711"
-        },
-        {
-          "name": "Dumbo Market",
-          "type": "supermarket",
-          "distance": 1757.2600342571866,
-          "latitude": 40.7024275,
-          "longitude": -73.9902714,
-          "address": "Address not specified",
-          "google_maps_url": "https://www.google.com/maps?q=40.7024275,-73.9902714"
-        },
-        {
-          "name": "Morton Williams",
-          "type": "supermarket",
-          "distance": 1767.6012057662324,
-          "latitude": 40.727713,
-          "longitude": -73.9987374,
-          "address": "Bleecker Street, 130",
-          "google_maps_url": "https://www.google.com/maps?q=40.727713,-73.9987374"
-        },
-        {
-          "name": "Peas & Pickles",
-          "type": "supermarket",
-          "distance": 1797.2431727521591,
-          "latitude": 40.7026168,
-          "longitude": -73.9894421,
-          "address": "Washington Street, 55",
-          "google_maps_url": "https://www.google.com/maps?q=40.7026168,-73.9894421"
-        },
-        {
-          "name": "East Side Glatt",
-          "type": "supermarket",
-          "distance": 1982.8783476559272,
-          "latitude": 40.714915,
-          "longitude": -73.9826397,
-          "address": "Grand Street, 500",
-          "google_maps_url": "https://www.google.com/maps?q=40.714915,-73.9826397"
-        },
-        {
-          "name": "All in One Deli Mart",
-          "type": "supermarket",
-          "distance": 1991.469017160477,
-          "latitude": 40.6981172,
-          "longitude": -73.9924718,
-          "address": "Pineapple Street, 79",
-          "google_maps_url": "https://www.google.com/maps?q=40.6981172,-73.9924718"
-        },
-        {
-          "name": "Union Market",
-          "type": "supermarket",
-          "distance": 1994.7393894225575,
-          "latitude": 40.7223696,
-          "longitude": -73.9859805,
-          "address": "East Houston Street, 240",
-          "google_maps_url": "https://www.google.com/maps?q=40.7223696,-73.9859805"
+        "confidence": 0.9,
+        "notes": "High rental costs may impact profitability. Business-friendly regulatory environment. Limited competition in the immediate area. Moderate market conditions with balanced opportunities and challenges."
+    },
+    "Population_Analysis": {
+        "multiplier": 1.6,
+        "confidence": 0.9,
+        "population": 12566,
+        "competition_count": 46,
+        "income_index": 0.5,
+        "notes": "High competition (46 competitors). Consider differentiation.",
+        "coordinates": [
+            40.7128,
+            -74.006
+        ],
+        "radius_km": 2
+    },
+    "Income_Data": {
+        "data": [
+            {
+                "year": "2020",
+                "value": 64401.5074354212,
+                "confidence_score": 100
+            },
+            {
+                "year": "2021",
+                "value": 71307.4017277218,
+                "confidence_score": 100
+            },
+            {
+                "year": "2022",
+                "value": 77860.9112908848,
+                "confidence_score": 100
+            }
+        ]
+    },
+    "Existing_Competitors": {
+        "data": {
+            "status": "success",
+            "total_competitors": 42,
+            "search_parameters": {
+                "latitude": 40.7128,
+                "longitude": -74.006,
+                "radius": 2000,
+                "business_types": [
+                    "supermarket"
+                ]
+            },
+            "competitors": [
+                {
+                    "name": "55 Fulton Market",
+                    "type": "supermarket",
+                    "distance": 466.06088644378724,
+                    "latitude": 40.7087325,
+                    "longitude": -74.0046656,
+                    "address": "Fulton Street, 55",
+                    "google_maps_url": "https://www.google.com/maps?q=40.7087325,-74.0046656"
+                },
+                {
+                    "name": "Superfresh",
+                    "type": "supermarket",
+                    "distance": 528.9120389480071,
+                    "latitude": 40.7109067,
+                    "longitude": -74.0002433,
+                    "address": "Saint James Place, 5",
+                    "google_maps_url": "https://www.google.com/maps?q=40.7109067,-74.0002433"
+                },
+                {
+                    "name": "Gourmet Garage",
+                    "type": "supermarket",
+                    "distance": 564.6102680950233,
+                    "latitude": 40.7174565,
+                    "longitude": -74.0033287,
+                    "address": "Broadway, 366",
+                    "google_maps_url": "https://www.google.com/maps?q=40.7174565,-74.0033287"
+                },
+                {
+                    "name": "Whole Foods Market",
+                    "type": "supermarket",
+                    "distance": 575.8161568552389,
+                    "latitude": 40.7156112,
+                    "longitude": -74.0117376,
+                    "address": "Greenwich Street, 270",
+                    "google_maps_url": "https://www.google.com/maps?q=40.7156112,-74.0117376"
+                },
+                {
+                    "name": "Eataly",
+                    "type": "supermarket",
+                    "distance": 584.8938835612747,
+                    "latitude": 40.7100561,
+                    "longitude": -74.0119204,
+                    "address": "Liberty Street, 101",
+                    "google_maps_url": "https://www.google.com/maps?q=40.7100561,-74.0119204"
+                },
+                {
+                    "name": "Sun Vin Grocery",
+                    "type": "supermarket",
+                    "distance": 692.1576524323052,
+                    "latitude": 40.7163077,
+                    "longitude": -73.9992157,
+                    "address": "Address not specified",
+                    "google_maps_url": "https://www.google.com/maps?q=40.7163077,-73.9992157"
+                },
+                {
+                    "name": "Up Market",
+                    "type": "supermarket",
+                    "distance": 696.5565017020566,
+                    "latitude": 40.7071196,
+                    "longitude": -74.0094839,
+                    "address": "Address not specified",
+                    "google_maps_url": "https://www.google.com/maps?q=40.7071196,-74.0094839"
+                },
+                {
+                    "name": "City Acres Market",
+                    "type": "supermarket",
+                    "distance": 734.3884855476254,
+                    "latitude": 40.7062836,
+                    "longitude": -74.0074184,
+                    "address": "Pine Street, 70",
+                    "google_maps_url": "https://www.google.com/maps?q=40.7062836,-74.0074184"
+                },
+                {
+                    "name": "Bayard Market",
+                    "type": "supermarket",
+                    "distance": 739.6912306568142,
+                    "latitude": 40.7153268,
+                    "longitude": -73.9978815,
+                    "address": "Address not specified",
+                    "google_maps_url": "https://www.google.com/maps?q=40.7153268,-73.9978815"
+                },
+                {
+                    "name": "Lucky Star Bamboo Depot",
+                    "type": "supermarket",
+                    "distance": 743.4518246954678,
+                    "latitude": 40.7155467,
+                    "longitude": -73.9979578,
+                    "address": "Bayard Street, 64A",
+                    "google_maps_url": "https://www.google.com/maps?q=40.7155467,-73.9979578"
+                },
+                {
+                    "name": "Tokyo Mart",
+                    "type": "supermarket",
+                    "distance": 744.8795931441696,
+                    "latitude": 40.7167954,
+                    "longitude": -73.9989061,
+                    "address": "Mulberry Street, 91",
+                    "google_maps_url": "https://www.google.com/maps?q=40.7167954,-73.9989061"
+                },
+                {
+                    "name": "Brookfield Place",
+                    "type": "supermarket",
+                    "distance": 765.7637606432927,
+                    "latitude": 40.7129846,
+                    "longitude": -74.0150822,
+                    "address": "Address not specified",
+                    "google_maps_url": "https://www.google.com/maps?q=40.7129846,-74.0150822"
+                },
+                {
+                    "name": "Kam Man",
+                    "type": "supermarket",
+                    "distance": 785.0813538183396,
+                    "latitude": 40.7168494,
+                    "longitude": -73.9983694,
+                    "address": "Canal Street, 200",
+                    "google_maps_url": "https://www.google.com/maps?q=40.7168494,-73.9983694"
+                },
+                {
+                    "name": "Whole Foods Market",
+                    "type": "supermarket",
+                    "distance": 807.5270022930349,
+                    "latitude": 40.7070866,
+                    "longitude": -74.0119141,
+                    "address": "Broadway, 66",
+                    "google_maps_url": "https://www.google.com/maps?q=40.7070866,-74.0119141"
+                },
+                {
+                    "name": "Le District",
+                    "type": "supermarket",
+                    "distance": 818.1156362359392,
+                    "latitude": 40.7123705,
+                    "longitude": -74.01569,
+                    "address": "Address not specified",
+                    "google_maps_url": "https://www.google.com/maps?q=40.7123705,-74.01569"
+                },
+                {
+                    "name": "Gristedes",
+                    "type": "supermarket",
+                    "distance": 910.768152076529,
+                    "latitude": 40.7105762,
+                    "longitude": -74.0163998,
+                    "address": "South End Avenue, 325",
+                    "google_maps_url": "https://www.google.com/maps?q=40.7105762,-74.0163998"
+                },
+                {
+                    "name": "寶榮行食品中心",
+                    "type": "supermarket",
+                    "distance": 913.9285000510351,
+                    "latitude": 40.7171212,
+                    "longitude": -73.9967759,
+                    "address": "Elizabeth Street, 49",
+                    "google_maps_url": "https://www.google.com/maps?q=40.7171212,-73.9967759"
+                },
+                {
+                    "name": "Chao Hui Grocery Store",
+                    "type": "supermarket",
+                    "distance": 953.8721311361465,
+                    "latitude": 40.7135422,
+                    "longitude": -73.9947251,
+                    "address": "Market Street, 9",
+                    "google_maps_url": "https://www.google.com/maps?q=40.7135422,-73.9947251"
+                },
+                {
+                    "name": "Christmas in New York",
+                    "type": "supermarket",
+                    "distance": 983.8924263970567,
+                    "latitude": 40.7188032,
+                    "longitude": -73.9974238,
+                    "address": "Mulberry Street, 142",
+                    "google_maps_url": "https://www.google.com/maps?q=40.7188032,-73.9974238"
+                },
+                {
+                    "name": "Hong Kong Supermarket",
+                    "type": "supermarket",
+                    "distance": 996.6337710777548,
+                    "latitude": 40.71761,
+                    "longitude": -73.996022,
+                    "address": "Hester Street, 157",
+                    "google_maps_url": "https://www.google.com/maps?q=40.71761,-73.996022"
+                },
+                {
+                    "name": "iFresh Market",
+                    "type": "supermarket",
+                    "distance": 1014.0255908966653,
+                    "latitude": 40.7184953,
+                    "longitude": -73.9966034,
+                    "address": "Mott Street, 128",
+                    "google_maps_url": "https://www.google.com/maps?q=40.7184953,-73.9966034"
+                },
+                {
+                    "name": "New York Supermarket",
+                    "type": "supermarket",
+                    "distance": 1017.2327979905724,
+                    "latitude": 40.7132849,
+                    "longitude": -73.9939479,
+                    "address": "Address not specified",
+                    "google_maps_url": "https://www.google.com/maps?q=40.7132849,-73.9939479"
+                },
+                {
+                    "name": "Super A Mart",
+                    "type": "supermarket",
+                    "distance": 1057.6905679384377,
+                    "latitude": 40.7175,
+                    "longitude": -73.9950895,
+                    "address": "Address not specified",
+                    "google_maps_url": "https://www.google.com/maps?q=40.7175,-73.9950895"
+                },
+                {
+                    "name": "Gristedes",
+                    "type": "supermarket",
+                    "distance": 1092.5161107538395,
+                    "latitude": 40.7084281,
+                    "longitude": -74.0176079,
+                    "address": "South End Avenue",
+                    "google_maps_url": "https://www.google.com/maps?q=40.7084281,-74.0176079"
+                },
+                {
+                    "name": "Chinatown Supermarket of Manhattan",
+                    "type": "supermarket",
+                    "distance": 1109.9767857901745,
+                    "latitude": 40.713697,
+                    "longitude": -73.9928838,
+                    "address": "East Broadway, 109",
+                    "google_maps_url": "https://www.google.com/maps?q=40.713697,-73.9928838"
+                },
+                {
+                    "name": "Tan Tin Hung Supermarket",
+                    "type": "supermarket",
+                    "distance": 1111.9857442148011,
+                    "latitude": 40.7180786,
+                    "longitude": -73.994794,
+                    "address": "Address not specified",
+                    "google_maps_url": "https://www.google.com/maps?q=40.7180786,-73.994794"
+                },
+                {
+                    "name": "Battery Place Market",
+                    "type": "supermarket",
+                    "distance": 1119.8297436777464,
+                    "latitude": 40.7072236,
+                    "longitude": -74.0170631,
+                    "address": "Battery Place",
+                    "google_maps_url": "https://www.google.com/maps?q=40.7072236,-74.0170631"
+                },
+                {
+                    "name": "Sunrise Mart",
+                    "type": "supermarket",
+                    "distance": 1198.2073621700642,
+                    "latitude": 40.7232585,
+                    "longitude": -74.0025757,
+                    "address": "Broome Street, 494",
+                    "google_maps_url": "https://www.google.com/maps?q=40.7232585,-74.0025757"
+                },
+                {
+                    "name": "Genkiya Mart",
+                    "type": "supermarket",
+                    "distance": 1291.6815046543481,
+                    "latitude": 40.7220123,
+                    "longitude": -73.9966638,
+                    "address": "Spring Street, 54",
+                    "google_maps_url": "https://www.google.com/maps?q=40.7220123,-73.9966638"
+                },
+                {
+                    "name": "Mulberry Market",
+                    "type": "supermarket",
+                    "distance": 1437.662135240288,
+                    "latitude": 40.7232089,
+                    "longitude": -73.9958812,
+                    "address": "Mulberry Street, 251",
+                    "google_maps_url": "https://www.google.com/maps?q=40.7232089,-73.9958812"
+                },
+                {
+                    "name": "Trader Joe's",
+                    "type": "supermarket",
+                    "distance": 1438.7380761557388,
+                    "latitude": 40.7257088,
+                    "longitude": -74.0048369,
+                    "address": "Spring Street, 233",
+                    "google_maps_url": "https://www.google.com/maps?q=40.7257088,-74.0048369"
+                },
+                {
+                    "name": "Bulletin Nolita",
+                    "type": "supermarket",
+                    "distance": 1487.7525971634961,
+                    "latitude": 40.7229886,
+                    "longitude": -73.994558,
+                    "address": "Prince Street, 27",
+                    "google_maps_url": "https://www.google.com/maps?q=40.7229886,-73.994558"
+                },
+                {
+                    "name": "Fine Fare Supermarket",
+                    "type": "supermarket",
+                    "distance": 1616.0888031394913,
+                    "latitude": 40.7155895,
+                    "longitude": -73.9871819,
+                    "address": "Clinton Street, 175",
+                    "google_maps_url": "https://www.google.com/maps?q=40.7155895,-73.9871819"
+                },
+                {
+                    "name": "Food Stop",
+                    "type": "supermarket",
+                    "distance": 1633.2661957340924,
+                    "latitude": 40.7195194,
+                    "longitude": -73.9887677,
+                    "address": "Ludlow Street, 117",
+                    "google_maps_url": "https://www.google.com/maps?q=40.7195194,-73.9887677"
+                },
+                {
+                    "name": "Trader Joe's",
+                    "type": "supermarket",
+                    "distance": 1666.8637409150685,
+                    "latitude": 40.7161587,
+                    "longitude": -73.9867257,
+                    "address": "Grand Street, 400",
+                    "google_maps_url": "https://www.google.com/maps?q=40.7161587,-73.9867257"
+                },
+                {
+                    "name": "Whole Foods Market",
+                    "type": "supermarket",
+                    "distance": 1681.8244093885462,
+                    "latitude": 40.7238482,
+                    "longitude": -73.9923711,
+                    "address": "East Houston Street, 95",
+                    "google_maps_url": "https://www.google.com/maps?q=40.7238482,-73.9923711"
+                },
+                {
+                    "name": "Dumbo Market",
+                    "type": "supermarket",
+                    "distance": 1757.2600342571866,
+                    "latitude": 40.7024275,
+                    "longitude": -73.9902714,
+                    "address": "Address not specified",
+                    "google_maps_url": "https://www.google.com/maps?q=40.7024275,-73.9902714"
+                },
+                {
+                    "name": "Morton Williams",
+                    "type": "supermarket",
+                    "distance": 1767.6012057662324,
+                    "latitude": 40.727713,
+                    "longitude": -73.9987374,
+                    "address": "Bleecker Street, 130",
+                    "google_maps_url": "https://www.google.com/maps?q=40.727713,-73.9987374"
+                },
+                {
+                    "name": "Peas & Pickles",
+                    "type": "supermarket",
+                    "distance": 1797.2431727521591,
+                    "latitude": 40.7026168,
+                    "longitude": -73.9894421,
+                    "address": "Washington Street, 55",
+                    "google_maps_url": "https://www.google.com/maps?q=40.7026168,-73.9894421"
+                },
+                {
+                    "name": "East Side Glatt",
+                    "type": "supermarket",
+                    "distance": 1982.8783476559272,
+                    "latitude": 40.714915,
+                    "longitude": -73.9826397,
+                    "address": "Grand Street, 500",
+                    "google_maps_url": "https://www.google.com/maps?q=40.714915,-73.9826397"
+                },
+                {
+                    "name": "All in One Deli Mart",
+                    "type": "supermarket",
+                    "distance": 1991.469017160477,
+                    "latitude": 40.6981172,
+                    "longitude": -73.9924718,
+                    "address": "Pineapple Street, 79",
+                    "google_maps_url": "https://www.google.com/maps?q=40.6981172,-73.9924718"
+                },
+                {
+                    "name": "Union Market",
+                    "type": "supermarket",
+                    "distance": 1994.7393894225575,
+                    "latitude": 40.7223696,
+                    "longitude": -73.9859805,
+                    "address": "East Houston Street, 240",
+                    "google_maps_url": "https://www.google.com/maps?q=40.7223696,-73.9859805"
+                }
+            ],
+            "statistics": {
+                "closest": {
+                    "name": "55 Fulton Market",
+                    "distance": 466.06088644378724,
+                    "type": "supermarket"
+                },
+                "farthest": {
+                    "name": "Union Market",
+                    "distance": 1994.7393894225575,
+                    "type": "supermarket"
+                },
+                "average_distance": 1125.5603473487813,
+                "business_density": 3.3422566280132036,
+                "count_by_type": {
+                    "supermarket": 42
+                }
+            }
         }
-      ],
-      "statistics": {
-        "closest": {
-          "name": "55 Fulton Market",
-          "distance": 466.06088644378724,
-          "type": "supermarket"
-        },
-        "farthest": {
-          "name": "Union Market",
-          "distance": 1994.7393894225575,
-          "type": "supermarket"
-        },
-        "average_distance": 1125.5603473487813,
-        "business_density": 3.3422566280132036,
-        "count_by_type": {
-          "supermarket": 42
-        }
-      }
+    },
+    "Cultural_Fit": {
+        "location": "Manhattan, New York County, City of New York, New York, United States",
+        "business_type": "supermarket",
+        "analysis_radius_km": 2000,
+        "cultural_fit_score": 0.27,
+        "sentiment_ratio": 0.5,
+        "insights": [
+            "- Poor cultural fit (27.0%) for a supermarket in City of New York within 2000.0km radius",
+            "- Strong local interest in fine dining (score: 10.0/10) within 2000.0km radius",
+            "- Strong local interest in fastfood (score: 10.0/10) within 2000.0km radius",
+            "- Currently in fall season - consider seasonal offerings within 2000.0km radius",
+            "- Analysis includes regional preferences for United States within 2000.0km radius",
+            "- Analysis covers a wide geographic region"
+        ]
     }
-  },
-  "Cultural_Fit": {
-    "location": "Manhattan, New York County, City of New York, New York, United States",
-    "business_type": "supermarket",
-    "analysis_radius_km": 2000,
-    "cultural_fit_score": 0.27,
-    "sentiment_ratio": 0.5,
-    "insights": [
-      "- Poor cultural fit (27.0%) for a supermarket in City of New York within 2000km radius",
-      "- Strong local interest in fastfood (score: 10.0/10) within 2000km radius",
-      "- Strong local interest in fine dining (score: 10.0/10) within 2000km radius",
-      "- Currently in fall season - consider seasonal offerings within 2000km radius",
-      "- Analysis includes regional preferences for United States within 2000km radius",
-      "- Analysis covers a wide geographic region"
-    ]
-  }
 }
