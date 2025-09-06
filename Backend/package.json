@@ -9,7 +9,9 @@
   "author": "kishore",
   "license": "ISC",
   "dependencies": {
+    "@googlemaps/js-api-loader": "^1.16.10",
     "child_process": "^1.0.2",
+    "cors": "^2.8.5",
     "express": "^5.1.0",
     "nodemon": "^3.1.10",
     "path": "^0.12.7"
