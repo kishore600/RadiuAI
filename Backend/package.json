@@ -1,7 +1,7 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "description": "",
+  "description": "AI is a revolutionary SaaS platform that transforms location-based business decisions from guesswork into data-driven strategy. Using advanced AI models and cultural intelligence, it helps entrepreneurs, investors, and small business owners make smart location decisions before investing their money",
   "main": "index.js",
   "scripts": {
     "dev": "nodemon index.js"
