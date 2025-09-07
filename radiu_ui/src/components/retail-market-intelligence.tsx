@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { Badge } from "@/components/ui/badge"
-import { Users, AlertCircle } from "lucide-react"
+import { Users, AlertCircle, Sparkles } from "lucide-react"
 import { MarketAnalysisCards } from "@/components/market-analysis-cards"
 import { CompetitorAnalysis } from "@/components/competitor-analysis"
 import { TrafficAnalysis } from "@/components/traffic-analysis"
@@ -129,28 +129,33 @@ export function RetailMarketIntelligence() {
     lat && lon ? `${Number.parseFloat(lat).toFixed(4)}, ${Number.parseFloat(lon).toFixed(4)}` : "No location set"
 
   return (
-    <div className="space-y-6">
-      {/* Dashboard Header */}
-      <DashboardHeader
-        lastAnalysis={lastAnalysis}
-        location={currentLocation}
-        status={loading ? "analyzing" : data ? "active" : "idle"}
-      />
+    <div className="space-y-8">
+      <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-card via-muted to-card p-6 border border-accent/20 animate-fade-in-up">
+        <div className="absolute inset-0 bg-gradient-to-r from-accent/5 to-primary/5" />
+        <div className="relative">
+          <DashboardHeader
+            lastAnalysis={lastAnalysis}
+            location={currentLocation}
+            status={loading ? "analyzing" : data ? "active" : "idle"}
+          />
+        </div>
+      </div>
 
-      {/* Enhanced Parameter Controls */}
-      <ParameterControls
-        lat={lat}
-        lon={lon}
-        businessType={businessType}
-        radiusKm={radiusKm}
-        onParameterChange={handleParameterChange}
-        onAnalyze={fetchMarketIntelligence}
-        loading={loading}
-      />
+      <div className="animate-fade-in-up" style={{ animationDelay: "0.1s" }}>
+        <ParameterControls
+          lat={lat}
+          lon={lon}
+          businessType={businessType}
+          radiusKm={radiusKm}
+          onParameterChange={handleParameterChange}
+          onAnalyze={fetchMarketIntelligence}
+          loading={loading}
+        />
+      </div>
 
       {/* Error Display */}
       {error && (
-        <Alert variant="destructive">
+        <Alert variant="destructive" className="animate-fade-in-up border-destructive/50 bg-destructive/5">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>
             <strong>Analysis Failed:</strong> {error}
@@ -160,49 +165,71 @@ export function RetailMarketIntelligence() {
 
       {/* Results Display */}
       {data && (
-        <div className="space-y-6">
-          {/* Market Overview Cards */}
-          <MarketAnalysisCards data={data} />
+        <div className="space-y-8">
+          <div className="animate-fade-in-up" style={{ animationDelay: "0.2s" }}>
+            <MarketAnalysisCards data={data} />
+          </div>
 
-          {/* Market Factor Chart */}
-          <MarketFactorChart data={data.Market_Factor} />
+          <div className="grid lg:grid-cols-2 gap-6">
+            <div className="animate-fade-in-up" style={{ animationDelay: "0.3s" }}>
+              <MarketFactorChart data={data.Market_Factor} />
+            </div>
+            <div className="animate-fade-in-up" style={{ animationDelay: "0.4s" }}>
+              <IncomeTrendChart data={data.Income_Data.data} />
+            </div>
+          </div>
 
-          {/* Income Trend Chart */}
-          <IncomeTrendChart data={data.Income_Data.data} />
+          <div className="animate-fade-in-up" style={{ animationDelay: "0.5s" }}>
+            <TrafficAnalysis data={data.Traffic_Score} />
+          </div>
 
-          {/* Traffic Analysis */}
-          <TrafficAnalysis data={data.Traffic_Score} />
+          <div className="animate-fade-in-up" style={{ animationDelay: "0.6s" }}>
+            <CompetitorAnalysis data={data.Existing_Competitors} />
+          </div>
 
-          {/* Competitor Analysis */}
-          <CompetitorAnalysis data={data.Existing_Competitors} />
-
-          {/* Cultural Fit Analysis */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Users className="h-5 w-5" />
+          <Card
+            className="animate-fade-in-up border-accent/20 bg-gradient-to-br from-card to-muted/30"
+            style={{ animationDelay: "0.7s" }}
+          >
+            <CardHeader className="bg-gradient-to-r from-transparent to-accent/5">
+              <CardTitle className="flex items-center gap-2 text-xl">
+                <div className="p-2 rounded-lg bg-gradient-to-br from-accent to-primary text-white">
+                  <Users className="h-5 w-5" />
+                </div>
                 Cultural Fit Analysis
+                <Sparkles className="h-4 w-4 text-accent ml-auto" />
               </CardTitle>
-              <CardDescription>{data.Cultural_Fit.location}</CardDescription>
+              <CardDescription className="text-base">{data.Cultural_Fit.location}</CardDescription>
             </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium">Cultural Fit Score</span>
-                  <Badge variant={data.Cultural_Fit.cultural_fit_score > 0.5 ? "default" : "secondary"}>
-                    {(data.Cultural_Fit.cultural_fit_score * 100).toFixed(1)}%
-                  </Badge>
-                </div>
-                <div className="space-y-2">
-                  <h4 className="text-sm font-medium">Key Insights</h4>
-                  <ul className="space-y-1">
-                    {data.Cultural_Fit.insights.map((insight, index) => (
-                      <li key={index} className="text-sm text-muted-foreground">
-                        {insight}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+            <CardContent className="space-y-6">
+              <div className="flex items-center justify-between p-4 rounded-lg bg-gradient-to-r from-muted to-muted/50">
+                <span className="text-base font-semibold">Cultural Fit Score</span>
+                <Badge
+                  variant={data.Cultural_Fit.cultural_fit_score > 0.5 ? "default" : "secondary"}
+                  className={`text-sm px-3 py-1 ${
+                    data.Cultural_Fit.cultural_fit_score > 0.5
+                      ? "bg-gradient-to-r from-accent to-primary text-white border-0"
+                      : ""
+                  }`}
+                >
+                  {(data.Cultural_Fit.cultural_fit_score * 100).toFixed(1)}%
+                </Badge>
+              </div>
+              <div className="space-y-3">
+                <h4 className="text-base font-semibold flex items-center gap-2">
+                  Key Insights
+                  <div className="h-px flex-1 bg-gradient-to-r from-accent/50 to-transparent" />
+                </h4>
+                <ul className="space-y-2">
+                  {data.Cultural_Fit.insights.map((insight, index) => (
+                    <li
+                      key={index}
+                      className="text-sm text-muted-foreground p-3 rounded-lg bg-muted/50 border-l-2 border-accent/30"
+                    >
+                      {insight}
+                    </li>
+                  ))}
+                </ul>
               </div>
             </CardContent>
           </Card>

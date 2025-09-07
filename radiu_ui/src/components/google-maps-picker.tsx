@@ -1,5 +1,22 @@
 "use client"
 
+/*
+ * SECURITY NOTE: Google Maps API Key Usage
+ *
+ * The NEXT_PUBLIC_GOOGLE_MAPS_API_KEY is intentionally exposed to the client-side
+ * because the Google Maps JavaScript API requires a browser-accessible API key.
+ * This is the standard and secure way to implement Google Maps.
+ *
+ * To secure your API key:
+ * 1. In Google Cloud Console, restrict your API key by:
+ *    - HTTP referrers (websites) - add your domain(s)
+ *    - API restrictions - enable only Maps JavaScript API and Geocoding API
+ * 2. Monitor usage in Google Cloud Console
+ * 3. Set usage quotas to prevent unexpected charges
+ *
+ * This approach is recommended by Google's official documentation.
+ */
+
 import type React from "react"
 import { useEffect, useRef, useState } from "react"
 import { Loader } from "@googlemaps/js-api-loader"
@@ -7,12 +24,12 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
-import { MapPin, Search, Crosshair } from "lucide-react"
+import { MapPin, Search, Crosshair, Shield } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 
 declare global {
   interface Window {
-    google: unknown
+    google: typeof google
   }
 }
 
@@ -25,8 +42,8 @@ interface GoogleMapsPickerProps {
 
 export function GoogleMapsPicker({ lat, lon, onLocationChange, className }: GoogleMapsPickerProps) {
   const mapRef = useRef<HTMLDivElement>(null)
-  const [map, setMap] = useState<any>(null)
-  const [marker, setMarker] = useState<any>(null)
+const [map, setMap] = useState<google.maps.Map | null>(null)
+const [marker, setMarker] = useState<google.maps.Marker | null>(null)
   const [searchInput, setSearchInput] = useState("")
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -37,6 +54,7 @@ export function GoogleMapsPicker({ lat, lon, onLocationChange, className }: Goog
     const initMap = async () => {
       try {
         const loader = new Loader({
+          // This API key is intentionally client-side for Google Maps JavaScript API
           apiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
           version: "weekly",
           libraries: ["places", "geocoding"],
@@ -55,9 +73,21 @@ export function GoogleMapsPicker({ lat, lon, onLocationChange, className }: Goog
           mapTypeControl: false,
           streetViewControl: false,
           fullscreenControl: false,
+          styles: [
+            {
+              featureType: "poi",
+              elementType: "labels",
+              stylers: [{ visibility: "off" }],
+            },
+            {
+              featureType: "transit",
+              elementType: "labels",
+              stylers: [{ visibility: "off" }],
+            },
+          ],
         })
 
-        // Create marker
+        // Create marker with custom styling
         const markerInstance = new window.google.maps.Marker({
           position: {
             lat: Number.parseFloat(lat) || 40.7128,
@@ -66,6 +96,14 @@ export function GoogleMapsPicker({ lat, lon, onLocationChange, className }: Goog
           map: mapInstance,
           draggable: true,
           title: "Click and drag to set location",
+          icon: {
+            path: window.google.maps.SymbolPath.CIRCLE,
+            scale: 8,
+            fillColor: "#8b5cf6",
+            fillOpacity: 1,
+            strokeColor: "#ffffff",
+            strokeWeight: 2,
+          },
         })
 
         // Handle map clicks
@@ -103,7 +141,7 @@ export function GoogleMapsPicker({ lat, lon, onLocationChange, className }: Goog
         }
       } catch (err) {
         console.error("Error loading Google Maps:", err)
-        setError("Failed to load Google Maps. Please check your API key.")
+        setError("Failed to load Google Maps. Please check your API key configuration.")
         setIsLoading(false)
       }
     }
@@ -174,6 +212,9 @@ export function GoogleMapsPicker({ lat, lon, onLocationChange, className }: Goog
       return
     }
 
+    setError(null) // Clear previous errors
+    setIsLoading(true) // Show loading state during geolocation
+
     navigator.geolocation.getCurrentPosition(
       (position) => {
         const newLat = position.coords.latitude.toString()
@@ -188,10 +229,42 @@ export function GoogleMapsPicker({ lat, lon, onLocationChange, className }: Goog
 
         onLocationChange(newLat, newLng)
         reverseGeocode(position.coords.latitude, position.coords.longitude)
+        setIsLoading(false) // Clear loading state on success
       },
       (error) => {
         console.error("Geolocation error:", error)
-        setError("Unable to get your current location.")
+        setIsLoading(false) // Clear loading state on error
+
+        let errorMessage = ""
+        let actionMessage = ""
+
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            errorMessage = "Location access was denied."
+            actionMessage =
+              "Please click the location icon in your browser's address bar and allow location access, then try again."
+            break
+          case error.POSITION_UNAVAILABLE:
+            errorMessage = "Your location could not be determined."
+            actionMessage =
+              "Please check your GPS/location services are enabled and try again, or enter coordinates manually."
+            break
+          case error.TIMEOUT:
+            errorMessage = "Location request timed out."
+            actionMessage = "Please try again or check your internet connection."
+            break
+          default:
+            errorMessage = "An unknown error occurred while getting your location."
+            actionMessage = "Please try again or enter your location manually."
+            break
+        }
+
+        setError(`${errorMessage} ${actionMessage}`)
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 15000, // Increased timeout to 15 seconds
+        maximumAge: 60000, // Reduced cache time to 1 minute for more accurate location
       },
     )
   }
@@ -204,36 +277,59 @@ export function GoogleMapsPicker({ lat, lon, onLocationChange, className }: Goog
 
   if (!process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY) {
     return (
-      <Alert variant="destructive">
-        <MapPin className="h-4 w-4" />
+      <Alert variant="destructive" className="border-destructive/50">
+        <Shield className="h-4 w-4" />
         <AlertDescription>
-          Google Maps API key is required. Please add NEXT_PUBLIC_GOOGLE_MAPS_API_KEY to your environment variables.
+          <div className="space-y-2">
+            <p>
+              <strong>Google Maps API key required</strong>
+            </p>
+            <p>
+              Add <code className="bg-muted px-1 rounded">NEXT_PUBLIC_GOOGLE_MAPS_API_KEY</code> to your environment
+              variables.
+            </p>
+            <p className="text-xs">
+              <strong>Security:</strong> Restrict your API key in Google Cloud Console by domain and API scope.
+            </p>
+          </div>
         </AlertDescription>
       </Alert>
     )
   }
 
   return (
-    <Card className={className}>
-      <CardContent className="p-4 space-y-4">
-        {/* Address Search */}
-        <div className="space-y-2">
-          <Label className="flex items-center gap-2">
-            <Search className="h-4 w-4" />
-            Search Address
+    <Card className={`${className} border-accent/20 bg-gradient-to-br from-card to-muted/30`}>
+      <CardContent className="p-6 space-y-4">
+        <div className="space-y-3">
+          <Label className="flex items-center gap-2 text-base font-semibold">
+            <div className="p-1 rounded bg-gradient-to-br from-accent to-primary text-white">
+              <Search className="h-3 w-3" />
+            </div>
+            Location Search
           </Label>
           <div className="flex gap-2">
             <Input
-              placeholder="Enter address or place name..."
+              placeholder="Enter address, city, or landmark..."
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
               onKeyPress={handleKeyPress}
-              className="flex-1"
+              className="flex-1 border-accent/20 focus:border-accent"
             />
-            <Button onClick={handleAddressSearch} variant="outline" size="sm">
+            <Button
+              onClick={handleAddressSearch}
+              variant="outline"
+              size="sm"
+              className="border-accent/20 hover:bg-accent/10 bg-transparent"
+            >
               <Search className="h-4 w-4" />
             </Button>
-            <Button onClick={handleCurrentLocation} variant="outline" size="sm" title="Use current location">
+            <Button
+              onClick={handleCurrentLocation}
+              variant="outline"
+              size="sm"
+              title="Use current location"
+              className="border-accent/20 hover:bg-accent/10 bg-transparent"
+            >
               <Crosshair className="h-4 w-4" />
             </Button>
           </div>
@@ -241,36 +337,64 @@ export function GoogleMapsPicker({ lat, lon, onLocationChange, className }: Goog
 
         {/* Current Address Display */}
         {currentAddress && (
-          <div className="p-2 bg-muted rounded text-sm">
-            <strong>Selected:</strong> {currentAddress}
+          <div className="p-3 bg-gradient-to-r from-muted to-muted/50 rounded-lg border border-accent/10">
+            <div className="flex items-start gap-2">
+              <MapPin className="h-4 w-4 text-accent mt-0.5 flex-shrink-0" />
+              <div>
+                <p className="text-xs font-medium text-muted-foreground">Selected Location</p>
+                <p className="text-sm">{currentAddress}</p>
+              </div>
+            </div>
           </div>
         )}
 
         {/* Map Container */}
         <div className="relative">
-          <div ref={mapRef} className="w-full h-64 rounded-lg border" style={{ minHeight: "256px" }} />
+          <div
+            ref={mapRef}
+            className="w-full h-80 rounded-xl border border-accent/20 shadow-lg"
+            style={{ minHeight: "320px" }}
+          />
 
           {isLoading && (
-            <div className="absolute inset-0 flex items-center justify-center bg-muted rounded-lg">
-              <div className="flex items-center gap-2">
-                <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                Loading map...
+            <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-muted to-muted/80 rounded-xl backdrop-blur-sm">
+              <div className="flex items-center gap-3 p-4 rounded-lg bg-background/80 border border-accent/20">
+                <div className="h-5 w-5 animate-spin rounded-full border-2 border-accent border-t-transparent" />
+                <span className="font-medium">Loading interactive map...</span>
               </div>
             </div>
           )}
         </div>
 
-        {/* Instructions */}
-        <div className="text-xs text-muted-foreground space-y-1">
-          <p>• Click anywhere on the map to set location</p>
-          <p>• Drag the marker to fine-tune position</p>
-          <p>• Search for addresses using the search box above</p>
+        {/* Enhanced Instructions */}
+        <div className="p-4 bg-gradient-to-r from-accent/5 to-primary/5 rounded-lg border border-accent/10">
+          <h4 className="text-sm font-semibold mb-2 flex items-center gap-2">
+            <MapPin className="h-4 w-4 text-accent" />
+            How to use
+          </h4>
+          <div className="text-xs text-muted-foreground space-y-1">
+            <p>
+              • <strong>Click</strong> anywhere on the map to set your analysis location
+            </p>
+            <p>
+              • <strong>Drag</strong> the purple marker to fine-tune the exact position
+            </p>
+            <p>
+              • <strong>Search</strong> for specific addresses or landmarks using the search box
+            </p>
+            <p>
+              • <strong>Current location</strong> button uses your device's GPS (requires permission)
+            </p>
+          </div>
         </div>
 
         {/* Error Display */}
         {error && (
-          <Alert variant="destructive">
-            <AlertDescription>{error}</AlertDescription>
+          <Alert variant="destructive" className="border-destructive/50 bg-destructive/5">
+            <AlertDescription className="flex items-center gap-2">
+              <Shield className="h-4 w-4" />
+              {error}
+            </AlertDescription>
           </Alert>
         )}
       </CardContent>
