@@ -1,0 +1,96 @@
+1. Function Definition & Baseline Setup
+
+    def analyze_business_location(business_type, lat, lon, radius_km=2):
+        Purpose: Get the global industry standard multiplier for this business type. Different business types have different inherent profitability potentials (e.g., supermarkets = 1.5x, book stores = 0.7x).
+
+2. Calculate Local Demand Score
+
+    total_population = get_population_within_radius(lat, lon, radius_km)
+    avg_income_index = get_income_index(lat, lon, radius_km)
+    local_demand_score = total_population * avg_income_index
+
+    Purpose: Calculate the total spending power in the area. More people × higher income = greater potential customer base with money to spend.
+
+3. Calculate Local Supply Score (Competition)
+
+    competing_businesses = get_nearby_places(lat, lon, radius_km, business_type)
+    competition_count = len(competing_businesses)
+
+    total_competition_strength = 0
+    for business in competing_businesses:
+        strength = business.get('user_ratings_total', 10) * business.get('price_level', 1)
+        total_competition_strength += strength
+
+    local_supply_score = total_competition_strength
+
+    Purpose: Measure both the quantity AND quality of competitors. A business with many ratings and higher prices is considered stronger competition than a small, unknown shop.
+
+4. Calculate Local Adjustment (Key Algorithm)
+
+    if local_supply_score == 0:
+        local_adjustment = 1.8  # Bonus for no competition (capped)
+    else:
+        raw_ratio = local_demand_score / local_supply_score
+        local_adjustment = 0.5 + 1.5 / (1 + math.exp(-0.000001 * (raw_ratio - 500000)))
+        
+    local_adjustment = max(0.5, min(2.0, local_adjustment))
+
+    1. Purpose: This is the core algorithm that determines how much to adjust the baseline. It uses a sigmoid function to:
+
+    2. Prevent extreme values: Caps between 0.5-2.0 (never too bad, never too good)
+
+    3. Handle no competition: Gives a 1.8x bonus (but capped to avoid unrealistic values)
+
+    4. Normalize ratios: A sigmoid curve prevents crazy multipliers from very high demand/supply ratios
+
+5. Calculate Final Multiplier
+
+    final_multiplier = baseline * local_adjustment
+
+    Purpose: Combine the industry baseline with the local market conditions. A good business type in a good location gets multiplied advantages.
+
+6. Calculate Confidence Score
+
+    confidence = calculate_confidence(total_population, competition_count)
+
+    Purpose: Indicate how reliable the analysis is. More population data and more competitor data = higher confidence in the results.
+
+7. Generate Business Insights
+
+    if competition_count == 0:
+        notes = "No direct competitors found. High opportunity but verify local demand."
+    elif competition_count < 3:
+        notes = f"Low competition ({competition_count} competitors). Good market conditions."
+    elif competition_count < 8:
+        notes = f"Moderate competition ({competition_count} competitors). Viable market."
+    else:
+        notes = f"High competition ({competition_count} competitors). Consider differentiation."
+
+    Purpose: Provide actionable advice based on competition levels. This helps users understand what the numbers mean.
+
+8. Return Comprehensive Results
+
+    return {
+        "multiplier": round(final_multiplier, 2),
+        "confidence": round(confidence, 2),
+        "population": total_population,
+        "competition_count": competition_count,
+        "income_index": round(avg_income_index, 2),
+        "notes": notes,
+        "coordinates": (lat, lon),
+        "radius_km": radius_km
+    }
+
+    Purpose: Return all the analysis components so users can see both the conclusion (multiplier) and the supporting data behind it.
+
+🎯 Why This Function is Useful:
+
+    1. Quantifies Location Quality: Turns subjective "good location" into a measurable number
+
+    2. Considers Multiple Factors: Population, income, competition strength (not just count)
+
+    3. Industry-Aware: Different baselines for different business types
+
+    4. Provides Context: Confidence score and notes explain the reliability and meaning
+
+    5 . Prevents Over-optimism: Mathematical limits prevent unrealistic predictions
