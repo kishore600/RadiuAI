@@ -29,7 +29,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 
 declare global {
   interface Window {
-    google: typeof google
+    google: typeof google.accounts
   }
 }
 
@@ -107,6 +107,7 @@ const [marker, setMarker] = useState<google.maps.Marker | null>(null)
         })
 
         // Handle map clicks
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         mapInstance.addListener("click", (event: any) => {
           if (event.latLng) {
             const newLat = event.latLng.lat().toString()
@@ -121,6 +122,7 @@ const [marker, setMarker] = useState<google.maps.Marker | null>(null)
         })
 
         // Handle marker drag
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         markerInstance.addListener("dragend", (event: any) => {
           if (event.latLng) {
             const newLat = event.latLng.lat().toString()
@@ -383,7 +385,7 @@ const [marker, setMarker] = useState<google.maps.Marker | null>(null)
               • <strong>Search</strong> for specific addresses or landmarks using the search box
             </p>
             <p>
-              • <strong>Current location</strong> button uses your device's GPS (requires permission)
+              • <strong>Current location</strong> button uses your device&apos;s GPS (requires permission)
             </p>
           </div>
         </div>
