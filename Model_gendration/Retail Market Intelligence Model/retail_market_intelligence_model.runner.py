@@ -3187,7 +3187,6 @@ def run_analysis(lat, lon, business_type, radius_km):
         }
 
     except Exception as e:
-        # 🚨 Send only JSON error (Express can handle it safely)
         return {"error": str(e)}
 
 

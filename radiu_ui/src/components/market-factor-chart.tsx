@@ -14,13 +14,14 @@ interface MarketFactorChartProps {
       seasonality_index: number
       competition_density: number
     }
-    weights: {
+    weights?: {
       rent_index: number
       regulatory_index: number
       seasonality_index: number
       competition_density: number
     }
     confidence: number
+    notes?: string
   }
 }
 
@@ -36,30 +37,40 @@ const chartConfig = {
 }
 
 export function MarketFactorChart({ data }: MarketFactorChartProps) {
+  // Default weights if not provided
+  const defaultWeights = {
+    rent_index: 0.25,
+    regulatory_index: 0.25,
+    seasonality_index: 0.25,
+    competition_density: 0.25
+  }
+
+  const weights = data.weights || defaultWeights
+
   const chartData = [
     {
       component: "Rent Index",
       value: data.components.rent_index,
-      weight: data.weights.rent_index,
-      weighted: data.components.rent_index * data.weights.rent_index,
+      weight: weights.rent_index,
+      weighted: data.components.rent_index * weights.rent_index,
     },
     {
       component: "Regulatory",
       value: data.components.regulatory_index,
-      weight: data.weights.regulatory_index,
-      weighted: data.components.regulatory_index * data.weights.regulatory_index,
+      weight: weights.regulatory_index,
+      weighted: data.components.regulatory_index * weights.regulatory_index,
     },
     {
       component: "Seasonality",
       value: data.components.seasonality_index,
-      weight: data.weights.seasonality_index,
-      weighted: data.components.seasonality_index * data.weights.seasonality_index,
+      weight: weights.seasonality_index,
+      weighted: data.components.seasonality_index * weights.seasonality_index,
     },
     {
       component: "Competition",
       value: data.components.competition_density,
-      weight: data.weights.competition_density,
-      weighted: data.components.competition_density * data.weights.competition_density,
+      weight: weights.competition_density,
+      weighted: data.components.competition_density * weights.competition_density,
     },
   ]
 
@@ -102,6 +113,11 @@ export function MarketFactorChart({ data }: MarketFactorChartProps) {
             <span className="ml-2 font-medium">{(data.market_factor * 100).toFixed(1)}%</span>
           </div>
         </div>
+        {data.notes && (
+          <div className="mt-4 p-3 bg-muted rounded-md">
+            <p className="text-sm text-muted-foreground">{data.notes}</p>
+          </div>
+        )}
       </CardContent>
     </Card>
   )

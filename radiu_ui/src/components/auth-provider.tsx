@@ -57,7 +57,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           if (window.google) {
             console.log("[v0] Google Identity Services loaded")
             window.google.accounts.id.initialize({
-              client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
+              client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID as string,
               callback: handleCredentialResponse,
               auto_select: false,
               cancel_on_tap_outside: true,
@@ -79,6 +79,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     initializeGoogleSignIn()
   }, [])
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleCredentialResponse = (response: any) => {
     try {
       console.log("[v0] handleCredentialResponse called")
@@ -139,6 +140,7 @@ export function useAuth() {
 // Global type declaration for Google Identity Services
 declare global {
   interface Window {
-    google: any
+    google: typeof google.accounts;
   }
 }
+

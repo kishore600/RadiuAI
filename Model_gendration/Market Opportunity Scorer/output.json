@@ -1,0 +1,57 @@
+{
+    "location": {
+        "name": "Manhattan",
+        "latitude": 40.7128,
+        "longitude": -74.006,
+        "country_code": "US",
+        "business_type": "supermarket",
+        "radius_km": 5
+    },
+    "scores": {
+        "demographics": 59.64569086635814,
+        "competition": 100,
+        "accessibility": 25,
+        "growth_potential": 38,
+        "cultural_factors": 84.39999999999999,
+        "overall": 60.95142271658953
+    },
+    "rating": "Moderate Investment Opportunity",
+    "risk_factors": [],
+    "opportunities": [
+        "Significant market gaps present opportunity for differentiation",
+        "Highly educated population provides skilled workforce",
+        "Low market saturation presents expansion opportunities"
+    ],
+    "raw_data": {
+        "demographics": {
+            "population_density": 0.5,
+            "income_distribution": 4000,
+            "age_composition": 0.5424943013209923,
+            "education_levels": 0.8
+        },
+        "competition": {
+            "market_saturation": 0,
+            "competitor_strength": 0,
+            "market_gaps": 10,
+            "price_competition": 0
+        },
+        "accessibility": {
+            "traffic_flow": 0,
+            "public_transport": 0,
+            "parking_availability": 10,
+            "walkability": 0
+        },
+        "growth_potential": {
+            "infrastructure_projects": 0,
+            "new_developments": 0,
+            "government_plans": 8,
+            "economic_indicators": 9
+        },
+        "cultural_factors": {
+            "cultural_compatibility": 8.1,
+            "language_preferences": 10,
+            "festival_impact": 7.2,
+            "business_customs": 8.549999999999999
+        }
+    }
+}

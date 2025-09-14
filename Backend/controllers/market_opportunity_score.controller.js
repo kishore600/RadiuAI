@@ -1,11 +1,11 @@
 const { spawn } = require("child_process");
 const path = require("path");
 
-exports.retail_market_intelligence_model = (req, res) => {
-  const lat = parseFloat(req.query.lat) || 40.7128;
-  const lon = parseFloat(req.query.lon) || -74.0060;
-  const businessType = req.query.businessType || "supermarket";
-  const radiusKm = parseFloat(req.query.radiusKm) || 2;
+exports.market_opportunity_score = (req, res) => {
+  const lat = parseFloat(req.body.latitude) || 40.7128;
+  const lon = parseFloat(req.body.longitude) || -74.0060;
+  const businessType = req.body.business_type || "supermarket";
+  const radiusKm = parseFloat(req.body.radius_km) || 2;
 
   if (isNaN(lat) || isNaN(lon) || isNaN(radiusKm)) {
     return res.status(400).json({
@@ -16,7 +16,7 @@ exports.retail_market_intelligence_model = (req, res) => {
 
   const scriptPath = path.join(
     __dirname,
-    "../../Model_gendration/Retail Market Intelligence Model/retail_market_intelligence_model.runner.py"
+    "../../Model_gendration/Market Opportunity Scorer/market_opportunity_score.runner.py"
   );
 
   const pythonProcess = spawn("python", [
@@ -24,7 +24,6 @@ exports.retail_market_intelligence_model = (req, res) => {
     lat.toString(),
     lon.toString(),
     businessType,
-    radiusKm.toString(),
   ]);
 
   let data = "";

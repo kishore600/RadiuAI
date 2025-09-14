@@ -1,7 +1,16 @@
 /* eslint-disable @next/next/no-img-element */
-"use client"
+"use client";
 
-import { BarChart3, Building2, Target, TrendingUp, Home, Settings, Sparkles, LogOut } from "lucide-react"
+import {
+  BarChart3,
+  Building2,
+  Target,
+  TrendingUp,
+  Home,
+  Settings,
+  Sparkles,
+  Sparkle,
+} from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -14,10 +23,12 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarSeparator,
-} from "@/components/ui/sidebar"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { useAuth } from "@/components/auth-provider"
+} from "@/components/ui/sidebar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { useAuth } from "@/components/auth-provider";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const models = [
   {
@@ -28,9 +39,9 @@ const models = [
     badge: "Active",
   },
   {
-    title: "Competition Impact Simulator",
-    url: "/competition-simulator",
-    icon: Building2,
+    title: "Cultural Fit Analyzer",
+    url: "/cultural-fit",
+    icon: Sparkle,
     isActive: false,
     badge: "Coming Soon",
   },
@@ -45,10 +56,10 @@ const models = [
     title: "Market Opportunity Scorer",
     url: "/opportunity-scorer",
     icon: TrendingUp,
-    isActive: false,
-    badge: "Coming Soon",
+    isActive: true,
+    badge: "Active",
   },
-]
+];
 
 const navigation = [
   {
@@ -61,10 +72,10 @@ const navigation = [
     url: "/settings",
     icon: Settings,
   },
-]
+];
 
 export function AppSidebar() {
-  const { user, signOut } = useAuth()
+  const pathname = usePathname();
 
   return (
     <Sidebar className="animate-slide-in-right">
@@ -77,14 +88,18 @@ export function AppSidebar() {
             <span className="text-xl font-bold bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
               radiuAI
             </span>
-            <span className="text-xs text-sidebar-foreground/70 font-medium">Professional Market Intelligence</span>
+            <span className="text-xs text-sidebar-foreground/70 font-medium">
+              Professional Market Intelligence
+            </span>
           </div>
         </div>
       </SidebarHeader>
 
       <SidebarContent className="bg-gradient-to-b from-sidebar to-sidebar/95">
         <SidebarGroup>
-          <SidebarGroupLabel className="text-sidebar-foreground/80 font-semibold">Navigation</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-sidebar-foreground/80 font-semibold">
+            Navigation
+          </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {navigation.map((item, index) => (
@@ -110,83 +125,78 @@ export function AppSidebar() {
 
         <SidebarGroup>
           <SidebarGroupLabel className="text-sidebar-foreground/80 font-semibold flex items-center gap-2">
-            <BarChart3 className="h-4 w-4 text-accent" />
-            AI Models
+            AI Engines
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {models.map((model, index) => (
-                <SidebarMenuItem key={model.title}>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={model.isActive}
-                    disabled={!model.isActive}
-                    className="animate-fade-in-up hover:bg-sidebar-accent/10 transition-all duration-300"
-                    style={{ animationDelay: `${(index + 2) * 0.1}s` }}
-                  >
-                    <a href={model.url} className={!model.isActive ? "pointer-events-none" : ""}>
-                      <model.icon className={model.isActive ? "text-white" : ""} />
-                      <span className="flex-1 truncate">{model.title}</span>
-                      <Badge
-                        variant={model.isActive ? "default" : "secondary"}
-                        className={`ml-auto text-xs ${
-                          model.isActive
-                            ? "bg-gradient-to-r from-accent to-primary text-white border-0 animate-pulse-glow"
-                            : ""
-                        }`}
+              {models.map((model, index) => {
+                const isSelected = pathname === model.url;
+
+                return (
+                  <SidebarMenuItem key={model.title}>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={model.isActive && isSelected}
+                      disabled={!model.isActive}
+                      className={`animate-fade-in-up hover:bg-sidebar-accent/10 hover:text-black transition-all duration-300 ${
+                        isSelected
+                          ? "bg-sidebar-accent/20 border-l-2 border-accent"
+                          : ""
+                      }`}
+                      style={{ animationDelay: `${(index + 2) * 0.1}s` }}
+                    >
+                      <Link
+                        href={model.url}
+                        className={!model.isActive ? "pointer-events-none" : ""}
                       >
-                        {model.badge}
-                      </Badge>
-                    </a>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+                        <model.icon
+                          className={
+                            model.isActive && isSelected ? "text-whtie" : ""
+                          }
+                        />
+                        <span
+                          className={`flex-1 truncate ${
+                            isSelected ? "font-semibold text-white" : ""
+                          }`}
+                        >
+                          {model.title}
+                        </span>
+                        <Badge
+                          variant={isSelected ? "default" : "secondary"}
+                          className={`ml-auto text-xs ${
+                            isSelected || model.isActive
+                              ? "bg-gradient-to-r from-accent to-primary text-white border-0 animate-pulse-glow"
+                              : ""
+                          }`}
+                        >
+                          {model.badge}
+                        </Badge>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
 
       <SidebarFooter className="border-t border-sidebar-border bg-gradient-to-r from-sidebar to-sidebar/80">
-        {/* {user && (
-          <div className="px-3 py-3 border-b border-sidebar-border/50">
-            <div className="flex items-center gap-3">
-              <div className="relative">
-                <img
-                  src={user.picture || "/placeholder.svg"}
-                  alt={user.name}
-                  className="h-8 w-8 rounded-full ring-2 ring-accent/20"
-                  onError={(e) => {
-                    e.currentTarget.style.display = "none"
-                    e.currentTarget.nextElementSibling.style.display = "flex"
-                  }}
-                />
-                <div className="h-8 w-8 rounded-full bg-gradient-to-br from-accent to-primary flex items-center justify-center text-white text-sm font-medium hidden">
-                  {user.name.charAt(0)}
-                </div>
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="text-sm font-medium text-sidebar-foreground truncate">{user.name}</div>
-                <div className="text-xs text-sidebar-foreground/70 truncate">{user.email}</div>
-              </div>
-              <Button variant="ghost" size="sm" onClick={signOut} className="h-8 w-8 p-0 hover:bg-sidebar-accent/10">
-                <LogOut className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-        )} */}
-
         <div className="px-3 py-3">
           <div className="flex items-center justify-between">
             <div className="text-xs text-sidebar-foreground/70">
               <div className="font-medium">v1.0.0</div>
-              <div>Retail Intelligence Model</div>
+              {/* <div>Retail Intelligence Model</div> */}
             </div>
-            <Badge variant="outline" className="text-xs border-accent/30 text-accent">
+            <Badge
+              variant="outline"
+              className="text-xs border-accent/30 text-accent"
+            >
               Pro
             </Badge>
           </div>
         </div>
       </SidebarFooter>
     </Sidebar>
-  )
+  );
 }
