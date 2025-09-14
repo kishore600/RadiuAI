@@ -35,6 +35,8 @@ yarn-error.log*
 
 #client screact
 client_secret_113646492287-akr3v8u1r3gt479f4ebg7idfncgkka2g.apps.googleusercontent.com.json
+# .gitignore
+radiu_ui/client_secret_*.json
 
 # vercel
 .vercel
