@@ -35,6 +35,7 @@ yarn-error.log*
 
 #client screact
 client_secret_113646492287-akr3v8u1r3gt479f4ebg7idfncgkka2g.apps.googleusercontent.com.json
+client_secret_474477215289-s08k0prpi27v4486evije1k4kl7pafhq.apps.googleusercontent.com
 # vercel
 .vercel
 

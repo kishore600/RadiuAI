@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Target, MapPin, Map } from "lucide-react";
-import { GoogleMapsPicker } from "./google-maps-picker";
+import {GoogleMapsPicker} from "./google-maps-picker";
 
 interface ParameterControlsProps {
   lat: string;
