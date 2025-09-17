@@ -73,57 +73,7 @@ interface MarketIntelligenceData {
   }
 }
 
-export function RetailMarketIntelligence() {
-  const [data, setData] = useState<MarketIntelligenceData | null>(null)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [lastAnalysis, setLastAnalysis] = useState<string>("Never")
-
-  // Form parameters
-  const [lat, setLat] = useState("40.7128")
-  const [lon, setLon] = useState("-74.0060")
-  const [businessType, setBusinessType] = useState("supermarket")
-  const [radiusKm, setRadiusKm] = useState("2")
-
-  const handleParameterChange = (params: {
-    lat: string
-    lon: string
-    businessType: string
-    radiusKm: string
-  }) => {
-    setLat(params.lat)
-    setLon(params.lon)
-    setBusinessType(params.businessType)
-    setRadiusKm(params.radiusKm)
-  }
-
-  const fetchMarketIntelligence = async () => {
-    setLoading(true)
-    setError(null)
-
-    try {
-      const params = new URLSearchParams({
-        lat,
-        lon,
-        businessType,
-        radiusKm,
-      })
-
-      const response = await fetch(`http://localhost:5000/analyze/retail_market_intelligence_model?${params}`)
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
-      }
-
-      const result = await response.json()
-      setData(result)
-      setLastAnalysis(new Date().toLocaleString())
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to fetch market intelligence data")
-    } finally {
-      setLoading(false)
-    }
-  }
+export function RetailMarketIntelligence({data, lat, lon,loading,error}: {data?: MarketIntelligenceData, lat?: string, lon?: string, loading?: boolean, error?: string}) {
 
   const currentLocation =
     lat && lon ? `${Number.parseFloat(lat).toFixed(4)}, ${Number.parseFloat(lon).toFixed(4)}` : "No location set"
@@ -134,24 +84,12 @@ export function RetailMarketIntelligence() {
         <div className="absolute inset-0 bg-gradient-to-r from-accent/5 to-primary/5" />
         <div className="relative">
           <DashboardHeader
-            lastAnalysis={lastAnalysis}
             location={currentLocation}
             status={loading ? "analyzing" : data ? "active" : "idle"}
           />
         </div>
       </div>
 
-      <div className="animate-fade-in-up" style={{ animationDelay: "0.1s" }}>
-        <ParameterControls
-          lat={lat}
-          lon={lon}
-          businessType={businessType}
-          radiusKm={radiusKm}
-          onParameterChange={handleParameterChange}
-          onAnalyze={fetchMarketIntelligence}
-          loading={loading}
-        />
-      </div>
 
       {/* Error Display */}
       {error && (

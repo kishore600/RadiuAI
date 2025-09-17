@@ -25,42 +25,6 @@ import {
   SidebarSeparator,
 } from "@/components/ui/sidebar";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { useAuth } from "@/components/auth-provider";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-
-const models = [
-  {
-    title: "Retail Market Intelligence",
-    url: "/",
-    icon: BarChart3,
-    isActive: true,
-    badge: "Active",
-  },
-  {
-    title: "Cultural Fit Analyzer",
-    url: "/cultural-fit",
-    icon: Sparkle,
-    isActive: false,
-    badge: "Coming Soon",
-  },
-  {
-    title: "Business Recommendation Engine",
-    url: "/recommendations",
-    icon: Target,
-    isActive: false,
-    badge: "Coming Soon",
-  },
-  {
-    title: "Market Opportunity Scorer",
-    url: "/opportunity-scorer",
-    icon: TrendingUp,
-    isActive: true,
-    badge: "Active",
-  },
-];
-
 const navigation = [
   {
     title: "Dashboard",
@@ -75,8 +39,6 @@ const navigation = [
 ];
 
 export function AppSidebar() {
-  const pathname = usePathname();
-
   return (
     <Sidebar className="animate-slide-in-right">
       <SidebarHeader className="border-b border-sidebar-border bg-gradient-to-r from-sidebar to-sidebar/80">
@@ -122,63 +84,6 @@ export function AppSidebar() {
         </SidebarGroup>
 
         <SidebarSeparator className="bg-gradient-to-r from-transparent via-sidebar-border to-transparent" />
-
-        <SidebarGroup>
-          <SidebarGroupLabel className="text-sidebar-foreground/80 font-semibold flex items-center gap-2">
-            AI Engines
-          </SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {models.map((model, index) => {
-                const isSelected = pathname === model.url;
-
-                return (
-                  <SidebarMenuItem key={model.title}>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={model.isActive && isSelected}
-                      disabled={!model.isActive}
-                      className={`animate-fade-in-up hover:bg-sidebar-accent/10 hover:text-black transition-all duration-300 ${
-                        isSelected
-                          ? "bg-sidebar-accent/20 border-l-2 border-accent"
-                          : ""
-                      }`}
-                      style={{ animationDelay: `${(index + 2) * 0.1}s` }}
-                    >
-                      <Link
-                        href={model.url}
-                        className={!model.isActive ? "pointer-events-none" : ""}
-                      >
-                        <model.icon
-                          className={
-                            model.isActive && isSelected ? "text-whtie" : ""
-                          }
-                        />
-                        <span
-                          className={`flex-1 truncate ${
-                            isSelected ? "font-semibold text-white" : ""
-                          }`}
-                        >
-                          {model.title}
-                        </span>
-                        <Badge
-                          variant={isSelected ? "default" : "secondary"}
-                          className={`ml-auto text-xs ${
-                            isSelected || model.isActive
-                              ? "bg-gradient-to-r from-accent to-primary text-white border-0 animate-pulse-glow"
-                              : ""
-                          }`}
-                        >
-                          {model.badge}
-                        </Badge>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                );
-              })}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
       </SidebarContent>
 
       <SidebarFooter className="border-t border-sidebar-border bg-gradient-to-r from-sidebar to-sidebar/80">

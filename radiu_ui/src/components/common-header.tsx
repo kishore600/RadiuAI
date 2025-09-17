@@ -29,7 +29,6 @@ const CommonHeader = ({ data }: HeaderProps) => {
     console.log("[v0] App is loading, user state:", user);
     return (
       <div
-        style={{ width: "-webkit-fill-available" }}
         className="min-h-screen bg-gradient-to-br from-background via-muted to-background flex items-center justify-center"
       >
         <div className="flex items-center gap-3 p-6 ">

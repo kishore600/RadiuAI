@@ -2,17 +2,20 @@
 
 import { RetailMarketIntelligence } from "@/components/retail-market-intelligence";
 import CommonHeader from "@/components/common-header";
+import CommonParameterControl from "@/components/common-parameter-control";
 
 export default function Home() {
   return (
+    <div style={{ width: "-webkit-fill-available" }}>
       <CommonHeader
         data={{
-          headerTitle: "Retail Market Intelligence Model",
-          headerTitleSubtext: "Market Intelligence Dashboard",
+          headerTitle: "Home - Radiu AI",
+          headerTitleSubtext: "Complete AI Model Ecosystem",
           headerDescription:
-            "Analyze retail market opportunities with comprehensive location-based intelligence",
-          modelComponent: <RetailMarketIntelligence />,
+            "Analyze real  market opportunities with comprehensive location-based intelligence",
+          modelComponent: <CommonParameterControl />,
         }}
       />
+    </div>
   );
 }
