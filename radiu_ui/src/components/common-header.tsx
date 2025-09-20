@@ -28,9 +28,7 @@ const CommonHeader = ({ data }: HeaderProps) => {
   if (isLoading) {
     console.log("[v0] App is loading, user state:", user);
     return (
-      <div
-        className="min-h-screen bg-gradient-to-br from-background via-muted to-background flex items-center justify-center"
-      >
+      <div className="min-h-screen bg-gradient-to-br from-background via-muted to-background flex items-center justify-center">
         <div className="flex items-center gap-3 p-6 ">
           <Loader2 className="h-6 w-6 animate-spin text-accent" />
           <span className="font-medium text-lg">
@@ -51,6 +49,8 @@ const CommonHeader = ({ data }: HeaderProps) => {
     return <GoogleAuth />;
   }
 
+  console.log(user);
+
   return (
     <SidebarInset>
       <div>
@@ -69,10 +69,13 @@ const CommonHeader = ({ data }: HeaderProps) => {
 
           <div className="ml-auto flex items-center gap-3">
             <div className="flex items-center gap-2">
-              <Avatar className="h-8 w-8">
+              <Avatar className="h-10 w-10">
                 <AvatarImage
-                  src={user.picture || "/placeholder.svg"}
+                  className=" rounded-l-full"
+                  src={user.picture}
                   alt={user.name}
+                  referrerPolicy="no-referrer"
+                  crossOrigin="anonymous"
                 />
                 <AvatarFallback>
                   <UserIcon className="h-4 w-4" />
@@ -90,8 +93,8 @@ const CommonHeader = ({ data }: HeaderProps) => {
           </div>
         </header>
 
-        <div className="flex flex-1 flex-col gap-4 p-4 animate-fade-in-up">
-          <div className="mb-4">
+        <div className="flex flex-1 flex-col justify-center items-center mt-10 gap-4 px-4 animate-fade-in-up">
+          <div className="">
             <h1 className="text-4xl font-bold bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
               {data.headerTitleSubtext}
             </h1>

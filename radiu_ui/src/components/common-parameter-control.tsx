@@ -1,13 +1,39 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from "react";
 import { ParameterControls } from "./parameter-controls";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  CardDescription,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { RetailMarketIntelligence } from "./retail-market-intelligence";
 import MarketOpportunityScore from "./market-opportunity-scorer";
+import CulturalIntelligence from "./cultural-intelligence";
+import {
+  Activity,
+  AlertCircle,
+  Badge,
+  BarChart3,
+  Building,
+  Building2,
+  CheckCircle2,
+  Download,
+  FileText,
+  Globe,
+  Lightbulb,
+  Share,
+  Sparkles,
+  Target,
+  TrendingUp,
+  Users,
+  Zap,
+} from "lucide-react";
 
 interface ModelData {
   retailMarketIntelligence: any | null;
@@ -39,17 +65,25 @@ const CommonParameterControl = () => {
   const [lon, setLon] = useState("-74.0060");
   const [businessType, setBusinessType] = useState("supermarket");
   const [radiusKm, setRadiusKm] = useState("2");
+  const [focus, setFocus] = useState("menu and marketing recommendations");
+  const [targetAudience, setTargetAudience] = useState(
+    "families and young adults"
+  );
 
   const handleParameterChange = (params: {
     lat: string;
     lon: string;
     businessType: string;
     radiusKm: string;
+    focus: string;
+    target_audience: string;
   }) => {
     setLat(params.lat);
     setLon(params.lon);
     setBusinessType(params.businessType);
     setRadiusKm(params.radiusKm);
+    setFocus(params.focus);
+    setTargetAudience(params.target_audience);
   };
 
   const toggleModel = (modelName: keyof typeof activeModels) => {
@@ -95,8 +129,18 @@ const CommonParameterControl = () => {
           break;
 
         case "culturalIntelligence":
-          url = `http://localhost:5000/analyze/cultural_intelligence_model?${params}`;
-          options = { method: "GET" };
+          url = `http://localhost:5000/analyze/cultural_intelligence_system`;
+          options = {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              lat,
+              lon,
+              business_type: businessType,
+              focus: focus,
+              target_audience: targetAudience,
+            }),
+          };
           break;
 
         case "businessRecommendation":
@@ -144,37 +188,67 @@ const CommonParameterControl = () => {
       await fetchModelData(modelName);
     }
   };
-
   const ModelToggle = ({
     name,
     displayName,
+    icon: Icon,
+    description,
   }: {
     name: keyof typeof activeModels;
     displayName: string;
+    icon: any;
+    description: string;
   }) => (
-    <Card>
-      <CardContent className="flex items-center justify-between border-none">
-        <div className="flex items-center gap-3">
-          <Switch
-            checked={activeModels[name]}
-            className={`data-[state=unchecked]:bg-gray-400 data-[state=checked]:bg-blue-600 `}
-            onCheckedChange={() => toggleModel(name)}
-          />
-          <Label className="font-medium">{displayName}</Label>
-        </div>
+    <Card className="group relative overflow-hidden border-0 bg-gradient-to-br from-slate-50 to-slate-100 hover:from-blue-50 hover:to-indigo-50 transition-all duration-500 hover:shadow-2xl hover:shadow-blue-500/10 hover:-translate-y-1">
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-600/5 to-purple-600/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+      <CardContent className="relative p-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="relative">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-110">
+                <Icon className="w-6 h-6 text-white" />
+              </div>
+              <div className="absolute -inset-1 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 opacity-0 group-hover:opacity-20 blur transition-all duration-300" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-gray-900 group-hover:text-blue-700 transition-colors">
+                {displayName}
+              </h3>
+              <p className="text-sm text-gray-600 group-hover:text-gray-700 transition-colors">
+                {description}
+              </p>
+            </div>
+          </div>
 
-        <div className="flex items-center gap-3">
-          {loading[name] && (
-            <div className="w-4 h-4 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin" />
-          )}
-          {data[name] && !loading[name] && (
-            <span className="text-sm text-green-600">✓ Data loaded</span>
-          )}
+          <div className="flex items-center gap-4">
+            {loading[name] && (
+              <div className="flex items-center gap-2">
+                <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+                <span className="text-sm text-blue-600 font-medium">
+                  Analyzing...
+                </span>
+              </div>
+            )}
+            {data[name] && !loading[name] && (
+              <div className="flex items-center gap-2 bg-green-100 px-3 py-1 rounded-full">
+                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                <span className="text-sm text-green-700 font-medium">
+                  Complete
+                </span>
+              </div>
+            )}
+            <Switch
+              checked={activeModels[name]}
+              onCheckedChange={() => toggleModel(name)}
+              className="data-[state=unchecked]:bg-gray-300 data-[state=checked]:bg-gradient-to-r data-[state=checked]:from-blue-500 data-[state=checked]:to-purple-600"
+            />
+          </div>
         </div>
       </CardContent>
     </Card>
   );
 
+  console.log(data.culturalIntelligence);
   return (
     <div className="p-6 space-y-6">
       <ParameterControls
@@ -185,43 +259,51 @@ const CommonParameterControl = () => {
         onParameterChange={handleParameterChange}
         onAnalyze={fetchAllActiveModels}
         loading={Object.values(loading).some((l) => l)}
+        focus={focus}
+        target_audience={targetAudience}
       />
 
-      {/* Model Toggles */}
- {/* Model Toggles */}
-<div className="mt-10">
-  <Card>
-    <CardHeader>
-      <CardTitle className="text-xl font-semibold">
-        Select Models to Analyze
-      </CardTitle>
-      <p className="text-sm text-muted-foreground">
-        Choose one or more models to include in your analysis.
-      </p>
-    </CardHeader>
-    <CardContent>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
-        <ModelToggle
-          name="retailMarketIntelligence"
-          displayName="Retail Market Intelligence Model"
-        />
-        <ModelToggle
-          name="marketOpportunityScore"
-          displayName="Market Opportunity Score"
-        />
-        <ModelToggle
-          name="culturalIntelligence"
-          displayName="Cultural Intelligence Model"
-        />
-        <ModelToggle
-          name="businessRecommendation"
-          displayName="Business Recommendation Engine"
-        />
-      </div>
-    </CardContent>
-  </Card>
-</div>
-
+      <Card className="border-0 bg-white/70 backdrop-blur-sm shadow-2xl shadow-purple-500/10">
+        <CardHeader className=" text-black rounded-t-lg">
+          <CardTitle className="flex items-center gap-3">
+            <BarChart3 className="h-6 w-6" />
+            AI Analysis Models
+            <Zap className="h-5 w-5 ml-auto animate-bounce" />
+          </CardTitle>
+          <CardDescription className="text-black">
+            Select one or more AI models to analyze your market intelligence
+            data
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="p-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <ModelToggle
+              name="retailMarketIntelligence"
+              displayName="Retail Market Intelligence"
+              description="Predict business success probability by analyzing multiple data dimensions simultaneously"
+              icon={Building}
+            />
+            <ModelToggle
+              name="marketOpportunityScore"
+              displayName="Market Opportunity Score"
+              description="Provides an overall attractiveness score (1-100) for any location, helping users compare multiple locations."
+              icon={TrendingUp}
+            />
+            <ModelToggle
+              name="culturalIntelligence"
+              displayName="Cultural Intelligence"
+              description="Provides deep cultural insights to optimize business strategy for local preferences and behaviors."
+              icon={Users}
+            />
+            <ModelToggle
+              name="businessRecommendation"
+              displayName="Business Recommendations"
+              description="Analyzes location characteristics and recommends the top 5 most suitable business types."
+              icon={Activity}
+            />
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Analyze All Button */}
       <div className="flex justify-center">
@@ -231,9 +313,9 @@ const CommonParameterControl = () => {
             Object.values(loading).some((l) => l) ||
             Object.values(activeModels).every((a) => !a)
           }
-          className="w-64"
+          className={`relative h-14 px-8 text-lg font-semibold transition-all duration-300 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 hover:from-blue-700 hover:via-purple-700 hover:to-pink-700 text-white shadow-2xl hover:shadow-3xl transform hover:scale-105`}
         >
-          Analyze All Selected Models
+          Analyze Market...
         </Button>
       </div>
 
@@ -252,64 +334,185 @@ const CommonParameterControl = () => {
       {/* Data Display */}
       <div className="w-full">
         {Object.values(data).some((d) => d) && (
-          <Card className="w-full shadow-lg border border-gray-200">
-            <CardHeader className="border-b bg-gray-50/70">
-              <CardTitle className="text-lg font-semibold text-gray-800">
+          <Card className="w-full border-0 shadow-2xl bg-gradient-to-br from-white to-gray-50/80 backdrop-blur-sm">
+            <CardHeader className="border-b border-gray-200/50 bg-gradient-to-r from-blue-50/70 to-purple-50/70">
+              <CardTitle className="flex items-center gap-3 text-xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+                <Sparkles className="h-6 w-6 text-blue-600" />
                 Analysis Results
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <Tabs defaultValue={Object.keys(data)[0]} className="w-full">
+            <CardContent className="p-6">
+              <Tabs
+                defaultValue={Object.keys(data).find((key) => data[key]) || ""}
+                className="w-full"
+              >
                 {/* Tab buttons */}
-                <TabsList className="flex flex-wrap justify-start gap-2 bg-gray-100 p-2 rounded-xl">
+                <TabsList className="flex h-full  w-full flex-wrap justify-start gap-6  bg-gradient-to-r from-gray-100 to-gray-200/80  rounded-2xl shadow-inner ">
                   {Object.entries(data).map(
                     ([modelName, modelData]) =>
                       modelData && (
                         <TabsTrigger
                           key={modelName}
                           value={modelName}
-                          className="rounded-lg px-4 py-2 text-sm font-medium transition-all
-                               data-[state=active]:bg-blue-600 
-                               data-[state=active]:text-white 
-                               data-[state=active]:shadow-sm
-                               data-[state=inactive]:bg-white 
-                               data-[state=inactive]:text-gray-600 
-                               hover:bg-blue-50"
+                          className="rounded-xl p-5  text-sm font-semibold transition-all duration-300
+                         data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 
+                         data-[state=active]:text-white 
+                         data-[state=active]:shadow-lg
+                         data-[state=active]:scale-105
+                         data-[state=inactive]:bg-white 
+                         data-[state=inactive]:text-gray-700 
+                         data-[state=inactive]:shadow-md
+                         data-[state=inactive]:border
+                         data-[state=inactive]:border-gray-200
+                         hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50
+                         hover:text-blue-700
+                         hover:shadow-lg
+                         hover:scale-105"
                         >
-                          {modelName.replace(/([A-Z])/g, " $1").trim()}
+                          <div className="flex items-center gap-2">
+                            {modelName === "marketOpportunityScore" && (
+                              <Target className="h-4 w-4" />
+                            )}
+                            {modelName === "retailMarketIntelligence" && (
+                              <Building2 className="h-4 w-4" />
+                            )}
+                            {modelName === "culturalIntelligence" && (
+                              <Globe className="h-4 w-4" />
+                            )}
+                            {modelName === "businessRecommendation" && (
+                              <Lightbulb className="h-4 w-4" />
+                            )}
+                            {modelName.replace(/([A-Z])/g, " $1").trim()}
+                          </div>
                         </TabsTrigger>
                       )
                   )}
                 </TabsList>
 
                 {/* Tab content */}
-                <div className="mt-4">
+                <div className="mt-6">
                   {Object.entries(data).map(
                     ([modelName, modelData]) =>
                       modelData && (
                         <TabsContent
                           key={modelName}
                           value={modelName}
-                          className="rounded-lg border p-4 bg-gray-50 shadow-inner"
+                          className="rounded-2xl border-0 bg-gradient-to-br from-white to-gray-50/50 p-6 shadow-lg animate-fade-in"
                         >
-                          {modelName === "marketOpportunityScore" && (
-                            <MarketOpportunityScore data={modelData} />
+                          {/* Loading State */}
+                          {loading[modelName] && (
+                            <div className="flex items-center justify-center py-12">
+                              <div className="text-center">
+                                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                                <p className="text-gray-600 font-medium">
+                                  Loading{" "}
+                                  {modelName.replace(/([A-Z])/g, " $1").trim()}
+                                  ...
+                                </p>
+                              </div>
+                            </div>
                           )}
 
-                          {modelName === "retailMarketIntelligence" && (
-                            <RetailMarketIntelligence
-                              data={modelData}
-                              lat={lat}
-                              lon={lon}
-                              loading={loading[modelName]}
-                              error={error ? "Loading error" : ""}
-                            />
+                          {/* Error State */}
+                          {error && (
+                            <Card className="border-red-200 bg-red-50/80 mb-6">
+                              <CardContent className="p-4 flex items-center gap-3">
+                                <AlertCircle className="h-5 w-5 text-red-600" />
+                                <div>
+                                  <p className="text-red-800 font-medium">
+                                    Analysis Error
+                                  </p>
+                                  <p className="text-red-600 text-sm">
+                                    {error}
+                                  </p>
+                                </div>
+                              </CardContent>
+                            </Card>
+                          )}
+
+                          {/* Success Content */}
+                          {!loading[modelName] && !error && (
+                            <div className="space-y-6">
+                              {/* Model-specific content */}
+                              {modelName === "marketOpportunityScore" && (
+                                <MarketOpportunityScore data={modelData} />
+                              )}
+
+                              {modelName === "retailMarketIntelligence" && (
+                                <RetailMarketIntelligence
+                                  data={modelData}
+                                  lat={lat}
+                                  lon={lon}
+                                  loading={loading[modelName]}
+                                />
+                              )}
+
+                              {modelName === "culturalIntelligence" && (
+                                <CulturalIntelligence
+                                  data={modelData}
+                                  loading={loading[modelName]}
+                                />
+                              )}
+                              {/* 
+                        {modelName === "businessRecommendation" && (
+                          <BusinessRecommendation
+                            data={modelData}
+                            loading={loading[modelName]}
+                            error={error}
+                          />
+                        )} */}
+
+                              {/* Footer with timestamp */}
+                              <div className="pt-6 border-t border-gray-200/50">
+                                <p className="text-sm text-gray-500 text-center">
+                                  Analysis generated on{" "}
+                                  {new Date().toLocaleDateString()} at{" "}
+                                  {new Date().toLocaleTimeString()}
+                                </p>
+                              </div>
+                            </div>
                           )}
                         </TabsContent>
                       )
                   )}
                 </div>
               </Tabs>
+
+              {/* Quick Actions Footer */}
+              <div className="mt-6 flex flex-wrap gap-3 justify-center">
+                <Button
+                  variant="outline"
+                  className="border-blue-200 text-blue-700 hover:bg-blue-50 hover:text-black"
+                  onClick={() => {
+                    // Add download all functionality
+                  }}
+                >
+                  <Download className="h-4 w-4 mr-2" />
+                  Download All Reports
+                </Button>
+
+                <Button
+                  variant="outline"
+                  className="border-purple-200 text-purple-700 hover:bg-purple-50 hover:text-black"
+                  onClick={() => {
+                    // Add share functionality
+                  }}
+                >
+                  <Share className="h-4 w-4 mr-2" />
+                  Share Results
+                </Button>
+
+                <Button
+                  variant="outline"
+                  className="border-green-200 text-green-700 hover:bg-green-50 hover:text-black"
+                  onClick={() => {
+                    // Add export functionality
+                  }}
+                >
+                  <FileText className="h-4 w-4 mr-2" />
+                  Export to PDF
+                </Button>
+              </div>
             </CardContent>
           </Card>
         )}

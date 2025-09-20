@@ -10,7 +10,7 @@ export default function Home() {
       <CommonHeader
         data={{
           headerTitle: "Home - Radiu AI",
-          headerTitleSubtext: "Complete AI Model Ecosystem",
+          headerTitleSubtext: "Complete Bisuness Intelligence Eco Ecosystem",
           headerDescription:
             "Analyze real  market opportunities with comprehensive location-based intelligence",
           modelComponent: <CommonParameterControl />,

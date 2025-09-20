@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   BarChart,
   Bar,
@@ -18,15 +19,40 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
   RadarChart,
   PolarGrid,
   PolarAngleAxis,
   PolarRadiusAxis,
   Radar,
+  PieChart,
+  Pie,
+  Cell,
 } from "recharts";
+import {
+  Target,
+  MapPin,
+  Building2,
+  TrendingUp,
+  AlertTriangle,
+  Lightbulb,
+  Users,
+  GraduationCap,
+  DollarSign,
+  Car,
+  Train,
+  ParkingCircle,
+  Footprints,
+  Zap,
+  Sparkles,
+  Download,
+  Share,
+  BarChart3,
+  Crown,
+  Award,
+  Rocket,
+  Eye,
+  ChartNoAxesCombined,
+} from "lucide-react";
 
 type Props = {
   data: any;
@@ -45,30 +71,58 @@ export default function MarketOpportunityScore({ data }: Props) {
         {
           name: "Population Density",
           value: data.raw_data.demographics.population_density * 100,
+          icon: Users,
+          color: "#3B82F6",
         },
         {
           name: "Income Distribution",
           value: data.raw_data.demographics.income_distribution / 100,
+          icon: DollarSign,
+          color: "#10B981",
         },
         {
           name: "Age Composition",
           value: data.raw_data.demographics.age_composition * 100,
+          icon: ChartNoAxesCombined,
+          color: "#F59E0B",
         },
         {
           name: "Education Levels",
           value: data.raw_data.demographics.education_levels * 100,
+          icon: GraduationCap,
+          color: "#8B5CF6",
         },
       ]
     : [];
 
-  const radarData = Object.entries(data.raw_data).flatMap(
-    ([category, metrics]) =>
-      Object.entries(metrics as any).map(([metric, value]) => ({
-        subject: metric.replace(/_/g, " "),
-        [category]: typeof value === "number" ? value * 10 : 0,
-        fullMark: 100,
-      }))
-  );
+  const accessibilityData = data.raw_data.accessibility
+    ? [
+        {
+          name: "Traffic Flow",
+          value: data.raw_data.accessibility.traffic_flow * 10,
+          icon: Car,
+          color: "#EF4444",
+        },
+        {
+          name: "Public Transport",
+          value: data.raw_data.accessibility.public_transport * 10,
+          icon: Train,
+          color: "#3B82F6",
+        },
+        {
+          name: "Parking",
+          value: data.raw_data.accessibility.parking_availability * 10,
+          icon: ParkingCircle,
+          color: "#10B981",
+        },
+        {
+          name: "Walkability",
+          value: data.raw_data.accessibility.walkability * 10,
+          icon: Footprints,
+          color: "#F59E0B",
+        },
+      ]
+    : [];
 
   function getScoreColor(score: number) {
     if (score >= 80) return "#10b981"; // green
@@ -78,106 +132,143 @@ export default function MarketOpportunityScore({ data }: Props) {
   }
 
   function getRatingColor(rating: string) {
-    if (rating.includes("High")) return "bg-green-100 text-green-800";
-    if (rating.includes("Moderate")) return "bg-yellow-100 text-yellow-800";
-    if (rating.includes("Low")) return "bg-red-100 text-red-800";
-    return "bg-gray-100 text-gray-800";
+    if (rating.includes("High")) return "bg-gradient-to-r from-green-500 to-green-600 text-white";
+    if (rating.includes("Moderate")) return "bg-gradient-to-r from-yellow-500 to-yellow-600 text-white";
+    if (rating.includes("Low")) return "bg-gradient-to-r from-red-500 to-red-600 text-white";
+    return "bg-gradient-to-r from-gray-500 to-gray-600 text-white";
   }
 
-  const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884D8"];
+  function getScoreIcon(score: number) {
+    if (score >= 80) return <Crown className="h-5 w-5" />;
+    if (score >= 60) return <Award className="h-5 w-5" />;
+    if (score >= 40) return <Eye className="h-5 w-5" />;
+    return <AlertTriangle className="h-5 w-5" />;
+  }
+
+  const COLORS = ["#3B82F6", "#10B981", "#F59E0B", "#EF4444", "#8B5CF6"];
 
   return (
-    <div className="space-y-6 p-4">
+    <div className="space-y-6">
       {/* Header with Overall Score */}
-      <Card className="bg-gradient-to-r from-blue-50 to-indigo-50">
+      <Card className="border-0 bg-gradient-to-r from-blue-50 via-purple-50 to-pink-50">
         <CardHeader className="text-center">
-          <CardTitle className="text-3xl font-bold">
-            Market Opportunity Analysis
+          <CardTitle className="text-4xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+            Market Opportunity Score
           </CardTitle>
-          <CardDescription>
+          <CardDescription className="text-lg text-gray-600">
             {data.location.name}, {data.location.country_code}
           </CardDescription>
-          <Badge className={`text-lg px-4 py-2 ${getRatingColor(data.rating)}`}>
-            {data.rating}
-          </Badge>
+          <div className="mt-4">
+            <Badge className={`text-lg px-6 py-3 ${getRatingColor(data.rating)}`}>
+              <div className="flex items-center gap-2">
+                {getScoreIcon(data.scores.overall)}
+                {data.rating}
+              </div>
+            </Badge>
+          </div>
         </CardHeader>
       </Card>
 
+      {/* Main Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Location Info */}
-        <Card>
+        <Card className="border-0 shadow-xl bg-gradient-to-br from-white to-gray-50/50">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              📍 Location Details
+            <CardTitle className="flex items-center gap-3 text-xl font-semibold">
+              <div className="p-2 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg">
+                <MapPin className="h-5 w-5 text-white" />
+              </div>
+              Location Details
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3">
+          <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
-              <div>
-                <p className="text-sm text-muted-foreground">Name</p>
-                <p className="font-semibold">{data.location.name}</p>
+              <div className="bg-blue-50 p-4 rounded-lg">
+                <p className="text-sm text-blue-600 font-medium">Name</p>
+                <p className="font-semibold text-lg">{data.location.name}</p>
               </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Business Type</p>
-                <p className="font-semibold capitalize">
-                  {data.location.business_type}
+              <div className="bg-purple-50 p-4 rounded-lg">
+                <p className="text-sm text-purple-600 font-medium">Business Type</p>
+                <p className="font-semibold text-lg capitalize">{data.location.business_type}</p>
+              </div>
+              <div className="bg-green-50 p-4 rounded-lg">
+                <p className="text-sm text-green-600 font-medium">Coordinates</p>
+                <p className="font-semibold text-sm">
+                  {data.location.latitude.toFixed(6)}, {data.location.longitude.toFixed(6)}
                 </p>
               </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Coordinates</p>
-                <p className="font-semibold">
-                  {data.location.latitude}, {data.location.longitude}
-                </p>
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Radius</p>
-                <p className="font-semibold">{data.location.radius_km} km</p>
+              <div className="bg-orange-50 p-4 rounded-lg">
+                <p className="text-sm text-orange-600 font-medium">Radius</p>
+                <p className="font-semibold text-lg">{data.location.radius_km} km</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
         {/* Overall Score */}
-        <Card>
+        <Card className="border-0 shadow-xl bg-gradient-to-br from-white to-gray-50/50">
           <CardHeader>
-            <CardTitle>Overall Score</CardTitle>
+            <CardTitle className="flex items-center gap-3 text-xl font-semibold">
+              <div className="p-2 bg-gradient-to-r from-green-500 to-green-600 rounded-lg">
+                <BarChart3 className="h-5 w-5 text-white" />
+              </div>
+              Overall Score
+            </CardTitle>
             <CardDescription>Market Opportunity Assessment</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="text-center">
-              <div className="text-5xl font-bold text-black mb-2">
+              <div className="text-6xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-4">
                 {data.scores.overall.toFixed(1)}
               </div>
-              <Progress value={data.scores.overall} className="h-3" />
-              <p className="text-sm text-muted-foreground mt-2">
-                Out of 100 points
-              </p>
+              <Progress value={data.scores.overall} className="h-3 bg-gray-200">
+                <div
+                  className="h-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-1000"
+                  style={{ width: `${data.scores.overall}%` }}
+                />
+              </Progress>
+              <p className="text-sm text-gray-500 mt-3">Out of 100 points</p>
             </div>
           </CardContent>
         </Card>
       </div>
 
       {/* Scores Radar Chart */}
-      <Card>
+      <Card className="border-0 shadow-xl bg-gradient-to-br from-white to-gray-50/50">
         <CardHeader>
-          <CardTitle>Detailed Scores Analysis</CardTitle>
+          <CardTitle className="flex items-center gap-3 text-xl font-semibold">
+            <div className="p-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg">
+              <RadarChart className="h-5 w-5 text-white" />
+            </div>
+            Detailed Scores Analysis
+          </CardTitle>
           <CardDescription>Performance across key metrics</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
               <RadarChart data={scoreData}>
-                <PolarGrid />
-                <PolarAngleAxis dataKey="name" />
+                <PolarGrid stroke="#E5E7EB" />
+                <PolarAngleAxis 
+                  dataKey="name" 
+                  tick={{ fill: '#374151', fontSize: 12 }}
+                />
                 <PolarRadiusAxis domain={[0, 100]} />
                 <Radar
                   name="Scores"
                   dataKey="value"
-                  stroke="#111"
-                  fill="#222"
+                  stroke="#4F46E5"
+                  fill="#4F46E5"
                   fillOpacity={0.6}
                 />
-                <Tooltip />
+                <Tooltip 
+                  contentStyle={{
+                    background: 'white',
+                    border: '1px solid #E5E7EB',
+                    borderRadius: '8px',
+                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                  }}
+                />
               </RadarChart>
             </ResponsiveContainer>
           </div>
@@ -185,118 +276,203 @@ export default function MarketOpportunityScore({ data }: Props) {
       </Card>
 
       {/* Individual Scores with Progress Bars */}
-      <Card>
+
+      {/* Opportunities & Risks Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <Card className="border-0 shadow-xl bg-gradient-to-br from-white to-gray-50/50">
         <CardHeader>
-          <CardTitle>Detailed Scores</CardTitle>
+          <CardTitle className="flex items-center gap-3 text-xl font-semibold">
+            <div className="p-2 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg">
+              <TrendingUp className="h-5 w-5 text-white" />
+            </div>
+            Detailed Scores Breakdown
+          </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-6">
           {scoreData
             .filter((item) => item.name !== "OVERALL")
             .map((item, index) => (
-              <div key={item.name} className="space-y-2">
+              <div key={item.name} className="space-y-3">
                 <div className="flex justify-between items-center">
-                  <span className="font-medium capitalize">
-                    {item.name.toLowerCase()}
+                  <div className="flex items-center gap-3">
+                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.fill }} />
+                    <span className="font-semibold text-gray-800 capitalize">
+                      {item.name.toLowerCase()}
+                    </span>
+                  </div>
+                  <span className="font-bold text-2xl" style={{ color: item.fill }}>
+                    {item.value.toFixed(1)}
                   </span>
-                  <span className="font-bold">{item.value.toFixed(1)}</span>
                 </div>
-                <Progress value={item.value} className="h-2" />
+                <Progress value={item.value} className="h-3 bg-gray-200">
+                  <div
+                    className="h-full transition-all duration-1000"
+                    style={{ 
+                      width: `${item.value}%`,
+                      backgroundColor: item.fill
+                    }}
+                  />
+                </Progress>
               </div>
             ))}
         </CardContent>
       </Card>
-
-      {/* Opportunities */}
-      <Card className="bg-green-50">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-green-800">
-            💡 Opportunities
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ul className="space-y-3">
-            {data.opportunities.map((item: string, i: number) => (
-              <li
-                key={i}
-                className="flex items-start gap-3 p-3 bg-white rounded-lg shadow-sm"
-              >
-                <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0" />
-                <span className="text-sm">{item}</span>
-              </li>
-            ))}
-          </ul>
-        </CardContent>
-      </Card>
-
-      {/* Risk Factors */}
-      {data.risk_factors.length > 0 && (
-        <Card className="bg-red-50">
+        {/* Opportunities */}
+        <Card className="border-0 shadow-xl bg-gradient-to-br from-green-50 to-emerald-50">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-red-800">
-              ⚠️ Risk Factors
+            <CardTitle className="flex items-center gap-3 text-xl font-semibold text-green-800">
+              <div className="p-2 bg-gradient-to-r from-green-500 to-green-600 rounded-lg">
+                <Lightbulb className="h-5 w-5 text-white" />
+              </div>
+              Opportunities
             </CardTitle>
           </CardHeader>
           <CardContent>
             <ul className="space-y-3">
-              {data.risk_factors.map((risk: string, i: number) => (
+              {data.opportunities.map((item: string, i: number) => (
                 <li
                   key={i}
-                  className="flex items-start gap-3 p-3 bg-white rounded-lg shadow-sm"
+                  className="flex items-start gap-3 p-4 bg-white rounded-xl shadow-sm border border-green-100"
                 >
-                  <div className="w-2 h-2 bg-red-500 rounded-full mt-2 flex-shrink-0" />
-                  <span className="text-sm">{risk}</span>
+                  <div className="w-3 h-3 bg-green-500 rounded-full mt-2 flex-shrink-0" />
+                  <span className="text-sm text-green-800 leading-relaxed">{item}</span>
                 </li>
               ))}
             </ul>
           </CardContent>
         </Card>
-      )}
 
-      {/* Demographic Data Chart */}
-      {demographicData.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Demographic Analysis</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={demographicData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis domain={[0, 100]} />
-                  <Tooltip />
-                  <Bar dataKey="value" fill="black" />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </CardContent>
-        </Card>
-      )}
+        {/* Risk Factors */}
+        {data.risk_factors.length > 0 && (
+          <Card className="border-0 shadow-xl bg-gradient-to-br from-red-50 to-orange-50">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-3 text-xl font-semibold text-red-800">
+                <div className="p-2 bg-gradient-to-r from-red-500 to-red-600 rounded-lg">
+                  <AlertTriangle className="h-5 w-5 text-white" />
+                </div>
+                ⚠️ Risk Factors
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ul className="space-y-3">
+                {data.risk_factors.map((risk: string, i: number) => (
+                  <li
+                    key={i}
+                    className="flex items-start gap-3 p-4 bg-white rounded-xl shadow-sm border border-red-100"
+                  >
+                    <div className="w-3 h-3 bg-red-500 rounded-full mt-2 flex-shrink-0" />
+                    <span className="text-sm text-red-800 leading-relaxed">{risk}</span>
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+        )}
+      </div>
+
+      {/* Charts Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Demographic Data Chart */}
+        {demographicData.length > 0 && (
+          <Card className="border-0 shadow-xl bg-gradient-to-br from-white to-gray-50/50">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-3 text-xl font-semibold">
+                <div className="p-2 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg">
+                  <Users className="h-5 w-5 text-white" />
+                </div>
+                Demographic Analysis
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="h-64">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={demographicData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
+                    <XAxis dataKey="name" tick={{ fill: '#374151', fontSize: 12 }} />
+                    <YAxis domain={[0, 100]} tick={{ fill: '#374151' }} />
+                    <Tooltip 
+                      contentStyle={{
+                        background: 'white',
+                        border: '1px solid #E5E7EB',
+                        borderRadius: '8px'
+                      }}
+                    />
+                    <Bar dataKey="value" radius={[4, 4, 0, 0]}>
+                      {demographicData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Accessibility Data Chart */}
+        {accessibilityData.length > 0 && (
+          <Card className="border-0 shadow-xl bg-gradient-to-br from-white to-gray-50/50">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-3 text-xl font-semibold">
+                <div className="p-2 bg-gradient-to-r from-green-500 to-green-600 rounded-lg">
+                  <Car className="h-5 w-5 text-white" />
+                </div>
+                Accessibility Analysis
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="h-64">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={accessibilityData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
+                    <XAxis dataKey="name" tick={{ fill: '#374151', fontSize: 12 }} />
+                    <YAxis domain={[0, 100]} tick={{ fill: '#374151' }} />
+                    <Tooltip 
+                      contentStyle={{
+                        background: 'white',
+                        border: '1px solid #E5E7EB',
+                        borderRadius: '8px'
+                      }}
+                    />
+                    <Bar dataKey="value" radius={[4, 4, 0, 0]}>
+                      {accessibilityData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+      </div>
 
       {/* Raw Data Summary */}
-      <Card>
+      <Card className="border-0 shadow-xl bg-gradient-to-br from-white to-gray-50/50">
         <CardHeader>
-          <CardTitle>Raw Data Summary</CardTitle>
-          <CardDescription>Detailed metrics breakdown</CardDescription>
+          <CardTitle className="flex items-center gap-3 text-xl font-semibold">
+            <div className="p-2 bg-gradient-to-r from-purple-500 to-purple-600 rounded-lg">
+              <Zap className="h-5 w-5 text-white" />
+            </div>
+            Detailed Metrics Breakdown
+          </CardTitle>
+          <CardDescription>Comprehensive data analysis across all categories</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {Object.entries(data.raw_data).map(([category, metrics]) => (
-              <div key={category} className="bg-muted p-4 rounded-lg">
-                <h4 className="font-semibold capitalize mb-3">
+              <div key={category} className="bg-gradient-to-br from-gray-50 to-white p-6 rounded-xl border border-gray-200 shadow-sm">
+                <h4 className="font-semibold text-lg text-gray-800 capitalize mb-4">
                   {category.replace(/_/g, " ")}
                 </h4>
-                <div className="space-y-2">
+                <div className="space-y-3">
                   {Object.entries(metrics as any).map(([metric, value]) => (
-                    <div key={metric} className="flex justify-between text-sm">
-                      <span className="capitalize">
-                        {metric.replace(/_/g, " ")}:
+                    <div key={metric} className="flex justify-between items-center py-2 border-b border-gray-100 last:border-b-0">
+                      <span className="text-sm text-gray-600 capitalize">
+                        {metric.replace(/_/g, " ")}
                       </span>
-                      <span className="font-medium">
-                        {typeof value === "number"
-                          ? value.toFixed(2)
-                          : String(value)}
+                      <span className="font-semibold text-gray-800">
+                        {typeof value === "number" ? value.toFixed(2) : String(value)}
                       </span>
                     </div>
                   ))}
@@ -306,6 +482,7 @@ export default function MarketOpportunityScore({ data }: Props) {
           </div>
         </CardContent>
       </Card>
+
     </div>
   );
 }
