@@ -5,6 +5,14 @@ import { Download, Share, FileText } from "lucide-react";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 
+interface MarketData {
+  retailMarketIntelligence: any;
+  marketOpportunityScore: any;
+  culturalIntelligence: any;
+  businessRecommendation: any;
+}
+
+
 export default function ReportActions({ data }: any) {
   const [shareLink, setShareLink] = useState(null);
 

@@ -315,7 +315,7 @@ function CompetitorAnalysis({ data }: { data: MarketIntelligenceData['Existing_C
     </div>
     <div className="text-center p-4 bg-green-50 rounded-lg border border-green-200">
       <div className="text-2xl font-bold text-green-600">
-        {data.data.statistics.average_distance.toFixed(1)}km
+        {data.data.statistics?.average_distance.toFixed(1)}km
       </div>
       <div className="text-sm text-green-700">Avg Distance</div>
     </div>
@@ -412,9 +412,10 @@ export function RetailMarketIntelligence({data, lat, lon, loading, error}: {data
             <MarketFactorChart data={data.Market_Factor} />
             <IncomeTrendChart data={data.Income_Data.data} />
           </div>
-
+<div className="grid lg:grid-cols-2 gap-6">
           <TrafficAnalysis data={data.Traffic_Score} />
           <CompetitorAnalysis data={data.Existing_Competitors} />
+  </div>
 
           {/* Cultural Fit Analysis */}
           <Card className="border-0 shadow-xl bg-gradient-to-br from-white to-pink-50/50">
