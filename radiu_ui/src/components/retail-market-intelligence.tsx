@@ -321,7 +321,7 @@ function CompetitorAnalysis({ data }: { data: MarketIntelligenceData['Existing_C
     </div>
     <div className="text-center p-4 bg-blue-50 rounded-lg border border-blue-200">
       <div className="text-2xl font-bold text-blue-600">
-        {data.data.statistics.business_density.toFixed(1)}
+        {data.data.statistics?.business_density.toFixed(1)}
       </div>
       <div className="text-sm text-blue-700">Density Score</div>
     </div>
@@ -412,7 +412,7 @@ export function RetailMarketIntelligence({data, lat, lon, loading, error}: {data
             <MarketFactorChart data={data.Market_Factor} />
             <IncomeTrendChart data={data.Income_Data.data} />
           </div>
-<div className="grid lg:grid-cols-2 gap-6">
+<div className="flex flex-col gap-6">
           <TrafficAnalysis data={data.Traffic_Score} />
           <CompetitorAnalysis data={data.Existing_Competitors} />
   </div>
