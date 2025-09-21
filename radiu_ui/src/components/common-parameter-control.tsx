@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { RetailMarketIntelligence } from "./retail-market-intelligence";
 import MarketOpportunityScore from "./market-opportunity-scorer";
@@ -34,6 +33,8 @@ import {
   Users,
   Zap,
 } from "lucide-react";
+import { BusinessRecommendation } from "./business-recommendation";
+import ReportActions from "./radui-action";
 
 interface ModelData {
   retailMarketIntelligence: any | null;
@@ -84,13 +85,6 @@ const CommonParameterControl = () => {
     setRadiusKm(params.radiusKm);
     setFocus(params.focus);
     setTargetAudience(params.target_audience);
-  };
-
-  const toggleModel = (modelName: keyof typeof activeModels) => {
-    setActiveModels((prev) => ({
-      ...prev,
-      [modelName]: !prev[modelName],
-    }));
   };
 
   const fetchModelData = async (modelName: keyof typeof activeModels) => {
@@ -144,8 +138,16 @@ const CommonParameterControl = () => {
           break;
 
         case "businessRecommendation":
-          url = `http://localhost:5000/analyze/business_recommendation_engine?${params}`;
-          options = { method: "GET" };
+          url = `http://localhost:5000/analyze/business-recommendation`;
+          options = {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              retailMarketIntelligence: data.retailMarketIntelligence,
+              marketOpportunityScore: data.marketOpportunityScore,
+              culturalIntelligence: data.culturalIntelligence,
+            }),
+          };
           break;
 
         default:
@@ -187,6 +189,25 @@ const CommonParameterControl = () => {
     for (const modelName of activeModelNames) {
       await fetchModelData(modelName);
     }
+  };
+  const toggleModel = (modelName: keyof typeof activeModels) => {
+    setActiveModels((prev) => {
+      const newState = {
+        ...prev,
+        [modelName]: !prev[modelName],
+      };
+
+      // Enable business recommendation if at least 2 other models are selected
+      const otherModelsSelected = Object.entries(newState)
+        .filter(([key]) => key !== "businessRecommendation")
+        .filter(([_, isActive]) => isActive).length;
+
+      if (otherModelsSelected >= 2 && !newState.businessRecommendation) {
+        newState.businessRecommendation = true;
+      }
+
+      return newState;
+    });
   };
   const ModelToggle = ({
     name,
@@ -247,8 +268,7 @@ const CommonParameterControl = () => {
       </CardContent>
     </Card>
   );
-
-  console.log(data.culturalIntelligence);
+  console.log(data);
   return (
     <div className="p-6 space-y-6">
       <ParameterControls
@@ -264,16 +284,20 @@ const CommonParameterControl = () => {
       />
 
       <Card className="border-0 bg-white/70 backdrop-blur-sm shadow-2xl shadow-purple-500/10">
-        <CardHeader className=" text-black rounded-t-lg">
-          <CardTitle className="flex items-center gap-3">
-            <BarChart3 className="h-6 w-6" />
-            AI Analysis Models
+        <CardHeader className=" text-black rounded-t-lg items-center">
+          <CardTitle className="flex items-center gap-3 text-2xl  flex-row">
+            <div className="p-2 bg-gradient-to-r from-green-500 to-green-600 rounded-lg">
+              <BarChart3 className="h-6 w-6 text-white" />
+            </div>
+            <div>
+              <p>AI Analysis Models</p>
+              <CardDescription className="text-black">
+                Select one or more AI models to analyze your market intelligence
+                data
+              </CardDescription>
+            </div>
             <Zap className="h-5 w-5 ml-auto animate-bounce" />
           </CardTitle>
-          <CardDescription className="text-black">
-            Select one or more AI models to analyze your market intelligence
-            data
-          </CardDescription>
         </CardHeader>
         <CardContent className="p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -304,7 +328,18 @@ const CommonParameterControl = () => {
           </div>
         </CardContent>
       </Card>
-
+{Object.entries(activeModels)
+  .filter(([key]) => key !== "businessRecommendation")
+  .filter(([_, isActive]) => isActive).length >= 2 && (
+  <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+    <p className="text-sm text-blue-700 flex items-center gap-2">
+      <Lightbulb className="h-4 w-4" />
+      <span>
+        <strong>Business Recommendations enabled:</strong> Comprehensive analysis from multiple models provides better insights.
+      </span>
+    </p>
+  </div>
+)}
       {/* Analyze All Button */}
       <div className="flex justify-center">
         <Button
@@ -315,7 +350,10 @@ const CommonParameterControl = () => {
           }
           className={`relative h-14 px-8 text-lg font-semibold transition-all duration-300 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 hover:from-blue-700 hover:via-purple-700 hover:to-pink-700 text-white shadow-2xl hover:shadow-3xl transform hover:scale-105`}
         >
-          Analyze Market...
+          {Object.values(loading).some((l) => l) ||
+          Object.values(activeModels).every((a) => !a)
+            ? " Get Startted"
+            : "Analyze Market..."}
         </Button>
       </div>
 
@@ -344,7 +382,7 @@ const CommonParameterControl = () => {
             <CardContent className="p-6">
               <Tabs
                 defaultValue={Object.keys(data).find((key) => data[key]) || ""}
-                className="w-full"
+                className="w-full px-6"
               >
                 {/* Tab buttons */}
                 <TabsList className="flex h-full  w-full flex-wrap justify-start gap-6  bg-gradient-to-r from-gray-100 to-gray-200/80  rounded-2xl shadow-inner ">
@@ -367,7 +405,7 @@ const CommonParameterControl = () => {
                          hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50
                          hover:text-blue-700
                          hover:shadow-lg
-                         hover:scale-105"
+                         hover:scale-90"
                         >
                           <div className="flex items-center gap-2">
                             {modelName === "marketOpportunityScore" && (
@@ -453,14 +491,13 @@ const CommonParameterControl = () => {
                                   loading={loading[modelName]}
                                 />
                               )}
-                              {/* 
+
                         {modelName === "businessRecommendation" && (
                           <BusinessRecommendation
                             data={modelData}
                             loading={loading[modelName]}
-                            error={error}
                           />
-                        )} */}
+                        )} 
 
                               {/* Footer with timestamp */}
                               <div className="pt-6 border-t border-gray-200/50">
@@ -478,41 +515,8 @@ const CommonParameterControl = () => {
                 </div>
               </Tabs>
 
-              {/* Quick Actions Footer */}
-              <div className="mt-6 flex flex-wrap gap-3 justify-center">
-                <Button
-                  variant="outline"
-                  className="border-blue-200 text-blue-700 hover:bg-blue-50 hover:text-black"
-                  onClick={() => {
-                    // Add download all functionality
-                  }}
-                >
-                  <Download className="h-4 w-4 mr-2" />
-                  Download All Reports
-                </Button>
 
-                <Button
-                  variant="outline"
-                  className="border-purple-200 text-purple-700 hover:bg-purple-50 hover:text-black"
-                  onClick={() => {
-                    // Add share functionality
-                  }}
-                >
-                  <Share className="h-4 w-4 mr-2" />
-                  Share Results
-                </Button>
-
-                <Button
-                  variant="outline"
-                  className="border-green-200 text-green-700 hover:bg-green-50 hover:text-black"
-                  onClick={() => {
-                    // Add export functionality
-                  }}
-                >
-                  <FileText className="h-4 w-4 mr-2" />
-                  Export to PDF
-                </Button>
-              </div>
+              <ReportActions data={data} />
             </CardContent>
           </Card>
         )}

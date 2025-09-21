@@ -1,7 +1,7 @@
 const express = require("express");
 const analyze_model_py = require("./routes/python.AImodel.route.js");
 const cors = require("cors");
-
+require('dotenv').config();
 const app = express();
 const PORT = 5000;
 
