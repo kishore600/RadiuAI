@@ -56,10 +56,10 @@ const CommonParameterControl = () => {
   const [error, setError] = useState<string | null>(null);
   const [lastAnalysis, setLastAnalysis] = useState<string>("Never");
   const [activeModels, setActiveModels] = useState<{ [key: string]: boolean }>({
-    retailMarketIntelligence: false,
-    marketOpportunityScore: false,
-    culturalIntelligence: false,
-    businessRecommendation: false,
+    retailMarketIntelligence: true,
+    marketOpportunityScore: true,
+    culturalIntelligence: true,
+    businessRecommendation: true,
   });
 
   const [lat, setLat] = useState("40.7128");
@@ -258,11 +258,6 @@ const CommonParameterControl = () => {
                 </span>
               </div>
             )}
-            <Switch
-              checked={activeModels[name]}
-              onCheckedChange={() => toggleModel(name)}
-              className="data-[state=unchecked]:bg-gray-300 data-[state=checked]:bg-gradient-to-r data-[state=checked]:from-blue-500 data-[state=checked]:to-purple-600"
-            />
           </div>
         </div>
       </CardContent>
@@ -328,18 +323,19 @@ const CommonParameterControl = () => {
           </div>
         </CardContent>
       </Card>
-{Object.entries(activeModels)
-  .filter(([key]) => key !== "businessRecommendation")
-  .filter(([_, isActive]) => isActive).length >= 2 && (
-  <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-    <p className="text-sm text-blue-700 flex items-center gap-2">
-      <Lightbulb className="h-4 w-4" />
-      <span>
-        <strong>Business Recommendations enabled:</strong> Comprehensive analysis from multiple models provides better insights.
-      </span>
-    </p>
-  </div>
-)}
+      {Object.entries(activeModels)
+        .filter(([key]) => key !== "businessRecommendation")
+        .filter(([_, isActive]) => isActive).length >= 2 && (
+        <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+          <p className="text-sm text-blue-700 flex items-center gap-2">
+            <Lightbulb className="h-4 w-4" />
+            <span>
+              <strong>Business Recommendations enabled:</strong> Comprehensive
+              analysis from multiple models provides better insights.
+            </span>
+          </p>
+        </div>
+      )}
       {/* Analyze All Button */}
       <div className="flex justify-center">
         <Button
@@ -492,12 +488,12 @@ const CommonParameterControl = () => {
                                 />
                               )}
 
-                        {modelName === "businessRecommendation" && (
-                          <BusinessRecommendation
-                            data={modelData}
-                            loading={loading[modelName]}
-                          />
-                        )} 
+                              {modelName === "businessRecommendation" && (
+                                <BusinessRecommendation
+                                  data={modelData}
+                                  loading={loading[modelName]}
+                                />
+                              )}
 
                               {/* Footer with timestamp */}
                               <div className="pt-6 border-t border-gray-200/50">
@@ -514,7 +510,6 @@ const CommonParameterControl = () => {
                   )}
                 </div>
               </Tabs>
-
 
               <ReportActions data={data} />
             </CardContent>
