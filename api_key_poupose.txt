@@ -1,0 +1,65 @@
+1️⃣ Google API Key (google_key)
+
+Where used: get_google_travel_time() → called in calculate_hybrid_score().
+
+Purpose:
+
+Calls Google Distance Matrix API to get travel time with traffic.
+
+Calculates congestion ratio based on duration vs duration_in_traffic.
+
+Effect on score: Primary contributor (up to 50 points on 0–100 scale).
+
+2️⃣ HERE API Key (here_key)
+
+Where used: Nowhere.
+
+Purpose (planned): Could be used to fetch traffic data or routing info from HERE API.
+
+Effect on score: Currently none. It’s just stored in self.api_keys.
+
+3️⃣ TomTom API Key (tomtom_key)
+
+Where used: Nowhere.
+
+Purpose (planned): Could fetch TomTom traffic or routing info as additional data source.
+
+Effect on score: Currently none.
+
+4️⃣ OpenWeather API Key (openweather_key)
+
+Where used: get_weather_impact() → called in calculate_hybrid_score().
+
+Purpose:
+
+Calls OpenWeather API to get current weather at origin coordinates.
+
+Assigns traffic impact score based on weather type:
+
+Thunderstorm → 0.8
+
+Snow → 0.7
+
+Rain → 0.5
+
+Drizzle → 0.3
+
+Clear → 0.0
+
+Clouds → 0.1
+
+Effect on score: Can add up to 30 points on 0–100 scale.
+
+5️⃣ Event API Key (event_key)
+
+Where used: get_event_impact() → called in calculate_hybrid_score().
+
+Purpose:
+
+Calls TicketMaster API to get events near the origin (radius 10 miles).
+
+Calculates traffic impact based on number of events:
+
+Up to 5 events considered → each adds 0.2 → max 1.0 → scaled to 20 points.
+
+Effect on score: Can add up to 20 points.
