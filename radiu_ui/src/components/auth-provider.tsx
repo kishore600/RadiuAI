@@ -372,14 +372,6 @@ function OtpVerificationModal() {
           </div>
           
           <div className="flex items-center space-x-3 mb-4 p-3 bg-muted/50 rounded-lg">
-            {currentPicture && (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img 
-                src={currentPicture} 
-                alt="Profile" 
-                className="w-10 h-10 rounded-full"
-              />
-            )}
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-foreground truncate">{currentName}</p>
               <p className="text-sm text-muted-foreground truncate">{currentEmail}</p>
