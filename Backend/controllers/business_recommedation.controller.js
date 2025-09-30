@@ -1,6 +1,6 @@
-import fetch from "node-fetch";
+const fetch =  require("node-fetch");
 
-export const getBusinessRecommendation = async (req, res) => {
+const getBusinessRecommendation = async (req, res) => {
   try {
     const analysisData = req.body;
 
@@ -59,3 +59,5 @@ export const getBusinessRecommendation = async (req, res) => {
     res.status(500).json({ error: "Failed to generate recommendation" });
   }
 };
+
+module.exports = {getBusinessRecommendation}

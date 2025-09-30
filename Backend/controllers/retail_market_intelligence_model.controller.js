@@ -1,7 +1,7 @@
 const { spawn } = require("child_process");
 const path = require("path");
 
-exports.retail_market_intelligence_model = (req, res) => {
+const retail_market_intelligence_model = (req, res) => {
   const lat = parseFloat(req.query.lat) || 40.7128;
   const lon = parseFloat(req.query.lon) || -74.0060;
   const businessType = req.query.businessType || "supermarket";
@@ -75,3 +75,5 @@ exports.retail_market_intelligence_model = (req, res) => {
     });
   });
 };
+
+module.exports = {retail_market_intelligence_model}

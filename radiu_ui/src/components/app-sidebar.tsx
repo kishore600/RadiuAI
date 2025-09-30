@@ -10,6 +10,7 @@ import {
   Settings,
   Sparkles,
   Sparkle,
+  User,
 } from "lucide-react";
 import {
   Sidebar,
@@ -35,6 +36,11 @@ const navigation = [
     title: "Settings",
     url: "/settings",
     icon: Settings,
+  },
+  {
+    title: "Profile",
+    url: "/profile",
+    icon: User,
   },
 ];
 
@@ -91,7 +97,6 @@ export function AppSidebar() {
           <div className="flex items-center justify-between">
             <div className="text-xs text-sidebar-foreground/70">
               <div className="font-medium">v1.0.0</div>
-              {/* <div>Retail Intelligence Model</div> */}
             </div>
             <Badge
               variant="outline"

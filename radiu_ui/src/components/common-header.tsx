@@ -78,7 +78,7 @@ const CommonHeader = ({ data }: HeaderProps) => {
                   crossOrigin="anonymous"
                 />
                 <AvatarFallback>
-                  <UserIcon className="h-4 w-4" />
+                  {/* <UserIcon className="h-4 w-4" /> */}
                 </AvatarFallback>
               </Avatar>
 

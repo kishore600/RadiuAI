@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "AI is a revolutionary SaaS platform that transforms location-based business decisions from guesswork into data-driven strategy. Using advanced AI models and cultural intelligence, it helps entrepreneurs, investors, and small business owners make smart location decisions before investing their money",
   "main": "index.js",
+  "type": "commonjs",
   "scripts": {
     "dev": "nodemon index.js"
   },
@@ -11,10 +12,16 @@
   "dependencies": {
     "@googlemaps/js-api-loader": "^1.16.10",
     "child_process": "^1.0.2",
+    "cloudinary": "^2.7.0",
     "cors": "^2.8.5",
+    "datauri": "^4.1.0",
     "dotenv": "^17.2.2",
     "express": "^5.1.0",
+    "express-async-handler": "^1.2.0",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^2.0.2",
     "node-fetch": "^3.3.2",
+    "nodemailer": "^7.0.6",
     "nodemon": "^3.1.10",
     "path": "^0.12.7"
   }

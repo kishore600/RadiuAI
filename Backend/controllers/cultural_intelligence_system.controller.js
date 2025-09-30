@@ -2,7 +2,7 @@
 const { spawn } = require("child_process");
 const path = require("path");
 
-exports.cultural_intelligence_system = (req, res) => {
+const cultural_intelligence_system = (req, res) => {
   const { lat, lon, business_type, focus, target_audience } = req.body;
 
   // Validate required fields
@@ -87,3 +87,5 @@ exports.cultural_intelligence_system = (req, res) => {
     });
   });
 };
+
+module.exports = {cultural_intelligence_system}

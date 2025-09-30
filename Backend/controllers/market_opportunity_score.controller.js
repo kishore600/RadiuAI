@@ -1,7 +1,7 @@
 const { spawn } = require("child_process");
 const path = require("path");
 
-exports.market_opportunity_score = (req, res) => {
+const market_opportunity_score = (req, res) => {
   const lat = parseFloat(req.body.latitude) || 40.7128;
   const lon = parseFloat(req.body.longitude) || -74.0060;
   const businessType = req.body.business_type || "supermarket";
@@ -74,3 +74,5 @@ exports.market_opportunity_score = (req, res) => {
     });
   });
 };
+
+module.exports = {market_opportunity_score}
