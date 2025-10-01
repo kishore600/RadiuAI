@@ -15,6 +15,11 @@ import {
   MessageSquare,
   ChevronDown,
   MoreHorizontal,
+  MapPin,
+  Briefcase,
+  FileText,
+  Shield,
+  HelpCircle,
 } from "lucide-react";
 import {
   Sidebar,
@@ -43,46 +48,77 @@ import {
 import { DialogHeader } from "./ui/dialog";
 import { useEffect, useState } from "react";
 import axios from "axios";
+
 const navigation = [
   {
     title: "Dashboard",
     url: "/",
     icon: Home,
+    description: "Market overview & insights",
+    badge: "New",
+    badgeColor: "bg-gradient-to-r from-green-500 to-emerald-500"
   },
   {
     title: "Profile",
     url: "/profile",
     icon: User,
+    description: "Account & reports",
+    badge: "You",
+    badgeColor: "bg-gradient-to-r from-indigo-500 to-purple-500"
+  },
+];
+
+const tools = [
+  {
+    title: "Market Reports",
+    url: "/reports",
+    icon: FileText,
+    description: "Generated insights",
+    badge: "12+",
+    badgeColor: "bg-gradient-to-r from-teal-500 to-blue-500"
+  },
+  {
+    title: "Business Tools",
+    url: "/tools",
+    icon: Briefcase,
+    description: "Planning resources",
+    badge: "Free",
+    badgeColor: "bg-gradient-to-r from-emerald-500 to-green-500"
   },
 ];
 
 export function AppSidebar() {
   const { user, signOut } = useAuth();
   const pathname = usePathname();
-
-
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <Sidebar className="animate-slide-in-right">
-      <SidebarHeader className="border-b border-sidebar-border bg-gradient-to-r from-sidebar to-sidebar/80">
-        <div className="flex items-center gap-3 px-3 py-4">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-accent to-primary text-white shadow-lg animate-pulse-glow">
-            <Sparkles className="h-5 w-5" />
+    <Sidebar className="animate-slide-in-right bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 border-r border-slate-700/50">
+      <SidebarHeader className="border-b border-slate-700/50 bg-gradient-to-b from-slate-900/95 to-slate-800/95 backdrop-blur-sm">
+        <div className="flex items-center gap-3 px-4 py-5 ">
+          <div className="relative">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 shadow-2xl animate-pulse-glow">
+              <Sparkles className="h-6 w-6 text-white" />
+            </div>
+            <div className="absolute -top-1 -right-1">
+              <div className="w-3 h-3 bg-green-400 rounded-full border-2 border-slate-900 shadow-lg animate-ping"></div>
+            </div>
           </div>
           <div className="flex flex-col">
-            <span className="text-xl font-bold bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
+            <span className="text-2xl font-bold bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
               radiuAI
             </span>
-            <span className="text-xs text-sidebar-foreground/70 font-medium">
-              Professional Market Intelligence
+            <span className="text-xs text-slate-300/80 font-medium tracking-wide">
+              AI Market Intelligence
             </span>
           </div>
         </div>
       </SidebarHeader>
 
-      <SidebarContent className="bg-gradient-to-b from-sidebar to-sidebar/95">
-        <SidebarGroup>
-          <SidebarGroupLabel className="text-sidebar-foreground/80 font-semibold">
+      <SidebarContent className="bg-gradient-to-b from-slate-900/95 to-slate-800/95">
+        {/* Main Navigation */}
+        <SidebarGroup className="mt-4">
+          <SidebarGroupLabel className="text-slate-300/70 font-semibold text-xs uppercase tracking-wider px-4 mb-3">
             Navigation
           </SidebarGroupLabel>
           <SidebarGroupContent>
@@ -92,12 +128,33 @@ export function AppSidebar() {
                   <SidebarMenuButton
                     asChild
                     isActive={item.url === pathname}
-                    className="animate-fade-in-up hover:bg-sidebar-accent/10 transition-all duration-300"
-                    style={{ animationDelay: `${index * 0.1}s` }}
+                    className="group  relative  mb-1 rounded-xl transition-all duration-300 hover:bg-white/5 hover:shadow-lg hover:scale-[1.02] border border-transparent hover:border-white/10 animate-fade-in-up"
+                    style={{ animationDelay: `${index * 0.05}s` }}
                   >
-                    <a href={item.url}>
-                      <item.icon />
-                      <span>{item.title}</span>
+                    <a href={item.url} className="p-3 ">
+                      <div className="flex items-center gap-3">
+                        <div className={`p-2 rounded-lg bg-gradient-to-br from-slate-700 to-slate-600 group-hover:from-blue-500/20 group-hover:to-purple-500/20 transition-all duration-300 ${
+                          item.url === pathname ? 'from-blue-500/30 to-purple-500/30' : ''
+                        }`}>
+                          <item.icon className="h-4 w-4 text-slate-300 group-hover:text-white transition-colors" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-medium text-slate-200 group-hover:text-white transition-colors">
+                              {item.title}
+                            </span>
+                            {item.badge && (
+                              <Badge className={`text-[10px] px-1.5 py-0.5 rounded-full text-white border-0 ${item.badgeColor}`}>
+                                {item.badge}
+                              </Badge>
+                            )}
+                          </div>
+
+                        </div>
+                        {item.url === pathname && (
+                          <div className="w-1.5 h-1.5 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full animate-pulse"></div>
+                        )}
+                      </div>
                     </a>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -106,67 +163,170 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        <SidebarSeparator className="bg-gradient-to-r from-transparent via-sidebar-border to-transparent" />
-      </SidebarContent>
-      {user ? (
-        <SidebarFooter className="border-t border-sidebar-border bg-gradient-to-r from-sidebar to-sidebar/80">
-          <Dialog>
-            <DialogTrigger asChild>
-              <div className="flex items-center gap-2 cursor-pointer hover:bg-sidebar-accent/10 p-2 rounded-lg">
-                <Avatar className="h-10 w-10">
-                  <AvatarImage
-                    src={user?.picture}
-                    alt={user?.name}
-                    className="rounded-lg"
-                  />
-                  <AvatarFallback>
-                    {user?.name?.charAt(0).toUpperCase() || ""}
-                  </AvatarFallback>
-                </Avatar>
+        <SidebarSeparator className="my-4 bg-gradient-to-r from-transparent via-slate-700/50 to-transparent" />
 
-                <div>
-                  <p className="text-sm font-medium">{user?.name}</p>
+        {/* Tools Section */}
+        <SidebarGroup>
+          <SidebarGroupLabel className="text-slate-300/70 font-semibold text-xs uppercase tracking-wider px-4 mb-3">
+            Tools & Resources
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {tools.map((item, index) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={item.url === pathname}
+                    className="group relative mx-2 mb-1 rounded-xl transition-all duration-300 hover:bg-white/5 hover:shadow-lg border border-transparent hover:border-white/10"
+                  >
+                    <a href={item.url} className="py-3 px-3">
+                      <div className="flex items-center gap-3">
+                        <div className={`p-2 rounded-lg bg-gradient-to-br from-slate-700 to-slate-600 group-hover:from-green-500/20 group-hover:to-blue-500/20 transition-all duration-300 ${
+                          item.url === pathname ? 'from-green-500/30 to-blue-500/30' : ''
+                        }`}>
+                          <item.icon className="h-4 w-4 text-slate-300 group-hover:text-white transition-colors" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-medium text-slate-200 group-hover:text-white transition-colors">
+                              {item.title}
+                            </span>
+                            {item.badge && (
+                              <Badge className={`text-[10px] px-1.5 py-0.5 rounded-full text-white border-0 ${item.badgeColor}`}>
+                                {item.badge}
+                              </Badge>
+                            )}
+                          </div>
+                          <p className="text-xs text-slate-400 group-hover:text-slate-300 transition-colors truncate">
+                            {item.description}
+                          </p>
+                        </div>
+                      </div>
+                    </a>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        {/* Stats Section */}
+        <div className="mx-4 mt-6 p-4 rounded-xl bg-gradient-to-br from-slate-800/50 to-slate-700/30 border border-slate-700/50 backdrop-blur-sm">
+          <div className="text-center">
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <TrendingUp className="h-4 w-4 text-green-400" />
+              <span className="text-xs font-semibold text-green-400">PRO ACTIVE</span>
+            </div>
+            <p className="text-xs text-slate-400 mb-3">AI Analysis Ready</p>
+            <div className="flex justify-between text-xs">
+              <div className="text-center">
+                <div className="text-white font-bold">24/7</div>
+                <div className="text-slate-400">Monitoring</div>
+              </div>
+              <div className="text-center">
+                <div className="text-white font-bold">99.9%</div>
+                <div className="text-slate-400">Accuracy</div>
+              </div>
+              <div className="text-center">
+                <div className="text-white font-bold">AI</div>
+                <div className="text-slate-400">Powered</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </SidebarContent>
+
+      {/* Enhanced Footer with User Profile */}
+      {user ? (
+        <SidebarFooter className="border-t border-slate-700/50 bg-gradient-to-r from-slate-800 to-slate-800/80 backdrop-blur-sm">
+          <Dialog open={isOpen} onOpenChange={setIsOpen}>
+            <DialogTrigger asChild>
+              <div className="flex items-center gap-3 cursor-pointer hover:bg-white/5 p-3 rounded-xl transition-all duration-300 group border border-transparent hover:border-white/10 mx-2 my-2">
+ 
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-white truncate">
+                    {user?.name}
+                  </p>
+                  <p className="text-xs text-slate-400 truncate">
+                    {user?.email}
+                  </p>
+                  <div className="flex items-center gap-1 mt-1">
+                    <Shield className="h-3 w-3 text-blue-400" />
+                    <span className="text-xs text-slate-500">Verified Account</span>
+                  </div>
                 </div>
 
-                {user ? (
-                  <MoreHorizontal className="h-4 w-4 text-muted-foreground ml-auto" />
-                ) : (
-                  <div />
-                )}
+                <MoreHorizontal className="h-4 w-4 text-slate-400 group-hover:text-white transition-colors" />
               </div>
             </DialogTrigger>
 
-            {/* Modal content */}
-            <DialogContent className="sm:max-w-md">
+            {/* Enhanced Modal Content */}
+            <DialogContent className="sm:max-w-md bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700 rounded-2xl shadow-2xl">
               <DialogHeader>
-                <DialogTitle className="flex items-center gap-2">
-                  <SidebarSeparator className="bg-gradient-to-r from-transparent via-sidebar-border to-transparent" />
+                <DialogTitle className="flex items-center gap-3 p-2 border-b border-slate-700">
+                  {/* <Avatar className="h-12 w-12 rounded-xl">
+                    <AvatarImage
+                      src={user?.picture}
+                      alt={user?.name}
+                      className="rounded-xl"
+                    />
+                    <AvatarFallback className="rounded-xl  bg-gradient-to-br from-blue-500 to-purple-500 text-white font-bold">
+                      {user?.name?.charAt(0).toUpperCase() || "U"}
+                    </AvatarFallback>
+                  </Avatar> */}
+                  <h1 className="text-white">Options</h1>
                 </DialogTitle>
               </DialogHeader>
 
-              <div className="space-y-3 mt-4">
-                <Button variant="outline" className="w-full justify-start">
-                  <Settings className="mr-2 h-4 w-4" />
-                  Settings
-                </Button>
-                <Button variant="outline" className="w-full justify-start">
-                  <MessageSquare className="mr-2 h-4 w-4" />
-                  Contact Us
-                </Button>
-                <Button
-                  variant="destructive"
-                  className="w-full justify-start"
-                  onClick={signOut}
+              <div className="p-4 space-y-2">
+                <Button 
+                  variant="ghost" 
+                  className="w-full justify-start p-4 rounded-xl hover:bg-slate-700/50 transition-all duration-300 group"
+                  onClick={() => setIsOpen(false)}
                 >
-                  <LogOut className="mr-2 h-4 w-4" />
-                  Log out
+                  <Settings className="mr-3 h-4 w-4 text-slate-400 group-hover:text-blue-400 transition-colors" />
+                  <span className="text-slate-200 group-hover:text-white">Settings</span>
                 </Button>
+                <Button 
+                  variant="ghost" 
+                  className="w-full justify-start p-4 rounded-xl hover:bg-slate-700/50 transition-all duration-300 group"
+                  onClick={() => setIsOpen(false)}
+                >
+                  <HelpCircle className="mr-3 h-4 w-4 text-slate-400 group-hover:text-green-400 transition-colors" />
+                  <span className="text-slate-200 group-hover:text-white">Help & Support</span>
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  className="w-full justify-start p-4 rounded-xl hover:bg-slate-700/50 transition-all duration-300 group"
+                  onClick={() => setIsOpen(false)}
+                >
+                  <MessageSquare className="mr-3 h-4 w-4 text-slate-400 group-hover:text-purple-400 transition-colors" />
+                  <span className="text-slate-200 group-hover:text-white">Contact Us</span>
+                </Button>
+                
+                <div className="pt-2 border-t border-slate-700">
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start p-4 rounded-xl hover:bg-red-500/20 transition-all duration-300 group text-red-400 hover:text-red-300"
+                    onClick={() => {
+                      signOut();
+                      setIsOpen(false);
+                    }}
+                  >
+                    <LogOut className="mr-3 h-4 w-4" />
+                    <span>Log out</span>
+                  </Button>
+                </div>
               </div>
             </DialogContent>
           </Dialog>
         </SidebarFooter>
       ) : (
-        <div />
+        <div className="p-4">
+          <Button className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white rounded-xl py-3 font-semibold shadow-lg transition-all duration-300">
+            Sign In
+          </Button>
+        </div>
       )}
     </Sidebar>
   );

@@ -606,7 +606,7 @@ const CommonParameterControl = () => {
                 <Button
                   variant="ghost"
                   onClick={() => setShowModal(false)}
-                  disabled={loading}
+                  disabled={saveloading}
                 >
                   Cancel
                 </Button>
