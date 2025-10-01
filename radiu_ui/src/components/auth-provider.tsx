@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import type React from "react";
@@ -6,6 +7,7 @@ import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { Terminal, CheckCircle, XCircle, Loader2 } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
+import axios from "axios";
 
 interface User {
   id: string;
@@ -27,8 +29,16 @@ interface AuthContextType {
   setCurrentName: (name: string) => void;
   currentPicture: string;
   setCurrentPicture: (picture: string) => void;
-  verifyOtp: (email: string, otp: string, name?: string, picture?: string) => Promise<boolean>;
+  verifyOtp: (
+    email: string,
+    otp: string,
+    name?: string,
+    picture?: string
+  ) => Promise<boolean>;
   resendOtp: (email: string) => Promise<boolean>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  fetchSavedReports:any;
+  savedReports:any
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -40,7 +50,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [currentEmail, setCurrentEmail] = useState("");
   const [currentName, setCurrentName] = useState("");
   const [currentPicture, setCurrentPicture] = useState("");
-
+  const [savedReports, setSavedReports] = useState<any[]>([]);
+  const fetchSavedReports = async () => {
+    if (!user?.id) return;
+    try {
+      console.log(user);
+      const response = await axios.get(
+        `http://localhost:5000/api/reports/user/${user.id}`
+      );
+      setSavedReports(response.data || []);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to fetch saved reports.");
+    }
+  };
   useEffect(() => {
     const savedUser = localStorage.getItem("radiu_ai_user");
     if (savedUser) {
@@ -141,7 +164,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const verifyOtp = async (email: string, otp: string, name?: string, picture?: string): Promise<boolean> => {
+  const verifyOtp = async (
+    email: string,
+    otp: string,
+    name?: string,
+    picture?: string
+  ): Promise<boolean> => {
     try {
       const res = await fetch("http://localhost:5000/api/auth/verify-otp", {
         method: "POST",
@@ -156,7 +184,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (res.ok) {
         const data = await res.json();
-        
+
         const userData: User = {
           id: data.user.id,
           name: data.user.name,
@@ -170,7 +198,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         localStorage.setItem("radiu_ai_user", JSON.stringify(userData));
         localStorage.setItem("radiu_ai_token", data.token);
         setShowOtpModal(false);
-        
+
         return true;
       } else {
         const errorData = await res.json();
@@ -202,6 +230,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  
+  const sendOtp = async (email: string): Promise<boolean> => {
+    try {
+      const res = await fetch("http://localhost:5000/api/auth/send-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email,
+          name: currentName,
+          picture: currentPicture,
+        }),
+      });
+
+      return res.ok;
+    } catch (error) {
+      console.error("Failed to resend OTP:", error);
+      return false;
+    }
+  };
+
   const signIn = async () => {
     if (window.google) {
       console.log("[v0] Triggering Google Sign-in prompt");
@@ -215,29 +263,39 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setCurrentPicture("");
     localStorage.removeItem("radiu_ai_user");
     localStorage.removeItem("radiu_ai_token");
-    if (window.google) {
+
+    if (window.google && window.google.accounts && window.google.accounts.id) {
       window.google.accounts.id.disableAutoSelect();
+    } else {
+      console.warn("Google API not loaded yet, skipping disableAutoSelect()");
     }
-    window.location.reload();
+
+    // 🔑 Trigger re-render of GoogleAuth login button
+    const googleEvent = new Event("google-reinit");
+    window.dispatchEvent(googleEvent);
   };
 
   return (
-    <AuthContext.Provider value={{ 
-      user, 
-      isLoading, 
-      signIn, 
-      signOut,
-      showOtpModal,
-      setShowOtpModal,
-      currentEmail,
-      setCurrentEmail,
-      currentName,
-      setCurrentName,
-      currentPicture,
-      setCurrentPicture,
-      verifyOtp,
-      resendOtp
-    }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        isLoading,
+        signIn,
+        signOut,
+        showOtpModal,
+        setShowOtpModal,
+        currentEmail,
+        setCurrentEmail,
+        currentName,
+        setCurrentName,
+        currentPicture,
+        setCurrentPicture,
+        verifyOtp,
+        resendOtp,
+        fetchSavedReports,
+        savedReports
+      }}
+    >
       {children}
       <OtpVerificationModal />
     </AuthContext.Provider>
@@ -246,20 +304,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 // OTP Verification Modal Component
 function OtpVerificationModal() {
-  const { 
-    showOtpModal, 
-    setShowOtpModal, 
-    currentEmail, 
-    verifyOtp, 
+  const {
+    showOtpModal,
+    setShowOtpModal,
+    currentEmail,
+    verifyOtp,
     resendOtp,
     currentName,
-    currentPicture 
+    currentPicture,
   } = useAuth();
-  
+
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [isLoading, setIsLoading] = useState(false);
   const [isResending, setIsResending] = useState(false);
-  const [alert, setAlert] = useState<{ type: "success" | "error"; message: string } | null>(null);
+  const [alert, setAlert] = useState<{
+    type: "success" | "error";
+    message: string;
+  } | null>(null);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   useEffect(() => {
@@ -286,12 +347,15 @@ function OtpVerificationModal() {
     }
 
     // Auto-submit when all digits are entered
-    if (newOtp.every(digit => digit !== "") && index === 5) {
+    if (newOtp.every((digit) => digit !== "") && index === 5) {
       handleVerify();
     }
   };
 
-  const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (
+    index: number,
+    e: React.KeyboardEvent<HTMLInputElement>
+  ) => {
     if (e.key === "Backspace" && !otp[index] && index > 0) {
       inputRefs.current[index - 1]?.focus();
     }
@@ -301,7 +365,7 @@ function OtpVerificationModal() {
     e.preventDefault();
     const pastedData = e.clipboardData.getData("text");
     const pastedDigits = pastedData.replace(/\D/g, "").split("").slice(0, 6);
-    
+
     if (pastedDigits.length === 6) {
       const newOtp = [...otp];
       pastedDigits.forEach((digit, index) => {
@@ -321,10 +385,18 @@ function OtpVerificationModal() {
     setIsLoading(true);
     setAlert(null);
 
-    const success = await verifyOtp(currentEmail, otpString, currentName, currentPicture);
-    
+    const success = await verifyOtp(
+      currentEmail,
+      otpString,
+      currentName,
+      currentPicture
+    );
+
     if (success) {
-      setAlert({ type: "success", message: "OTP verified successfully! Redirecting..." });
+      setAlert({
+        type: "success",
+        message: "OTP verified successfully! Redirecting...",
+      });
       // Auto redirect after success
       setTimeout(() => {
         window.location.reload();
@@ -334,7 +406,7 @@ function OtpVerificationModal() {
       setOtp(["", "", "", "", "", ""]);
       inputRefs.current[0]?.focus();
     }
-    
+
     setIsLoading(false);
   };
 
@@ -343,13 +415,16 @@ function OtpVerificationModal() {
     setAlert(null);
 
     const success = await resendOtp(currentEmail);
-    
+
     if (success) {
       setAlert({ type: "success", message: "OTP resent successfully!" });
     } else {
-      setAlert({ type: "error", message: "Failed to resend OTP. Please try again." });
+      setAlert({
+        type: "error",
+        message: "Failed to resend OTP. Please try again.",
+      });
     }
-    
+
     setIsResending(false);
   };
 
@@ -370,11 +445,15 @@ function OtpVerificationModal() {
               <XCircle className="h-4 w-4" />
             </Button>
           </div>
-          
+
           <div className="flex items-center space-x-3 mb-4 p-3 bg-muted/50 rounded-lg">
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-foreground truncate">{currentName}</p>
-              <p className="text-sm text-muted-foreground truncate">{currentEmail}</p>
+              <p className="text-sm font-medium text-foreground truncate">
+                {currentName}
+              </p>
+              <p className="text-sm text-muted-foreground truncate">
+                {currentEmail}
+              </p>
             </div>
           </div>
 
@@ -383,13 +462,18 @@ function OtpVerificationModal() {
           </p>
 
           {alert && (
-            <Alert variant={alert.type === "success" ? "default" : "destructive"} className="mb-4">
+            <Alert
+              variant={alert.type === "success" ? "default" : "destructive"}
+              className="mb-4"
+            >
               {alert.type === "success" ? (
                 <CheckCircle className="h-4 w-4" />
               ) : (
                 <Terminal className="h-4 w-4" />
               )}
-              <AlertTitle>{alert.type === "success" ? "Success" : "Error"}</AlertTitle>
+              <AlertTitle>
+                {alert.type === "success" ? "Success" : "Error"}
+              </AlertTitle>
               <AlertDescription>{alert.message}</AlertDescription>
             </Alert>
           )}
@@ -414,7 +498,7 @@ function OtpVerificationModal() {
 
             <Button
               onClick={handleVerify}
-              disabled={isLoading || otp.some(digit => digit === "")}
+              disabled={isLoading || otp.some((digit) => digit === "")}
               className="w-full"
             >
               {isLoading ? (

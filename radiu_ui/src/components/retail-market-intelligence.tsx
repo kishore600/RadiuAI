@@ -357,7 +357,7 @@ function CompetitorAnalysis({
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="text-center p-4 bg-orange-50 rounded-lg border border-orange-200">
             <div className="text-2xl font-bold text-orange-600">
-              {data.data.total_competitors}
+              {data?.data.total_competitors}
             </div>
             <div className="text-sm text-orange-700">Total Competitors</div>
           </div>

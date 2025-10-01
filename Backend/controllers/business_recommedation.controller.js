@@ -1,4 +1,4 @@
-const fetch =  require("node-fetch");
+const axios = require("axios");
 
 const getBusinessRecommendation = async (req, res) => {
   try {
@@ -8,8 +8,8 @@ const getBusinessRecommendation = async (req, res) => {
       return res.status(400).json({ error: "Analysis data is required" });
     }
 
-      // Build the prompt
-      const prompt = `
+    // Build the prompt
+    const prompt = `
         You are a retail and cultural intelligence expert.
         Based on the following market, cultural, and competition data, give a clear business recommendation
         for whether to invest, expand, or avoid opening a new supermarket in this area.
@@ -24,13 +24,9 @@ const getBusinessRecommendation = async (req, res) => {
         `;
 
     // Call OpenAI API
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-      },
-      body: JSON.stringify({
+    const response = await axios.post(
+      "https://api.openai.com/v1/chat/completions",
+      {
         model: "gpt-4o-mini",
         messages: [
           { role: "system", content: "You are a business consultant AI." },
@@ -38,10 +34,16 @@ const getBusinessRecommendation = async (req, res) => {
         ],
         temperature: 0.2,
         max_tokens: 500,
-      }),
-    });
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+        },
+      }
+    );
 
-    const data = await response.json();
+    const data = response.data;
 
     if (data.error) {
       return res.status(500).json({ error: data.error.message });
@@ -60,4 +62,4 @@ const getBusinessRecommendation = async (req, res) => {
   }
 };
 
-module.exports = {getBusinessRecommendation}
+module.exports = { getBusinessRecommendation };

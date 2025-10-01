@@ -1,10 +1,2187 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+"use client";
+
+import { useAuth } from "@/components/auth-provider";
+import { useEffect, useState } from "react";
+
 export default function ProfilePage() {
+  const { user, fetchSavedReports, savedReports } = useAuth();
+  const [activeTab, setActiveTab] = useState("profile");
+  const [expandedReport, setExpandedReport] = useState<string | null>(null);
+  const [selectedSection, setSelectedSection] = useState<string | null>(null);
+
+  useEffect(() => {
+    console.log("in");
+    fetchSavedReports();
+  }, [user]);
+
+  const toggleReport = (reportId: string) => {
+    setExpandedReport(expandedReport === reportId ? null : reportId);
+    setSelectedSection(null);
+  };
+
+  const toggleSection = (section: string) => {
+    setSelectedSection(selectedSection === section ? null : section);
+  };
+  const handleExpandReport = (reportId: string, report: any) => {
+    if (expandedReport === reportId) {
+      setExpandedReport(null);
+    } else {
+      setExpandedReport(reportId);
+
+      // Define priority order
+      const sectionOrder = [
+        "market-intel",
+        "opportunity",
+        "cultural",
+        "recommendation",
+      ];
+
+      // Find first section that actually has data
+      const defaultSection =
+        sectionOrder.find((section) => {
+          if (section === "market-intel") return report.marketIntel?.length > 0;
+          if (section === "opportunity") return report.opportunity?.length > 0;
+          if (section === "cultural") return report.cultural?.length > 0;
+          if (section === "recommendation")
+            return report.recommendation?.length > 0;
+          return false;
+        }) || "market-intel"; // fallback if none found
+
+      setSelectedSection(defaultSection);
+    }
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
+  const getScoreColor = (score: number) => {
+    if (score >= 80) return "text-green-600";
+    if (score >= 60) return "text-yellow-600";
+    return "text-red-600";
+  };
+
+  const getScoreBgColor = (score: number) => {
+    if (score >= 80) return "bg-green-100";
+    if (score >= 60) return "bg-yellow-100";
+    return "bg-red-100";
+  };
+
+  const getRatingColor = (rating: string) => {
+    if (rating.includes("EXCELLENT") || rating.includes("Excellent"))
+      return "bg-green-100 text-green-800";
+    if (rating.includes("Moderate")) return "bg-yellow-100 text-yellow-800";
+    if (rating.includes("Avoid")) return "bg-red-100 text-red-800";
+    return "bg-gray-100 text-gray-800";
+  };
+
+  if (expandedReport) {
+    setExpandedReport;
+  }
+
+  const renderMarketIntelligence = (report: any) => {
+    const intel = report.data.retailMarketIntelligence;
+    if (!intel) return null;
+
+    return (
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl p-6 border border-indigo-200">
+          <div className="flex items-center space-x-4">
+            <div className="flex items-center justify-center w-12 h-12 bg-white rounded-xl shadow-sm border border-indigo-200">
+              <svg
+                className="w-6 h-6 text-indigo-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                />
+              </svg>
+            </div>
+            <div>
+              <h3 className="text-xl font-bold text-gray-900">
+                Retail Market Intelligence
+              </h3>
+              <p className="text-indigo-700">
+                Comprehensive market analysis and competitive landscape
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Traffic Score */}
+        {intel.Traffic_Score && (
+          <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+            <div className="bg-gradient-to-r from-blue-50 to-cyan-50 px-6 py-4 border-b border-blue-200">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                    <svg
+                      className="w-5 h-5 text-blue-600"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
+                      />
+                    </svg>
+                  </div>
+                  <div>
+                    <h4 className="text-lg font-semibold text-gray-900">
+                      Traffic Analysis
+                    </h4>
+                    <p className="text-sm text-blue-700">
+                      Foot traffic and location assessment
+                    </p>
+                  </div>
+                </div>
+                <div
+                  className={`text-2xl font-bold ${getScoreColor(
+                    intel.Traffic_Score.traffic_score * 10
+                  )}`}
+                >
+                  {intel.Traffic_Score.traffic_score}/10
+                </div>
+              </div>
+            </div>
+            <div className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="text-center p-4 bg-blue-50 rounded-lg">
+                  <div className="text-3xl font-bold text-blue-600 mb-2">
+                    {intel.Traffic_Score.traffic_score}/10
+                  </div>
+                  <div className="text-sm text-blue-700">Traffic Score</div>
+                  <div className="w-full bg-blue-200 rounded-full h-2 mt-2">
+                    <div
+                      className="bg-blue-600 h-2 rounded-full"
+                      style={{
+                        width: `${intel.Traffic_Score.traffic_score * 10}%`,
+                      }}
+                    ></div>
+                  </div>
+                </div>
+                <div className="text-center p-4 bg-gray-50 rounded-lg">
+                  <div className="flex items-center justify-center space-x-2 mb-2">
+                    <svg
+                      className="w-5 h-5 text-gray-600"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                      />
+                    </svg>
+                    <span className="text-sm font-medium text-gray-900">
+                      Location Coordinates
+                    </span>
+                  </div>
+                  <div className="text-lg font-mono text-gray-700">
+                    {intel.Traffic_Score.coordinates.latitude.toFixed(4)}
+                  </div>
+                  <div className="text-lg font-mono text-gray-700">
+                    {intel.Traffic_Score.coordinates.longitude.toFixed(4)}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Market Factor */}
+        {intel.Market_Factor && (
+          <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+            <div className="bg-gradient-to-r from-green-50 to-emerald-50 px-6 py-4 border-b border-green-200">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                    <svg
+                      className="w-5 h-5 text-green-600"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                      />
+                    </svg>
+                  </div>
+                  <div>
+                    <h4 className="text-lg font-semibold text-gray-900">
+                      Market Factor Analysis
+                    </h4>
+                    <p className="text-sm text-green-700">
+                      Comprehensive market condition assessment
+                    </p>
+                  </div>
+                </div>
+                <div
+                  className={`text-2xl font-bold ${getScoreColor(
+                    intel.Market_Factor.market_factor * 100
+                  )}`}
+                >
+                  {(intel.Market_Factor.market_factor * 100).toFixed(1)}%
+                </div>
+              </div>
+            </div>
+            <div className="p-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <h5 className="font-semibold text-gray-900">
+                      Market Score
+                    </h5>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-sm text-gray-600">Confidence:</span>
+                      <span className="font-semibold text-green-600">
+                        {(intel.Market_Factor.confidence * 100).toFixed(0)}%
+                      </span>
+                    </div>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-3">
+                    <div
+                      className={`h-3 rounded-full ${getScoreColor(
+                        intel.Market_Factor.market_factor * 100
+                      ).replace("text-", "bg-")}`}
+                      style={{
+                        width: `${intel.Market_Factor.market_factor * 100}%`,
+                      }}
+                    ></div>
+                  </div>
+                </div>
+                <div>
+                  <h5 className="font-semibold text-gray-900 mb-3">
+                    Component Breakdown
+                  </h5>
+                  <div className="space-y-3">
+                    {Object.entries(intel.Market_Factor.components).map(
+                      ([key, value]) => (
+                        <div
+                          key={key}
+                          className="flex items-center justify-between"
+                        >
+                          <span className="text-sm text-gray-600 capitalize">
+                            {key.replace("_", " ")}
+                          </span>
+                          <div className="flex items-center space-x-2">
+                            <span className="font-semibold text-gray-900">
+                              {value as number}
+                            </span>
+                            <span className="text-xs text-gray-500">
+                              (
+                              {(intel.Market_Factor.weights[key] * 100).toFixed(
+                                0
+                              )}
+                              %)
+                            </span>
+                          </div>
+                        </div>
+                      )
+                    )}
+                  </div>
+                </div>
+              </div>
+              {intel.Market_Factor.notes && (
+                <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                  <div className="flex items-start space-x-3">
+                    <svg
+                      className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                    <div>
+                      <h6 className="font-semibold text-blue-800">
+                        Market Insights
+                      </h6>
+                      <p className="text-blue-700 mt-1 text-sm leading-relaxed">
+                        {intel.Market_Factor.notes}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Population Analysis */}
+        {intel.Population_Analysis && (
+          <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+            <div className="bg-gradient-to-r from-purple-50 to-pink-50 px-6 py-4 border-b border-purple-200">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                  <svg
+                    className="w-5 h-5 text-purple-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                    />
+                  </svg>
+                </div>
+                <div>
+                  <h4 className="text-lg font-semibold text-gray-900">
+                    Demographic Analysis
+                  </h4>
+                  <p className="text-sm text-purple-700">
+                    Population and competitive landscape
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="p-6">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                <div className="text-center p-4 bg-purple-50 rounded-lg">
+                  <div className="text-2xl font-bold text-purple-600">
+                    {intel.Population_Analysis.population?.toLocaleString()}
+                  </div>
+                  <div className="text-sm text-purple-700">Population</div>
+                </div>
+                <div className="text-center p-4 bg-red-50 rounded-lg">
+                  <div className="text-2xl font-bold text-red-600">
+                    {intel.Population_Analysis.competition_count}
+                  </div>
+                  <div className="text-sm text-red-700">Competitors</div>
+                </div>
+                <div className="text-center p-4 bg-blue-50 rounded-lg">
+                  <div className="text-2xl font-bold text-blue-600">
+                    {intel.Population_Analysis.multiplier}
+                  </div>
+                  <div className="text-sm text-blue-700">Multiplier</div>
+                </div>
+                <div className="text-center p-4 bg-green-50 rounded-lg">
+                  <div className="text-2xl font-bold text-green-600">
+                    {intel.Population_Analysis.income_index}
+                  </div>
+                  <div className="text-sm text-green-700">Income Index</div>
+                </div>
+              </div>
+              {intel.Population_Analysis.notes && (
+                <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                  <div className="flex items-start space-x-3">
+                    <svg
+                      className="w-5 h-5 text-yellow-600 mt-0.5 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z"
+                      />
+                    </svg>
+                    <p className="text-yellow-700 text-sm leading-relaxed">
+                      {intel.Population_Analysis.notes}
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Income Data */}
+        {intel.Income_Data && (
+          <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+            <div className="bg-gradient-to-r from-emerald-50 to-teal-50 px-6 py-4 border-b border-emerald-200">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center">
+                  <svg
+                    className="w-5 h-5 text-emerald-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"
+                    />
+                  </svg>
+                </div>
+                <div>
+                  <h4 className="text-lg font-semibold text-gray-900">
+                    Income Trends
+                  </h4>
+                  <p className="text-sm text-emerald-700">
+                    Historical income data and projections
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {intel.Income_Data.data.map((income: any, index: number) => (
+                  <div
+                    key={income.year}
+                    className="group p-4 bg-white border border-emerald-100 rounded-lg hover:border-emerald-300 hover:shadow-sm transition-all duration-200"
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="font-semibold text-gray-900">
+                        {income.year}
+                      </span>
+                      <div
+                        className={`w-6 h-6 rounded-full flex items-center justify-center ${
+                          income.confidence_score >= 90
+                            ? "bg-green-100 text-green-600"
+                            : income.confidence_score >= 80
+                            ? "bg-yellow-100 text-yellow-600"
+                            : "bg-red-100 text-red-600"
+                        }`}
+                      >
+                        <span className="text-xs font-bold">
+                          {income.confidence_score}%
+                        </span>
+                      </div>
+                    </div>
+                    <div className="text-2xl font-bold text-emerald-600">
+                      $
+                      {income.value.toLocaleString(undefined, {
+                        maximumFractionDigits: 0,
+                      })}
+                    </div>
+                    <div className="text-xs text-gray-500 mt-1">
+                      Average Income
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Competitors */}
+        {intel.Existing_Competitors && (
+          <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+            <div className="bg-gradient-to-r from-orange-50 to-red-50 px-6 py-4 border-b border-orange-200">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
+                  <svg
+                    className="w-5 h-5 text-orange-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                    />
+                  </svg>
+                </div>
+                <div>
+                  <h4 className="text-lg font-semibold text-gray-900">
+                    Competitive Landscape
+                  </h4>
+                  <p className="text-sm text-orange-700">
+                    Market saturation and competitor analysis
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="p-6">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                <div className="text-center p-4 bg-blue-50 rounded-lg">
+                  <div className="text-2xl font-bold text-blue-600">
+                    {intel.Existing_Competitors.data.total_competitors}
+                  </div>
+                  <div className="text-sm text-blue-700">Total Competitors</div>
+                </div>
+                <div className="text-center p-4 bg-green-50 rounded-lg">
+                  <div className="text-2xl font-bold text-green-600">
+                    {Math.round(
+                      intel.Existing_Competitors.data.statistics
+                        .average_distance
+                    )}
+                    m
+                  </div>
+                  <div className="text-sm text-green-700">Average Distance</div>
+                </div>
+                <div className="text-center p-4 bg-purple-50 rounded-lg">
+                  <div className="text-2xl font-bold text-purple-600">
+                    {intel.Existing_Competitors.data.statistics.business_density.toFixed(
+                      1
+                    )}
+                  </div>
+                  <div className="text-sm text-purple-700">
+                    Business Density
+                  </div>
+                </div>
+                <div className="text-center p-4 bg-red-50 rounded-lg">
+                  <div className="text-2xl font-bold text-red-600">
+                    {Math.round(
+                      intel.Existing_Competitors.data.statistics.closest
+                        .distance
+                    )}
+                    m
+                  </div>
+                  <div className="text-sm text-red-700">Nearest Competitor</div>
+                </div>
+              </div>
+
+              <div className="border border-gray-200 rounded-lg overflow-hidden">
+                <div className="bg-gray-50 px-4 py-3 border-b border-gray-200">
+                  <h5 className="font-semibold text-gray-900">
+                    Top Competitors
+                  </h5>
+                </div>
+                <div className="max-h-80 overflow-y-auto">
+                  <table className="w-full">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                          Name
+                        </th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                          Distance
+                        </th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                          Address
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-200">
+                      {intel.Existing_Competitors.data.competitors
+                        .slice(0, 10)
+                        .map((competitor: any, index: number) => (
+                          <tr
+                            key={index}
+                            className="hover:bg-gray-50 transition-colors"
+                          >
+                            <td className="px-4 py-3 text-sm font-medium text-gray-900">
+                              {competitor.name}
+                            </td>
+                            <td className="px-4 py-3 text-sm text-gray-600">
+                              {Math.round(competitor.distance)}m
+                            </td>
+                            <td className="px-4 py-3 text-sm text-gray-600">
+                              {competitor.address}
+                            </td>
+                          </tr>
+                        ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Cultural Fit */}
+        {intel.Cultural_Fit && (
+          <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+            <div className="bg-gradient-to-r from-pink-50 to-rose-50 px-6 py-4 border-b border-pink-200">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-pink-100 rounded-lg flex items-center justify-center">
+                  <svg
+                    className="w-5 h-5 text-pink-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                </div>
+                <div>
+                  <h4 className="text-lg font-semibold text-gray-900">
+                    Cultural Fit Analysis
+                  </h4>
+                  <p className="text-sm text-pink-700">
+                    Local cultural alignment and sentiment
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div className="text-center p-6 bg-pink-50 rounded-lg">
+                  <div
+                    className={`text-3xl font-bold ${getScoreColor(
+                      intel.Cultural_Fit.cultural_fit_score * 100
+                    )}`}
+                  >
+                    {(intel.Cultural_Fit.cultural_fit_score * 100).toFixed(1)}%
+                  </div>
+                  <div className="text-sm text-pink-700 mt-1">
+                    Cultural Fit Score
+                  </div>
+                </div>
+                <div className="text-center p-6 bg-purple-50 rounded-lg">
+                  <div className="text-3xl font-bold text-purple-600">
+                    {intel.Cultural_Fit.sentiment_ratio}
+                  </div>
+                  <div className="text-sm text-purple-700 mt-1">
+                    Sentiment Ratio
+                  </div>
+                </div>
+              </div>
+              <div className="space-y-3">
+                {intel.Cultural_Fit.insights.map(
+                  (insight: string, index: number) => (
+                    <div
+                      key={index}
+                      className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg"
+                    >
+                      <div className="w-2 h-2 bg-pink-500 rounded-full mt-2 flex-shrink-0"></div>
+                      <p className="text-gray-700 text-sm leading-relaxed">
+                        {insight}
+                      </p>
+                    </div>
+                  )
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  const renderMarketOpportunity = (report: any) => {
+    const opportunity = report.data.marketOpportunityScore;
+    if (!opportunity) return null;
+
+    const overallScore = opportunity.scores.overall;
+
+    return (
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl p-6 border border-blue-200">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center justify-center w-12 h-12 bg-white rounded-xl shadow-sm border border-blue-200">
+                <svg
+                  className="w-6 h-6 text-blue-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                  />
+                </svg>
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-gray-900">
+                  Market Opportunity Analysis
+                </h3>
+                <p className="text-blue-700">
+                  Comprehensive assessment of business potential
+                </p>
+              </div>
+            </div>
+            <div
+              className={`px-4 py-2 rounded-full text-lg font-bold ${getScoreColor(
+                overallScore
+              )} ${getScoreBgColor(overallScore)} border`}
+            >
+              {overallScore.toFixed(1)} / 100
+            </div>
+          </div>
+        </div>
+
+        {/* Overall Rating */}
+        <div
+          className={`p-6 rounded-xl border-2 ${
+            overallScore >= 80
+              ? "bg-green-50 border-green-200"
+              : overallScore >= 60
+              ? "bg-yellow-50 border-yellow-200"
+              : "bg-red-50 border-red-200"
+          }`}
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div
+                className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                  overallScore >= 80
+                    ? "bg-green-100 text-green-600"
+                    : overallScore >= 60
+                    ? "bg-yellow-100 text-yellow-600"
+                    : "bg-red-100 text-red-600"
+                }`}
+              >
+                {overallScore >= 80 ? (
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                ) : overallScore >= 60 ? (
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z"
+                    />
+                  </svg>
+                ) : (
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                )}
+              </div>
+              <div>
+                <h4 className="text-lg font-semibold text-gray-900">
+                  Overall Rating
+                </h4>
+                <p
+                  className={`text-sm font-medium ${
+                    overallScore >= 80
+                      ? "text-green-700"
+                      : overallScore >= 60
+                      ? "text-yellow-700"
+                      : "text-red-700"
+                  }`}
+                >
+                  {opportunity.rating}
+                </p>
+              </div>
+            </div>
+            <div className="text-right">
+              <div className="text-2xl font-bold text-gray-900">
+                {overallScore.toFixed(1)}
+              </div>
+              <div className="text-sm text-gray-600">Overall Score</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Location Details */}
+        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+          <div className="bg-gradient-to-r from-gray-50 to-blue-50 px-6 py-4 border-b border-gray-200">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                <svg
+                  className="w-5 h-5 text-blue-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                  />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                  />
+                </svg>
+              </div>
+              <div>
+                <h4 className="text-lg font-semibold text-gray-900">
+                  Location Analysis
+                </h4>
+                <p className="text-sm text-blue-700">
+                  Geographic and business context
+                </p>
+              </div>
+            </div>
+          </div>
+          <div className="p-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="text-center p-4 bg-gray-50 rounded-lg">
+                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <svg
+                    className="w-6 h-6 text-blue-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                    />
+                  </svg>
+                </div>
+                <div className="font-semibold text-gray-900">
+                  {opportunity.location.name}
+                </div>
+                <div className="text-sm text-gray-600">Location</div>
+              </div>
+              <div className="text-center p-4 bg-gray-50 rounded-lg">
+                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <svg
+                    className="w-6 h-6 text-green-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                    />
+                  </svg>
+                </div>
+                <div className="font-semibold text-gray-900 capitalize">
+                  {opportunity.location.business_type}
+                </div>
+                <div className="text-sm text-gray-600">Business Type</div>
+              </div>
+              <div className="text-center p-4 bg-gray-50 rounded-lg">
+                <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <svg
+                    className="w-6 h-6 text-purple-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"
+                    />
+                  </svg>
+                </div>
+                <div className="font-semibold text-gray-900">
+                  {opportunity.location.radius_km} km
+                </div>
+                <div className="text-sm text-gray-600">Analysis Radius</div>
+              </div>
+              <div className="text-center p-4 bg-gray-50 rounded-lg">
+                <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <svg
+                    className="w-6 h-6 text-orange-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                </div>
+                <div className="font-semibold text-gray-900 text-sm">
+                  {opportunity.location.latitude.toFixed(4)},{" "}
+                  {opportunity.location.longitude.toFixed(4)}
+                </div>
+                <div className="text-sm text-gray-600">Coordinates</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Detailed Scores */}
+        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+          <div className="bg-gradient-to-r from-indigo-50 to-purple-50 px-6 py-4 border-b border-indigo-200">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
+                <svg
+                  className="w-5 h-5 text-indigo-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+              </div>
+              <div>
+                <h4 className="text-lg font-semibold text-gray-900">
+                  Market Opportunity Scores
+                </h4>
+                <p className="text-sm text-indigo-700">
+                  Detailed breakdown by category
+                </p>
+              </div>
+            </div>
+          </div>
+          <div className="p-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {Object.entries(opportunity.scores).map(([key, value]) => (
+                <div
+                  key={key}
+                  className="group p-4 bg-white border border-gray-200 rounded-xl hover:border-indigo-300 hover:shadow-md transition-all duration-200"
+                >
+                  <div className="flex items-center justify-between mb-3">
+                    <h5 className="font-semibold text-gray-900 capitalize">
+                      {key.replace("_", " ")}
+                    </h5>
+                    <div
+                      className={`w-8 h-8 rounded-full flex items-center justify-center ${getScoreBgColor(
+                        value as number
+                      )}`}
+                    >
+                      <span
+                        className={`text-sm font-bold ${getScoreColor(
+                          value as number
+                        )}`}
+                      >
+                        {(value as number).toFixed(0)}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div
+                      className={`h-2 rounded-full ${
+                        (value as number) >= 80
+                          ? "bg-green-500"
+                          : (value as number) >= 60
+                          ? "bg-yellow-500"
+                          : "bg-red-500"
+                      }`}
+                      style={{ width: `${value as number}%` }}
+                    ></div>
+                  </div>
+                  <div className="flex justify-between text-xs text-gray-500 mt-2">
+                    <span>0</span>
+                    <span>50</span>
+                    <span>100</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Opportunities */}
+        {opportunity.opportunities && opportunity.opportunities.length > 0 && (
+          <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+            <div className="bg-gradient-to-r from-green-50 to-emerald-50 px-6 py-4 border-b border-green-200">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                  <svg
+                    className="w-5 h-5 text-green-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M13 10V3L4 14h7v7l9-11h-7z"
+                    />
+                  </svg>
+                </div>
+                <div>
+                  <h4 className="text-lg font-semibold text-gray-900">
+                    Growth Opportunities
+                  </h4>
+                  <p className="text-sm text-green-700">
+                    Potential areas for business success
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {opportunity.opportunities.map((opp: string, index: number) => (
+                  <div
+                    key={index}
+                    className="group flex items-start space-x-4 p-4 bg-green-50 border border-green-200 rounded-lg hover:border-green-300 hover:shadow-sm transition-all duration-200"
+                  >
+                    <div className="flex-shrink-0 w-8 h-8 bg-green-100 rounded-full flex items-center justify-center group-hover:bg-green-200 transition-colors">
+                      <svg
+                        className="w-4 h-4 text-green-600"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M5 13l4 4L19 7"
+                        />
+                      </svg>
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-gray-700 leading-relaxed">{opp}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Risk Factors */}
+        {opportunity.risk_factors && opportunity.risk_factors.length > 0 && (
+          <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+            <div className="bg-gradient-to-r from-red-50 to-pink-50 px-6 py-4 border-b border-red-200">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                  <svg
+                    className="w-5 h-5 text-red-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z"
+                    />
+                  </svg>
+                </div>
+                <div>
+                  <h4 className="text-lg font-semibold text-gray-900">
+                    Risk Factors
+                  </h4>
+                  <p className="text-sm text-red-700">
+                    Areas requiring attention and mitigation
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {opportunity.risk_factors.map((risk: string, index: number) => (
+                  <div
+                    key={index}
+                    className="group flex items-start space-x-4 p-4 bg-red-50 border border-red-200 rounded-lg hover:border-red-300 hover:shadow-sm transition-all duration-200"
+                  >
+                    <div className="flex-shrink-0 w-8 h-8 bg-red-100 rounded-full flex items-center justify-center group-hover:bg-red-200 transition-colors">
+                      <svg
+                        className="w-4 h-4 text-red-600"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M6 18L18 6M6 6l12 12"
+                        />
+                      </svg>
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-gray-700 leading-relaxed">{risk}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Summary Card */}
+        <div className="bg-gradient-to-r from-gray-50 to-blue-50 rounded-xl p-6 border border-gray-300">
+          <div className="flex items-center justify-between">
+            <div>
+              <h4 className="text-lg font-semibold text-gray-900 mb-2">
+                Investment Readiness
+              </h4>
+              <p className="text-gray-600">
+                {overallScore >= 80
+                  ? "High potential for success with strong market conditions"
+                  : overallScore >= 60
+                  ? "Moderate opportunity with some areas for improvement"
+                  : "Significant challenges identified - careful consideration required"}
+              </p>
+            </div>
+            <div className="text-right">
+              <div
+                className={`text-2xl font-bold ${getScoreColor(overallScore)}`}
+              >
+                {overallScore >= 80
+                  ? "Strong"
+                  : overallScore >= 60
+                  ? "Moderate"
+                  : "Weak"}
+              </div>
+              <div className="text-sm text-gray-600">Confidence Level</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+  const renderCulturalIntelligence = (report: any) => {
+    const cultural = report.data.culturalIntelligence;
+    if (!cultural) return null;
+
+    return (
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-6 border border-purple-200">
+          <div className="flex items-center space-x-4">
+            <div className="flex items-center justify-center w-12 h-12 bg-white rounded-xl shadow-sm border border-purple-200">
+              <svg
+                className="w-6 h-6 text-purple-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                />
+              </svg>
+            </div>
+            <div>
+              <h3 className="text-xl font-bold text-gray-900">
+                Cultural Intelligence
+              </h3>
+              <p className="text-purple-700">
+                Local insights and cultural adaptation strategies
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Menu Recommendations */}
+        {cultural.menu_recommendations && (
+          <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+            <div className="bg-gradient-to-r from-green-50 to-emerald-50 px-6 py-4 border-b border-green-200">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                  <svg
+                    className="w-5 h-5 text-green-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 8h6m-6 4h6m-6 4h6"
+                    />
+                  </svg>
+                </div>
+                <div>
+                  <h4 className="text-lg font-semibold text-gray-900">
+                    Menu Recommendations
+                  </h4>
+                  <p className="text-sm text-green-700">
+                    Curated suggestions for local preferences
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="p-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                {cultural.menu_recommendations.map(
+                  (recommendation: string, index: number) => (
+                    <div
+                      key={index}
+                      className="group flex items-start space-x-4 p-4 bg-white border border-green-100 rounded-lg hover:border-green-300 hover:shadow-sm transition-all duration-200"
+                    >
+                      <div className="flex-shrink-0 w-8 h-8 bg-green-100 rounded-full flex items-center justify-center group-hover:bg-green-200 transition-colors">
+                        <span className="text-sm font-semibold text-green-700">
+                          {index + 1}
+                        </span>
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-gray-700 leading-relaxed">
+                          {recommendation}
+                        </p>
+                      </div>
+                      <div className="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <svg
+                          className="w-4 h-4 text-green-400"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M5 13l4 4L19 7"
+                          />
+                        </svg>
+                      </div>
+                    </div>
+                  )
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Marketing Ideas */}
+        {cultural.marketing_ideas && (
+          <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+            <div className="bg-gradient-to-r from-blue-50 to-cyan-50 px-6 py-4 border-b border-blue-200">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                  <svg
+                    className="w-5 h-5 text-blue-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"
+                    />
+                  </svg>
+                </div>
+                <div>
+                  <h4 className="text-lg font-semibold text-gray-900">
+                    Marketing Strategies
+                  </h4>
+                  <p className="text-sm text-blue-700">
+                    Creative ideas to engage the local community
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="p-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                {cultural.marketing_ideas.map((idea: string, index: number) => (
+                  <div
+                    key={index}
+                    className="group flex items-start space-x-4 p-4 bg-white border border-blue-100 rounded-lg hover:border-blue-300 hover:shadow-sm transition-all duration-200"
+                  >
+                    <div className="flex-shrink-0 w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center group-hover:bg-blue-200 transition-colors">
+                      <svg
+                        className="w-4 h-4 text-blue-600"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M13 10V3L4 14h7v7l9-11h-7z"
+                        />
+                      </svg>
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-gray-700 leading-relaxed">{idea}</p>
+                    </div>
+                    <div className="flex-shrink-0 text-blue-400 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
+                        />
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                      </svg>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Local Events */}
+        {cultural.local_festivals_or_events && (
+          <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+            <div className="bg-gradient-to-r from-purple-50 to-fuchsia-50 px-6 py-4 border-b border-purple-200">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                  <svg
+                    className="w-5 h-5 text-purple-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z"
+                    />
+                  </svg>
+                </div>
+                <div>
+                  <h4 className="text-lg font-semibold text-gray-900">
+                    Local Events & Festivals
+                  </h4>
+                  <p className="text-sm text-purple-700">
+                    Key community gatherings and celebrations
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {cultural.local_festivals_or_events.map(
+                  (event: string, index: number) => (
+                    <div
+                      key={index}
+                      className="group p-4 bg-white border border-purple-100 rounded-lg hover:border-purple-300 hover:shadow-sm transition-all duration-200"
+                    >
+                      <div className="flex items-center space-x-3 mb-3">
+                        <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center group-hover:bg-purple-200 transition-colors">
+                          <span className="text-sm font-semibold text-purple-700">
+                            {index + 1}
+                          </span>
+                        </div>
+                        <div className="w-8 h-8 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full flex items-center justify-center">
+                          <svg
+                            className="w-4 h-4 text-white"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
+                            />
+                          </svg>
+                        </div>
+                      </div>
+                      <p className="text-gray-700 font-medium leading-relaxed">
+                        {event}
+                      </p>
+                    </div>
+                  )
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Cultural Tips */}
+        {cultural.cultural_tips && (
+          <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+            <div className="bg-gradient-to-r from-orange-50 to-amber-50 px-6 py-4 border-b border-orange-200">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
+                  <svg
+                    className="w-5 h-5 text-orange-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                </div>
+                <div>
+                  <h4 className="text-lg font-semibold text-gray-900">
+                    Cultural Best Practices
+                  </h4>
+                  <p className="text-sm text-orange-700">
+                    Essential tips for cultural integration
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="p-6">
+              <div className="space-y-4">
+                {cultural.cultural_tips.map((tip: string, index: number) => (
+                  <div
+                    key={index}
+                    className="group flex items-start space-x-4 p-4 bg-white border border-orange-100 rounded-lg hover:border-orange-300 hover:shadow-sm transition-all duration-200"
+                  >
+                    <div className="flex-shrink-0 w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center group-hover:bg-orange-200 transition-colors">
+                      <svg
+                        className="w-4 h-4 text-orange-600"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                        />
+                      </svg>
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-gray-700 leading-relaxed">{tip}</p>
+                    </div>
+                    <div className="flex-shrink-0 text-orange-400 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <svg
+                        className="w-4 h-4"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Summary Stats */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="bg-white p-4 rounded-xl border border-gray-200 text-center">
+            <div className="text-2xl font-bold text-green-600">
+              {cultural.menu_recommendations?.length || 0}
+            </div>
+            <div className="text-sm text-gray-600">Menu Ideas</div>
+          </div>
+          <div className="bg-white p-4 rounded-xl border border-gray-200 text-center">
+            <div className="text-2xl font-bold text-blue-600">
+              {cultural.marketing_ideas?.length || 0}
+            </div>
+            <div className="text-sm text-gray-600">Marketing Strategies</div>
+          </div>
+          <div className="bg-white p-4 rounded-xl border border-gray-200 text-center">
+            <div className="text-2xl font-bold text-purple-600">
+              {cultural.local_festivals_or_events?.length || 0}
+            </div>
+            <div className="text-sm text-gray-600">Local Events</div>
+          </div>
+          <div className="bg-white p-4 rounded-xl border border-gray-200 text-center">
+            <div className="text-2xl font-bold text-orange-600">
+              {cultural.cultural_tips?.length || 0}
+            </div>
+            <div className="text-sm text-gray-600">Cultural Tips</div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const renderBusinessRecommendation = (report: any) => {
+    const recommendation = report.data.businessRecommendation;
+    if (!recommendation) return null;
+
+    const paragraphs = recommendation.recommendation
+      .split("\n")
+      .filter((p: string) => p.trim());
+
+    return (
+      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+        {/* Header */}
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 px-6 py-4 border-b border-gray-200">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="flex items-center justify-center w-10 h-10 bg-white rounded-lg shadow-sm border border-gray-200">
+                <svg
+                  className="w-6 h-6 text-blue-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900">
+                  Business Recommendation
+                </h3>
+                <p className="text-sm text-gray-600">
+                  Based on comprehensive market analysis
+                </p>
+              </div>
+            </div>
+            <div
+              className={`px-3 py-1 rounded-full text-sm font-medium ${
+                recommendation.recommendation.includes("**Avoid**")
+                  ? "bg-red-100 text-red-800 border border-red-200"
+                  : recommendation.recommendation.includes("**Moderate**")
+                  ? "bg-yellow-100 text-yellow-800 border border-yellow-200"
+                  : "bg-green-100 text-green-800 border border-green-200"
+              }`}
+            >
+              {recommendation.recommendation.includes("**Avoid**")
+                ? "Not Recommended"
+                : recommendation.recommendation.includes("**Moderate**")
+                ? "Moderate Risk"
+                : "Recommended"}
+            </div>
+          </div>
+        </div>
+
+        {/* Main Content */}
+        <div className="p-6 space-y-6">
+          {/* Final Recommendation Card */}
+          <div
+            className={`p-4 rounded-lg border-2 ${
+              recommendation.recommendation.includes("**Avoid**")
+                ? "bg-red-50 border-red-200"
+                : recommendation.recommendation.includes("**Moderate**")
+                ? "bg-yellow-50 border-yellow-200"
+                : "bg-green-50 border-green-200"
+            }`}
+          >
+            <div className="flex items-center space-x-3">
+              <div
+                className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
+                  recommendation.recommendation.includes("**Avoid**")
+                    ? "bg-red-100 text-red-600"
+                    : recommendation.recommendation.includes("**Moderate**")
+                    ? "bg-yellow-100 text-yellow-600"
+                    : "bg-green-100 text-green-600"
+                }`}
+              >
+                {recommendation.recommendation.includes("**Avoid**") ? (
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                ) : recommendation.recommendation.includes("**Moderate**") ? (
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z"
+                    />
+                  </svg>
+                ) : (
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                )}
+              </div>
+              <div>
+                <h4
+                  className={`text-lg font-bold ${
+                    recommendation.recommendation.includes("**Avoid**")
+                      ? "text-red-800"
+                      : recommendation.recommendation.includes("**Moderate**")
+                      ? "text-yellow-800"
+                      : "text-green-800"
+                  }`}
+                >
+                  {recommendation.recommendation.includes("**Avoid**")
+                    ? "Avoid Investment"
+                    : recommendation.recommendation.includes("**Moderate**")
+                    ? "Moderate Investment Opportunity"
+                    : "Excellent Investment Opportunity"}
+                </h4>
+                <p
+                  className={`text-sm ${
+                    recommendation.recommendation.includes("**Avoid**")
+                      ? "text-red-700"
+                      : recommendation.recommendation.includes("**Moderate**")
+                      ? "text-yellow-700"
+                      : "text-green-700"
+                  }`}
+                >
+                  {paragraphs.find((p: string) =>
+                    p.includes("Final Recommendation")
+                  ) || "Based on comprehensive market analysis"}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Key Reasons */}
+          <div className="bg-gray-50 rounded-lg p-5">
+            <div className="flex items-center space-x-2 mb-4">
+              <div className="w-6 h-6 bg-red-100 rounded-lg flex items-center justify-center">
+                <svg
+                  className="w-4 h-4 text-red-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z"
+                  />
+                </svg>
+              </div>
+              <h4 className="text-lg font-semibold text-gray-900">
+                Key Concerns
+              </h4>
+            </div>
+            <div className="space-y-3">
+              {paragraphs
+                .filter((p: string) => p.match(/^\d+\./))
+                .map((reason: string, index: number) => (
+                  <div
+                    key={index}
+                    className="flex items-start space-x-3 p-3 bg-white rounded-lg border border-gray-200 hover:shadow-sm transition-shadow"
+                  >
+                    <div className="flex-shrink-0 w-6 h-6 bg-red-50 rounded-full flex items-center justify-center mt-0.5">
+                      <span className="text-sm font-semibold text-red-600">
+                        {index + 1}
+                      </span>
+                    </div>
+                    <p className="text-gray-700 leading-relaxed">
+                      {reason.replace(/^\d+\.\s*/, "")}
+                    </p>
+                  </div>
+                ))}
+            </div>
+          </div>
+
+          {/* Next Steps */}
+          <div className="bg-blue-50 rounded-lg p-5 border border-blue-200">
+            <div className="flex items-center space-x-2 mb-4">
+              <div className="w-6 h-6 bg-blue-100 rounded-lg flex items-center justify-center">
+                <svg
+                  className="w-4 h-4 text-blue-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M13 10V3L4 14h7v7l9-11h-7z"
+                  />
+                </svg>
+              </div>
+              <h4 className="text-lg font-semibold text-blue-900">
+                Recommended Next Steps
+              </h4>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {paragraphs
+                .filter((p: string) => p.match(/^\d+\./) && p.includes(":"))
+                .map((step: string, index: number) => (
+                  <div
+                    key={index}
+                    className="bg-white rounded-lg p-4 border border-blue-100 hover:border-blue-300 transition-colors"
+                  >
+                    <div className="flex items-start space-x-3">
+                      <div className="flex-shrink-0 w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                        <span className="text-sm font-semibold text-blue-600">
+                          {index + 1}
+                        </span>
+                      </div>
+                      <div>
+                        <h5 className="font-semibold text-gray-900 mb-1">
+                          {step.split(":")[0].replace(/^\d+\.\s*/, "")}
+                        </h5>
+                        <p className="text-sm text-gray-600 leading-relaxed">
+                          {step.split(":").slice(1).join(":").trim()}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+            </div>
+          </div>
+
+          {/* Conclusion */}
+          <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg p-5 border border-gray-300">
+            <div className="flex items-center space-x-2 mb-3">
+              <div className="w-6 h-6 bg-gray-200 rounded-lg flex items-center justify-center">
+                <svg
+                  className="w-4 h-4 text-gray-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                  />
+                </svg>
+              </div>
+              <h4 className="text-lg font-semibold text-gray-900">
+                Conclusion
+              </h4>
+            </div>
+            <p className="text-gray-700 leading-relaxed italic">
+              {paragraphs[paragraphs.length - 1]}
+            </p>
+          </div>
+
+          {/* Confidence Meter */}
+          <div className="bg-white rounded-lg p-5 border border-gray-200">
+            <div className="flex items-center justify-between mb-3">
+              <h4 className="text-lg font-semibold text-gray-900">
+                Analysis Confidence
+              </h4>
+              <span className="text-sm font-medium text-blue-600">
+                Based on comprehensive data review
+              </span>
+            </div>
+            <div className="w-full bg-gray-200 rounded-full h-3">
+              <div
+                className={`h-3 rounded-full ${
+                  recommendation.recommendation.includes("**Avoid**")
+                    ? "bg-red-500"
+                    : recommendation.recommendation.includes("**Moderate**")
+                    ? "bg-yellow-500"
+                    : "bg-green-500"
+                }`}
+                style={{ width: "85%" }}
+              ></div>
+            </div>
+            <div className="flex justify-between text-xs text-gray-500 mt-2">
+              <span>Low Confidence</span>
+              <span>High Confidence</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="bg-gray-50 px-6 py-4 border-t border-gray-200">
+          <div className="flex items-center justify-between text-sm text-gray-600">
+            <div className="flex items-center space-x-2">
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              <span>Last updated: {formatDate(report.createdAt)}</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                />
+              </svg>
+              <span>AI-Powered Analysis</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">My Profile</h1>
-      <p className="text-gray-600">
-        View and update your personal information here.
-      </p>
+    <div className="min-h-screen w-full bg-gray-50 py-8">
+      <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+          <div className="flex items-center space-x-4">
+            <img
+              src={user?.picture || "/default-avatar.png"}
+              alt={user?.name}
+              className="w-16 h-16 rounded-full border-2 border-blue-200"
+            />
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">{user?.name}</h1>
+              <p className="text-gray-600">{user?.email}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Tabs */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
+          <div className="border-b border-gray-200">
+            <nav className="flex -mb-px">
+              <button
+                onClick={() => setActiveTab("profile")}
+                className={`py-4 px-6 text-center border-b-2 font-medium text-sm ${
+                  activeTab === "profile"
+                    ? "border-blue-500 text-blue-600"
+                    : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                }`}
+              >
+                Profile Information
+              </button>
+              <button
+                onClick={() => setActiveTab("reports")}
+                className={`py-4 px-6 text-center border-b-2 font-medium text-sm ${
+                  activeTab === "reports"
+                    ? "border-blue-500 text-blue-600"
+                    : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                }`}
+              >
+                Saved Reports ({savedReports?.length || 0})
+              </button>
+            </nav>
+          </div>
+
+          <div className="p-6">
+            {activeTab === "profile" && (
+              <div className="space-y-6">
+                <h2 className="text-xl font-semibold text-gray-900">
+                  Personal Information
+                </h2>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Full Name
+                    </label>
+                    <input
+                      type="text"
+                      value={user?.name || ""}
+                      readOnly
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-600"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Email Address
+                    </label>
+                    <input
+                      type="email"
+                      value={user?.email || ""}
+                      readOnly
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-600"
+                    />
+                  </div>
+                </div>
+
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <h3 className="text-lg font-medium text-blue-800 mb-2">
+                    Account Status
+                  </h3>
+                  <p className="text-blue-700">
+                    Active member since{" "}
+                    {user ? formatDate(new Date().toISOString()) : "N/A"}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {activeTab === "reports" && (
+              <div className="space-y-6">
+                <div className="flex justify-between items-center">
+                  <h2 className="text-xl font-semibold text-gray-900">
+                    Saved Analysis Reports
+                  </h2>
+                  <span className="text-sm text-gray-500">
+                    {savedReports?.length || 0} report
+                    {savedReports?.length !== 1 ? "s" : ""}
+                  </span>
+                </div>
+
+                {!savedReports || savedReports.length === 0 ? (
+                  <div className="text-center py-12">
+                    <div className="text-gray-400 mb-4">
+                      <svg
+                        className="mx-auto h-12 w-12"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={1}
+                          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                        />
+                      </svg>
+                    </div>
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">
+                      No reports saved yet
+                    </h3>
+                    <p className="text-gray-500">
+                      Your market analysis reports will appear here once you
+                      save them.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {savedReports.map((report) => (
+                      <div
+                        key={report._id}
+                        className="border border-gray-200 rounded-lg bg-white hover:shadow-md transition-shadow"
+                      >
+                        <div
+                          className="p-4 cursor-pointer flex justify-between items-center"
+                          onClick={() => {
+                            toggleReport(report._id),
+                              handleExpandReport(report._id, report);
+                          }}
+                        >
+                          <div className="flex-1">
+                            <div className="flex items-center space-x-3">
+                              <h3 className="text-lg font-semibold text-gray-900">
+                                {report.reportName}
+                              </h3>
+                              {report.data.marketOpportunityScore && (
+                                <span
+                                  className={`px-2 py-1 rounded-full text-xs font-medium ${getRatingColor(
+                                    report.data.marketOpportunityScore.rating
+                                  )}`}
+                                >
+                                  {report.data.marketOpportunityScore.rating}
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-sm text-gray-500 mt-1">
+                              Created {formatDate(report.createdAt)}
+                            </p>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            {report.data.marketOpportunityScore && (
+                              <div className="text-right">
+                                <div
+                                  className={`text-lg font-bold ${getScoreColor(
+                                    report.data.marketOpportunityScore.scores
+                                      .overall
+                                  )}`}
+                                >
+                                  {report.data.marketOpportunityScore.scores.overall.toFixed(
+                                    1
+                                  )}
+                                </div>
+                                <div className="text-xs text-gray-500">
+                                  Overall Score
+                                </div>
+                              </div>
+                            )}
+                            <svg
+                              className={`w-5 h-5 text-gray-400 transform transition-transform ${
+                                expandedReport === report._id
+                                  ? "rotate-180"
+                                  : ""
+                              }`}
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M19 9l-7 7-7-7"
+                              />
+                            </svg>
+                          </div>
+                        </div>
+
+                        {expandedReport === report._id && (
+                          <div className="border-t border-gray-200 p-4 bg-gray-50">
+                            {/* Section Navigation */}
+                            <div className="flex flex-wrap gap-2 mb-6">
+                              <button
+                                onClick={() => toggleSection("market-intel")}
+                                className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
+                                  selectedSection === "market-intel"
+                                    ? "bg-blue-100 text-blue-700 border border-blue-200"
+                                    : "bg-white text-gray-700 border border-gray-200 hover:bg-gray-50"
+                                }`}
+                              >
+                                Market Intelligence
+                              </button>
+                              <button
+                                onClick={() => toggleSection("opportunity")}
+                                className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
+                                  selectedSection === "opportunity"
+                                    ? "bg-blue-100 text-blue-700 border border-blue-200"
+                                    : "bg-white text-gray-700 border border-gray-200 hover:bg-gray-50"
+                                }`}
+                              >
+                                Market Opportunity
+                              </button>
+                              <button
+                                onClick={() => toggleSection("cultural")}
+                                className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
+                                  selectedSection === "cultural"
+                                    ? "bg-blue-100 text-blue-700 border border-blue-200"
+                                    : "bg-white text-gray-700 border border-gray-200 hover:bg-gray-50"
+                                }`}
+                              >
+                                Cultural Intelligence
+                              </button>
+                              <button
+                                onClick={() => toggleSection("recommendation")}
+                                className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
+                                  selectedSection === "recommendation"
+                                    ? "bg-blue-100 text-blue-700 border border-blue-200"
+                                    : "bg-white text-gray-700 border border-gray-200 hover:bg-gray-50"
+                                }`}
+                              >
+                                Recommendation
+                              </button>
+                            </div>
+
+                            {selectedSection === "market-intel" &&
+                              renderMarketIntelligence(report)}
+                            {selectedSection === "opportunity" &&
+                              renderMarketOpportunity(report)}
+                            {selectedSection === "cultural" &&
+                              renderCulturalIntelligence(report)}
+                            {selectedSection === "recommendation" &&
+                              renderBusinessRecommendation(report)}
+
+                            {/* Action Buttons */}
+                            <div className="flex justify-end space-x-3 mt-6 pt-4 border-t border-gray-200">
+                              <button className="px-4 py-2 text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors border border-blue-200 rounded-lg hover:bg-blue-50">
+                                View Full Report
+                              </button>
+                              <button className="px-4 py-2 text-sm font-medium text-green-600 hover:text-green-800 transition-colors border border-green-200 rounded-lg hover:bg-green-50">
+                                Download PDF
+                              </button>
+                              <button className="px-4 py-2 text-sm font-medium text-red-600 hover:text-red-800 transition-colors border border-red-200 rounded-lg hover:bg-red-50">
+                                Delete Report
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

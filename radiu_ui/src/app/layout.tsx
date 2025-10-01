@@ -8,6 +8,7 @@ import { SidebarProvider } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/app-sidebar"
 import { Suspense } from "react"
 import "./globals.css"
+import { Toaster } from "@/components/ui/sonner"
 
 export const metadata: Metadata = {
   title: "radiuAI - Retail Market Intelligence",
@@ -23,6 +24,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable}`}>
+                <Toaster />
+
         <Suspense fallback={<div>Loading...</div>}>
           <AuthProvider>
             <SidebarProvider>

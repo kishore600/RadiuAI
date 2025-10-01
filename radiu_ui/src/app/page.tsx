@@ -1,12 +1,13 @@
 "use client";
 
-import { RetailMarketIntelligence } from "@/components/retail-market-intelligence";
 import CommonHeader from "@/components/common-header";
 import CommonParameterControl from "@/components/common-parameter-control";
+import { AuthProvider } from "@/components/auth-provider";
 
 export default function Home() {
   return (
     <div style={{ width: "-webkit-fill-available" }}>
+      <AuthProvider>
       <CommonHeader
         data={{
           headerTitle: "Home - Radiu AI",
@@ -16,6 +17,7 @@ export default function Home() {
           modelComponent: <CommonParameterControl />,
         }}
       />
+      </AuthProvider>
     </div>
   );
 }

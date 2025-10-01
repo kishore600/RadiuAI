@@ -6,6 +6,7 @@ const PORT = 5000;
 const connectDB = require("./config/db.config.js");
 const analyze_model_py = require("./routes/python.AImodel.route.js");
 const authRoutes = require("./routes/auth.Routes.js");
+const reportRoutes = require('./routes/report.routes.js')
 
 require('dotenv').config();
 connectDB();
@@ -16,6 +17,7 @@ app.use(express.json());
 
 app.use("/analyze", analyze_model_py);
 app.use("/api/auth", authRoutes);
+app.use('/api/reports',reportRoutes)
 
 app.listen(PORT, () => {
   console.log(`🚀 Server running at http://localhost:${PORT}`);

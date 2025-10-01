@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useState } from "react";
+
+import React, { useEffect, useState } from "react";
 import { ParameterControls } from "./parameter-controls";
 import {
   Card,
@@ -26,6 +27,7 @@ import {
   FileText,
   Globe,
   Lightbulb,
+  Loader2,
   Share,
   Sparkles,
   Target,
@@ -35,7 +37,9 @@ import {
 } from "lucide-react";
 import { BusinessRecommendation } from "./business-recommendation";
 import ReportActions from "./radui-action";
-
+import axios from "axios";
+import { Input } from "./ui/input";
+import { toast } from "sonner";
 interface ModelData {
   retailMarketIntelligence: any | null;
   marketOpportunityScore: any | null;
@@ -45,12 +49,19 @@ interface ModelData {
 }
 
 const CommonParameterControl = () => {
+  const [user, setuser] = useState<any>();
+
   const [data, setData] = useState<ModelData>({
     retailMarketIntelligence: null,
     marketOpportunityScore: null,
     culturalIntelligence: null,
     businessRecommendation: null,
   });
+  const [savedReports, setSavedReports] = useState<any[]>([]);
+  const [showReports, setShowReports] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [reportName, setReportName] = useState("");
+  const [saveloading, setSaveLoading] = useState(false);
 
   const [loading, setLoading] = useState<{ [key: string]: boolean }>({});
   const [error, setError] = useState<string | null>(null);
@@ -70,7 +81,21 @@ const CommonParameterControl = () => {
   const [targetAudience, setTargetAudience] = useState(
     "families and young adults"
   );
-
+  useEffect(() => {
+    const savedUser = localStorage.getItem("radiu_ai_user");
+    if (savedUser) {
+      try {
+        const userData = JSON.parse(savedUser);
+        console.log("[v0] Restored user from localStorage:", userData);
+        setuser(userData);
+        fetchSavedReports()
+        return;
+      } catch (error) {
+        console.error("Failed to parse saved user:", error);
+        localStorage.removeItem("radiu_ai_user");
+      }
+    }
+  }, []);
   const handleParameterChange = (params: {
     lat: string;
     lon: string;
@@ -176,7 +201,53 @@ const CommonParameterControl = () => {
     }
   };
 
+  const fetchSavedReports = async () => {
+    console.log(user);
+    if (!user?.id) return;
+    try {
+      const response = await axios.get(
+        `http://localhost:5000/api/reports/user/${user.id}`
+      );
+      setSavedReports(response.data.reports || []);
+      setShowReports(true);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to fetch saved reports.");
+    }
+  };
+
+  const handleSaveReport = async () => {
+    if (!user?.id) return toast("User not logged in");
+    if (!reportName.trim()) return toast("Please enter a report name");
+
+    setSaveLoading(true);
+    try {
+      await axios.post("http://localhost:5000/api/reports/save", {
+        userId: user.id,
+        reportName,
+        data,
+      });
+
+      toast(`Your report "${reportName}" has been saved successfully.`);
+
+      fetchSavedReports(); // refresh the list
+      setShowModal(false); // close modal
+      setReportName(""); // reset
+    } catch (err) {
+      console.error(err);
+      toast("Could not save the report. Please try again.");
+    } finally {
+      setSaveLoading(false);
+    }
+  };
+
   const fetchAllActiveModels = async () => {
+    setData({
+      retailMarketIntelligence: null,
+      marketOpportunityScore: null,
+      culturalIntelligence: null,
+      businessRecommendation: null,
+    });
     const activeModelNames = Object.entries(activeModels)
       .filter(([_, isActive]) => isActive)
       .map(([modelName]) => modelName as keyof typeof activeModels);
@@ -186,10 +257,19 @@ const CommonParameterControl = () => {
       return;
     }
 
+    // Run the first three models sequentially
     for (const modelName of activeModelNames) {
-      await fetchModelData(modelName);
+      if (modelName !== "businessRecommendation") {
+        await fetchModelData(modelName);
+      }
+    }
+
+    // After they’re done, check if businessRecommendation is active
+    if (activeModels.businessRecommendation) {
+      await fetchModelData("businessRecommendation");
     }
   };
+
   const toggleModel = (modelName: keyof typeof activeModels) => {
     setActiveModels((prev) => {
       const newState = {
@@ -263,6 +343,7 @@ const CommonParameterControl = () => {
       </CardContent>
     </Card>
   );
+
   console.log(data);
   return (
     <div className="p-6 space-y-6">
@@ -369,10 +450,19 @@ const CommonParameterControl = () => {
       <div className="w-full">
         {Object.values(data).some((d) => d) && (
           <Card className="w-full border-0 shadow-2xl bg-gradient-to-br from-white to-gray-50/80 backdrop-blur-sm">
-            <CardHeader className="border-b border-gray-200/50 bg-gradient-to-r from-blue-50/70 to-purple-50/70">
+            <CardHeader className="">
               <CardTitle className="flex items-center gap-3 text-xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
                 <Sparkles className="h-6 w-6 text-blue-600" />
                 Analysis Results
+                <div className="flex gap-4 justify-end ">
+                  <Button
+                    onClick={() => setShowModal(true)}
+                    className="border-2 hover:bg-blue-300 bg-gradient-to-br from-white to-gray-50/80"
+                  >
+                    <FileText className="w-5 h-5 text-green-600" />
+                    <p className="text-black">Save Report</p>
+                  </Button>
+                </div>
               </CardTitle>
             </CardHeader>
             <CardContent className="p-6">
@@ -447,23 +537,6 @@ const CommonParameterControl = () => {
                             </div>
                           )}
 
-                          {/* Error State */}
-                          {error && (
-                            <Card className="border-red-200 bg-red-50/80 mb-6">
-                              <CardContent className="p-4 flex items-center gap-3">
-                                <AlertCircle className="h-5 w-5 text-red-600" />
-                                <div>
-                                  <p className="text-red-800 font-medium">
-                                    Analysis Error
-                                  </p>
-                                  <p className="text-red-600 text-sm">
-                                    {error}
-                                  </p>
-                                </div>
-                              </CardContent>
-                            </Card>
-                          )}
-
                           {/* Success Content */}
                           {!loading[modelName] && !error && (
                             <div className="space-y-6">
@@ -514,6 +587,39 @@ const CommonParameterControl = () => {
               <ReportActions data={data} />
             </CardContent>
           </Card>
+        )}
+      </div>
+
+      <div>
+        {showModal && (
+          <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
+            <div className="bg-white rounded-xl p-6 shadow-lg w-96">
+              <h2 className="text-lg font-semibold mb-4">Save Report</h2>
+              <input
+                type="text"
+                placeholder="Enter report name"
+                value={reportName}
+                onChange={(e) => setReportName(e.target.value)}
+                className="w-full border rounded-md p-2 mb-4"
+              />
+              <div className="flex justify-end space-x-2">
+                <Button
+                  variant="ghost"
+                  onClick={() => setShowModal(false)}
+                  disabled={loading}
+                >
+                  Cancel
+                </Button>
+                <Button onClick={handleSaveReport} disabled={saveloading}>
+                  {saveloading ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    "Save"
+                  )}
+                </Button>
+              </div>
+            </div>
+          </div>
         )}
       </div>
     </div>
