@@ -46,52 +46,35 @@ import {
   DialogTrigger,
 } from "@radix-ui/react-dialog";
 import { DialogHeader } from "./ui/dialog";
-import { useEffect, useState } from "react";
-import axios from "axios";
-
-const navigation = [
-  {
-    title: "Dashboard",
-    url: "/",
-    icon: Home,
-    description: "Market overview & insights",
-    badge: "New",
-    badgeColor: "bg-gradient-to-r from-green-500 to-emerald-500"
-  },
-  {
-    title: "Profile",
-    url: "/profile",
-    icon: User,
-    description: "Account & reports",
-    badge: "You",
-    badgeColor: "bg-gradient-to-r from-indigo-500 to-purple-500"
-  },
-];
-
-const tools = [
-  {
-    title: "Market Reports",
-    url: "/reports",
-    icon: FileText,
-    description: "Generated insights",
-    badge: "12+",
-    badgeColor: "bg-gradient-to-r from-teal-500 to-blue-500"
-  },
-  {
-    title: "Business Tools",
-    url: "/tools",
-    icon: Briefcase,
-    description: "Planning resources",
-    badge: "Free",
-    badgeColor: "bg-gradient-to-r from-emerald-500 to-green-500"
-  },
-];
+import { useState } from "react";
 
 export function AppSidebar() {
   const { user, signOut } = useAuth();
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
-
+  console.log(user)
+  const navigation = [
+    {
+      title: "Dashboard",
+      url: "/",
+      icon: Home,
+      description: "Market overview & insights",
+      badge: "New",
+      badgeColor: "bg-gradient-to-r from-green-500 to-emerald-500",
+    },
+    ...(user
+      ? [
+          {
+            title: "Profile",
+            url: "/profile",
+            icon: User,
+            description: "Account & reports",
+            badge: "You",
+            badgeColor: "bg-gradient-to-r from-indigo-500 to-purple-500",
+          },
+        ]
+      : []),
+  ];
   return (
     <Sidebar className="animate-slide-in-right bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 border-r border-slate-700/50">
       <SidebarHeader className="border-b border-slate-700/50 bg-gradient-to-b from-slate-900/95 to-slate-800/95 backdrop-blur-sm">
@@ -133,9 +116,13 @@ export function AppSidebar() {
                   >
                     <a href={item.url} className="p-3 ">
                       <div className="flex items-center gap-3">
-                        <div className={`p-2 rounded-lg bg-gradient-to-br from-slate-700 to-slate-600 group-hover:from-blue-500/20 group-hover:to-purple-500/20 transition-all duration-300 ${
-                          item.url === pathname ? 'from-blue-500/30 to-purple-500/30' : ''
-                        }`}>
+                        <div
+                          className={`p-2 rounded-lg group-hover:from-blue-500/20 group-hover:to-purple-500/20 transition-all duration-300 ${
+                            item.url === pathname
+                              ? "from-blue-500/30 to-purple-500/30"
+                              : ""
+                          }`}
+                        >
                           <item.icon className="h-4 w-4 text-slate-300 group-hover:text-white transition-colors" />
                         </div>
                         <div className="flex-1 min-w-0">
@@ -144,12 +131,13 @@ export function AppSidebar() {
                               {item.title}
                             </span>
                             {item.badge && (
-                              <Badge className={`text-[10px] px-1.5 py-0.5 rounded-full text-white border-0 ${item.badgeColor}`}>
+                              <Badge
+                                className={`text-[10px] px-1.5 py-0.5 rounded-full text-white border-0 ${item.badgeColor}`}
+                              >
                                 {item.badge}
                               </Badge>
                             )}
                           </div>
-
                         </div>
                         {item.url === pathname && (
                           <div className="w-1.5 h-1.5 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full animate-pulse"></div>
@@ -165,57 +153,14 @@ export function AppSidebar() {
 
         <SidebarSeparator className="my-4 bg-gradient-to-r from-transparent via-slate-700/50 to-transparent" />
 
-        {/* Tools Section */}
-        <SidebarGroup>
-          <SidebarGroupLabel className="text-slate-300/70 font-semibold text-xs uppercase tracking-wider px-4 mb-3">
-            Tools & Resources
-          </SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {tools.map((item, index) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={item.url === pathname}
-                    className="group relative mx-2 mb-1 rounded-xl transition-all duration-300 hover:bg-white/5 hover:shadow-lg border border-transparent hover:border-white/10"
-                  >
-                    <a href={item.url} className="py-3 px-3">
-                      <div className="flex items-center gap-3">
-                        <div className={`p-2 rounded-lg bg-gradient-to-br from-slate-700 to-slate-600 group-hover:from-green-500/20 group-hover:to-blue-500/20 transition-all duration-300 ${
-                          item.url === pathname ? 'from-green-500/30 to-blue-500/30' : ''
-                        }`}>
-                          <item.icon className="h-4 w-4 text-slate-300 group-hover:text-white transition-colors" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2">
-                            <span className="text-sm font-medium text-slate-200 group-hover:text-white transition-colors">
-                              {item.title}
-                            </span>
-                            {item.badge && (
-                              <Badge className={`text-[10px] px-1.5 py-0.5 rounded-full text-white border-0 ${item.badgeColor}`}>
-                                {item.badge}
-                              </Badge>
-                            )}
-                          </div>
-                          <p className="text-xs text-slate-400 group-hover:text-slate-300 transition-colors truncate">
-                            {item.description}
-                          </p>
-                        </div>
-                      </div>
-                    </a>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
         {/* Stats Section */}
         <div className="mx-4 mt-6 p-4 rounded-xl bg-gradient-to-br from-slate-800/50 to-slate-700/30 border border-slate-700/50 backdrop-blur-sm">
           <div className="text-center">
             <div className="flex items-center justify-center gap-2 mb-2">
               <TrendingUp className="h-4 w-4 text-green-400" />
-              <span className="text-xs font-semibold text-green-400">PRO ACTIVE</span>
+              <span className="text-xs font-semibold text-green-400">
+                PRO ACTIVE
+              </span>
             </div>
             <p className="text-xs text-slate-400 mb-3">AI Analysis Ready</p>
             <div className="flex justify-between text-xs">
@@ -237,12 +182,11 @@ export function AppSidebar() {
       </SidebarContent>
 
       {/* Enhanced Footer with User Profile */}
-      {user ? (
+      {user && (
         <SidebarFooter className="border-t border-slate-700/50 bg-gradient-to-r from-slate-800 to-slate-800/80 backdrop-blur-sm">
           <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
               <div className="flex items-center gap-3 cursor-pointer hover:bg-white/5 p-3 rounded-xl transition-all duration-300 group border border-transparent hover:border-white/10 mx-2 my-2">
- 
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-semibold text-white truncate">
                     {user?.name}
@@ -252,7 +196,9 @@ export function AppSidebar() {
                   </p>
                   <div className="flex items-center gap-1 mt-1">
                     <Shield className="h-3 w-3 text-blue-400" />
-                    <span className="text-xs text-slate-500">Verified Account</span>
+                    <span className="text-xs text-slate-500">
+                      Verified Account
+                    </span>
                   </div>
                 </div>
 
@@ -263,47 +209,43 @@ export function AppSidebar() {
             {/* Enhanced Modal Content */}
             <DialogContent className="sm:max-w-md bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700 rounded-2xl shadow-2xl">
               <DialogHeader>
-                <DialogTitle className="flex items-center gap-3 p-2 border-b border-slate-700">
-                  {/* <Avatar className="h-12 w-12 rounded-xl">
-                    <AvatarImage
-                      src={user?.picture}
-                      alt={user?.name}
-                      className="rounded-xl"
-                    />
-                    <AvatarFallback className="rounded-xl  bg-gradient-to-br from-blue-500 to-purple-500 text-white font-bold">
-                      {user?.name?.charAt(0).toUpperCase() || "U"}
-                    </AvatarFallback>
-                  </Avatar> */}
-                  <h1 className="text-white">Options</h1>
+                <DialogTitle className="flex items-center gap-3  border-b text-white p-3  border-slate-700">
+                  Options
                 </DialogTitle>
               </DialogHeader>
 
               <div className="p-4 space-y-2">
-                <Button 
-                  variant="ghost" 
+                <Button
+                  variant="ghost"
                   className="w-full justify-start p-4 rounded-xl hover:bg-slate-700/50 transition-all duration-300 group"
                   onClick={() => setIsOpen(false)}
                 >
                   <Settings className="mr-3 h-4 w-4 text-slate-400 group-hover:text-blue-400 transition-colors" />
-                  <span className="text-slate-200 group-hover:text-white">Settings</span>
+                  <span className="text-slate-200 group-hover:text-white">
+                    Settings
+                  </span>
                 </Button>
-                <Button 
-                  variant="ghost" 
+                <Button
+                  variant="ghost"
                   className="w-full justify-start p-4 rounded-xl hover:bg-slate-700/50 transition-all duration-300 group"
                   onClick={() => setIsOpen(false)}
                 >
                   <HelpCircle className="mr-3 h-4 w-4 text-slate-400 group-hover:text-green-400 transition-colors" />
-                  <span className="text-slate-200 group-hover:text-white">Help & Support</span>
+                  <span className="text-slate-200 group-hover:text-white">
+                    Help & Support
+                  </span>
                 </Button>
-                <Button 
-                  variant="ghost" 
+                <Button
+                  variant="ghost"
                   className="w-full justify-start p-4 rounded-xl hover:bg-slate-700/50 transition-all duration-300 group"
                   onClick={() => setIsOpen(false)}
                 >
                   <MessageSquare className="mr-3 h-4 w-4 text-slate-400 group-hover:text-purple-400 transition-colors" />
-                  <span className="text-slate-200 group-hover:text-white">Contact Us</span>
+                  <span className="text-slate-200 group-hover:text-white">
+                    Contact Us
+                  </span>
                 </Button>
-                
+
                 <div className="pt-2 border-t border-slate-700">
                   <Button
                     variant="ghost"
@@ -321,12 +263,6 @@ export function AppSidebar() {
             </DialogContent>
           </Dialog>
         </SidebarFooter>
-      ) : (
-        <div className="p-4">
-          <Button className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white rounded-xl py-3 font-semibold shadow-lg transition-all duration-300">
-            Sign In
-          </Button>
-        </div>
       )}
     </Sidebar>
   );
