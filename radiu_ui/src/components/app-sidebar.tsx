@@ -215,16 +215,7 @@ export function AppSidebar() {
               </DialogHeader>
 
               <div className="p-4 space-y-2">
-                <Button
-                  variant="ghost"
-                  className="w-full justify-start p-4 rounded-xl hover:bg-slate-700/50 transition-all duration-300 group"
-                  onClick={() => setIsOpen(false)}
-                >
-                  <Settings className="mr-3 h-4 w-4 text-slate-400 group-hover:text-blue-400 transition-colors" />
-                  <span className="text-slate-200 group-hover:text-white">
-                    Settings
-                  </span>
-                </Button>
+
                 <Button
                   variant="ghost"
                   className="w-full justify-start p-4 rounded-xl hover:bg-slate-700/50 transition-all duration-300 group"
