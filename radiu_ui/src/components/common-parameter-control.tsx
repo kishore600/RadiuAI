@@ -129,12 +129,12 @@ const CommonParameterControl = () => {
 
       switch (modelName) {
         case "retailMarketIntelligence":
-          url = `http://localhost:5000/analyze/retail_market_intelligence_model?${params}`;
+          url = `https://radiuai.onrender.com/analyze/retail_market_intelligence_model?${params}`;
           options = { method: "GET" };
           break;
 
         case "marketOpportunityScore":
-          url = `http://localhost:5000/analyze/market_opportunity_score`;
+          url = `https://radiuai.onrender.com/analyze/market_opportunity_score`;
           options = {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -148,7 +148,7 @@ const CommonParameterControl = () => {
           break;
 
         case "culturalIntelligence":
-          url = `http://localhost:5000/analyze/cultural_intelligence_system`;
+          url = `https://radiuai.onrender.com/analyze/cultural_intelligence_system`;
           options = {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -163,7 +163,7 @@ const CommonParameterControl = () => {
           break;
 
         case "businessRecommendation":
-          url = `http://localhost:5000/analyze/business-recommendation`;
+          url = `https://radiuai.onrender.com/analyze/business-recommendation`;
           options = {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -206,7 +206,7 @@ const CommonParameterControl = () => {
     if (!user?.id) return;
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/reports/user/${user.id}`
+        `https://radiuai.onrender.com/api/reports/user/${user.id}`
       );
       setSavedReports(response.data.reports || []);
       setShowReports(true);
@@ -222,7 +222,7 @@ const CommonParameterControl = () => {
 
     setSaveLoading(true);
     try {
-      await axios.post("http://localhost:5000/api/reports/save", {
+      await axios.post("https://radiuai.onrender.com/api/reports/save", {
         userId: user.id,
         reportName,
         data,

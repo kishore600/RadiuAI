@@ -56,7 +56,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       console.log(user);
       const response = await axios.get(
-        `http://localhost:5000/api/reports/user/${user.id}`
+        `https://radiuai.onrender.com/api/reports/user/${user.id}`
       );
       setSavedReports(response.data || []);
     } catch (err) {
@@ -137,7 +137,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       };
 
       // Send OTP to the user's email with picture data
-      const res = await fetch("http://localhost:5000/api/auth/send-otp", {
+      const res = await fetch("https://radiuai.onrender.com/api/auth/send-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -171,7 +171,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     picture?: string
   ): Promise<boolean> => {
     try {
-      const res = await fetch("http://localhost:5000/api/auth/verify-otp", {
+      const res = await fetch("https://radiuai.onrender.com/api/auth/verify-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -213,7 +213,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const resendOtp = async (email: string): Promise<boolean> => {
     try {
-      const res = await fetch("http://localhost:5000/api/auth/send-otp", {
+      const res = await fetch("https://radiuai.onrender.com/api/auth/send-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -233,7 +233,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   
   const sendOtp = async (email: string): Promise<boolean> => {
     try {
-      const res = await fetch("http://localhost:5000/api/auth/send-otp", {
+      const res = await fetch("https://radiuai.onrender.com/api/auth/send-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
