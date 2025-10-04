@@ -1,15 +1,6 @@
 import React from "react";
-import { SidebarInset, SidebarTrigger } from "./ui/sidebar";
-import { Separator } from "@radix-ui/react-separator";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbList,
-  BreadcrumbPage,
-} from "./ui/breadcrumb";
-import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
-import { Loader2, LogOut, UserIcon } from "lucide-react";
-import { Button } from "./ui/button";
+import { SidebarInset } from "./ui/sidebar";
+import { Loader2 } from "lucide-react";
 import { useAuth } from "./auth-provider";
 import { GoogleAuth } from "./google-auth";
 
@@ -23,7 +14,7 @@ interface HeaderProps {
 }
 
 const CommonHeader = ({ data }: HeaderProps) => {
-  const { user, isLoading, signOut } = useAuth();
+  const { user, isLoading } = useAuth();
 
   if (isLoading) {
     console.log("[v0] App is loading, user state:", user);
@@ -39,17 +30,10 @@ const CommonHeader = ({ data }: HeaderProps) => {
     );
   }
 
-  console.log(
-    "[v0] App loaded, user:",
-    user ? `${user.name} (${user.email})` : "Not authenticated"
-  );
-
   if (!user) {
     console.log("[v0] No user found, showing sign-in screen");
     return <GoogleAuth />;
   }
-
-  console.log(user);
 
   return (
     <SidebarInset>
