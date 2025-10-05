@@ -88,7 +88,7 @@ const CommonParameterControl = () => {
         const userData = JSON.parse(savedUser);
         console.log("[v0] Restored user from localStorage:", userData);
         setuser(userData);
-        fetchSavedReports()
+        fetchSavedReports();
         return;
       } catch (error) {
         console.error("Failed to parse saved user:", error);
@@ -303,8 +303,8 @@ const CommonParameterControl = () => {
     <Card className="group relative overflow-hidden border-0 bg-gradient-to-br from-slate-50 to-slate-100 hover:from-blue-50 hover:to-indigo-50 transition-all duration-500 hover:shadow-2xl hover:shadow-blue-500/10 hover:-translate-y-1">
       <div className="absolute inset-0 bg-gradient-to-br from-blue-600/5 to-purple-600/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
       <CardContent className="relative p-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
+        <div className="flex items-center justify-between sm:flex-row">
+          <div className="flex items-center gap-4 flex-col md:flex-row sm:flex-row">
             <div className="relative">
               <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-110">
                 <Icon className="w-6 h-6 text-white" />
@@ -346,7 +346,7 @@ const CommonParameterControl = () => {
 
   console.log(data);
   return (
-    <div className="p-6 space-y-6">
+    <div className="lg:p-6 space-y-6 sm:p-4">
       <ParameterControls
         lat={lat}
         lon={lon}
@@ -359,7 +359,7 @@ const CommonParameterControl = () => {
         target_audience={targetAudience}
       />
 
-      <Card className="border-0 bg-white/70 backdrop-blur-sm shadow-2xl shadow-purple-500/10">
+      <Card className="p-3 border-0 bg-white/70 backdrop-blur-sm shadow-2xl shadow-purple-500/10">
         <CardHeader className=" text-black rounded-t-lg items-center">
           <CardTitle className="flex items-center gap-3 text-2xl  flex-row">
             <div className="p-2 bg-gradient-to-r from-green-500 to-green-600 rounded-lg">
@@ -375,8 +375,8 @@ const CommonParameterControl = () => {
             <Zap className="h-5 w-5 ml-auto animate-bounce" />
           </CardTitle>
         </CardHeader>
-        <CardContent className="p-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <CardContent className="p-3 xs:p-4 sm:p-6">
+          <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-2 2xl:grid-cols-2 gap-3 xs:gap-4 sm:gap-6">
             <ModelToggle
               name="retailMarketIntelligence"
               displayName="Retail Market Intelligence"

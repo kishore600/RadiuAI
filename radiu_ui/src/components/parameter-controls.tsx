@@ -181,13 +181,13 @@ export function ParameterControls({
   );
 
   return (
-    <Card className="w-full mx-auto border-0  bg-gradient-to-br from-white to-gray-50/50 ">
-      <CardHeader>
+    <Card className="w-full mx-auto border-0  bg-gradient-to-br from-white to-gray-50/50">
+      <CardHeader className="">
         <CardTitle className="flex items-center gap-2">
           <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg">
-          <Target className="h-5 w-5 text-white" />
+            <Target className="h-5 w-5 text-white" />
           </div>
-          <p className="text-4xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+          <p className=" text-4xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
             Analysis Parameters
           </p>
         </CardTitle>
@@ -196,7 +196,7 @@ export function ParameterControls({
           intelligence analysis
         </CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="p-0">
         {useMapInput ? (
           <GoogleMapsPicker
             lat={lat}
@@ -277,7 +277,7 @@ export function ParameterControls({
                 </div>
               </div>
             </CardHeader>
-            <CardContent className="space-y-6">
+            <CardContent className="space-y-6 px-3 border-0">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div className="space-y-3">
                   <Label
@@ -480,53 +480,55 @@ export function ParameterControls({
                 <CheckCircle2 className="h-5 w-5 text-green-500 animate-bounce" />
               )} */}
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="bg-white/60 p-4 rounded-lg border border-blue-200">
-                    <div className="flex items-center gap-2 mb-2">
-                      <MapPin className="h-4 w-4 text-blue-500" />
-                      <span className="text-sm font-medium text-gray-600">
-                        Location
-                      </span>
-                    </div>
-                    <Badge
-                      variant="secondary"
-                      className="bg-gradient-to-r from-blue-100 to-blue-200 text-blue-800"
-                    >
-                      {parseFloat(lat).toFixed(4)}, {parseFloat(lon).toFixed(4)}
-                    </Badge>
-                  </div>
+<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+  {/* Location Card */}
+  <div className="bg-white/60 p-3 sm:p-4 rounded-lg border border-blue-200">
+    <div className="flex items-center gap-2 mb-2">
+      <MapPin className="h-3 w-3 sm:h-4 sm:w-4 text-blue-500 flex-shrink-0" />
+      <span className="text-xs sm:text-sm font-medium text-gray-600">
+        Location
+      </span>
+    </div>
+    <Badge
+      variant="secondary"
+      className="bg-gradient-to-r from-blue-100 to-blue-200 text-blue-800 text-xs sm:text-sm w-full justify-center py-1"
+    >
+      {parseFloat(lat).toFixed(4)}, {parseFloat(lon).toFixed(4)}
+    </Badge>
+  </div>
 
-                  <div className="bg-white/60 p-4 rounded-lg border border-purple-200">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Building2 className="h-4 w-4 text-purple-500" />
-                      <span className="text-sm font-medium text-gray-600">
-                        Business
-                      </span>
-                    </div>
-                    <Badge
-                      variant="secondary"
-                      className="bg-gradient-to-r from-purple-100 to-purple-200 text-purple-800"
-                    >
-                      {selectedBusinessType?.label}
-                    </Badge>
-                  </div>
+  {/* Business Card */}
+  <div className="bg-white/60 p-3 sm:p-4 rounded-lg border border-purple-200">
+    <div className="flex items-center gap-2 mb-2">
+      <Building2 className="h-3 w-3 sm:h-4 sm:w-4 text-purple-500 flex-shrink-0" />
+      <span className="text-xs sm:text-sm font-medium text-gray-600">
+        Business
+      </span>
+    </div>
+    <Badge
+      variant="secondary"
+      className="bg-gradient-to-r from-purple-100 to-purple-200 text-purple-800 text-xs sm:text-sm w-full justify-center py-1 truncate"
+    >
+      {selectedBusinessType?.label}
+    </Badge>
+  </div>
 
-                  <div className="bg-white/60 p-4 rounded-lg border border-green-200">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Radar className="h-4 w-4 text-green-500" />
-                      <span className="text-sm font-medium text-gray-600">
-                        Radius
-                      </span>
-                    </div>
-                    <Badge
-                      variant="secondary"
-                      className="bg-gradient-to-r from-green-100 to-green-200 text-green-800"
-                    >
-                      {radiusKm}km coverage
-                    </Badge>
-                  </div>
-                </div>
-
+  {/* Radius Card */}
+  <div className="bg-white/60 p-3 sm:p-4 rounded-lg border border-green-200 sm:col-span-2 lg:col-span-1">
+    <div className="flex items-center gap-2 mb-2">
+      <Radar className="h-3 w-3 sm:h-4 sm:w-4 text-green-500 flex-shrink-0" />
+      <span className="text-xs sm:text-sm font-medium text-gray-600">
+        Radius
+      </span>
+    </div>
+    <Badge
+      variant="secondary"
+      className="bg-gradient-to-r from-green-100 to-green-200 text-green-800 text-xs sm:text-sm w-full justify-center py-1"
+    >
+      {radiusKm}km coverage
+    </Badge>
+  </div>
+</div>
                 {(focus || target_audience) && (
                   <div className="mt-4 flex flex-wrap gap-2">
                     {focus && (
