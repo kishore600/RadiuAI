@@ -8,6 +8,7 @@ import { Terminal, CheckCircle, XCircle, Loader2 } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 
 interface User {
   id: string;
@@ -37,8 +38,9 @@ interface AuthContextType {
   ) => Promise<boolean>;
   resendOtp: (email: string) => Promise<boolean>;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  fetchSavedReports:any;
-  savedReports:any
+  fetchSavedReports: any;
+  savedReports: any;
+  reportLoading: any;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -51,17 +53,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [currentName, setCurrentName] = useState("");
   const [currentPicture, setCurrentPicture] = useState("");
   const [savedReports, setSavedReports] = useState<any[]>([]);
+  const [reportLoading, setReportLoading] = useState<boolean>(false);
+  const { push } = useRouter();
+
   const fetchSavedReports = async () => {
     if (!user?.id) return;
     try {
       console.log(user);
+      setReportLoading(true);
       const response = await axios.get(
         `https://radiuai.onrender.com/api/reports/user/${user.id}`
       );
       setSavedReports(response.data || []);
     } catch (err) {
+      setReportLoading(true);
       console.error(err);
       alert("Failed to fetch saved reports.");
+    } finally {
+      setReportLoading(false);
     }
   };
   useEffect(() => {
@@ -137,15 +146,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       };
 
       // Send OTP to the user's email with picture data
-      const res = await fetch("https://radiuai.onrender.com/api/auth/send-otp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: userData.email,
-          name: userData.name,
-          picture: userData.picture, // Send picture to backend
-        }),
-      });
+      const res = await fetch(
+        "https://radiuai.onrender.com/api/auth/send-otp",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: userData.email,
+          }),
+        }
+      );
 
       if (res.ok) {
         // Show OTP modal instead of automatically signing in
@@ -171,16 +181,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     picture?: string
   ): Promise<boolean> => {
     try {
-      const res = await fetch("https://radiuai.onrender.com/api/auth/verify-otp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email,
-          otp,
-          name: name || currentName,
-          picture: picture || currentPicture, // Send picture to backend
-        }),
-      });
+      const res = await fetch(
+        "https://radiuai.onrender.com/api/auth/verify-otp",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email,
+            otp,
+            name: name || currentName,
+            picture: picture || currentPicture, // Send picture to backend
+          }),
+        }
+      );
 
       if (res.ok) {
         const data = await res.json();
@@ -213,35 +226,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const resendOtp = async (email: string): Promise<boolean> => {
     try {
-      const res = await fetch("https://radiuai.onrender.com/api/auth/send-otp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email,
-          name: currentName,
-          picture: currentPicture,
-        }),
-      });
-
-      return res.ok;
-    } catch (error) {
-      console.error("Failed to resend OTP:", error);
-      return false;
-    }
-  };
-
-  
-  const sendOtp = async (email: string): Promise<boolean> => {
-    try {
-      const res = await fetch("https://radiuai.onrender.com/api/auth/send-otp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email,
-          name: currentName,
-          picture: currentPicture,
-        }),
-      });
+      const res = await fetch(
+        "https://radiuai.onrender.com/api/auth/send-otp",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email,
+            name: currentName,
+            picture: currentPicture,
+          }),
+        }
+      );
 
       return res.ok;
     } catch (error) {
@@ -273,6 +269,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // 🔑 Trigger re-render of GoogleAuth login button
     const googleEvent = new Event("google-reinit");
     window.dispatchEvent(googleEvent);
+    push("/");
   };
 
   return (
@@ -293,7 +290,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         verifyOtp,
         resendOtp,
         fetchSavedReports,
-        savedReports
+        savedReports,
+        reportLoading,
       }}
     >
       {children}

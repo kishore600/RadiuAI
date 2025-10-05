@@ -1,26 +1,17 @@
 /* eslint-disable @next/next/no-img-element */
-"use client";
+"use client"
 
 import {
-  BarChart3,
-  Building2,
-  Target,
   TrendingUp,
   Home,
-  Settings,
   Sparkles,
-  Sparkle,
   User,
   LogOut,
   MessageSquare,
-  ChevronDown,
   MoreHorizontal,
-  MapPin,
-  Briefcase,
-  FileText,
   Shield,
   HelpCircle,
-} from "lucide-react";
+} from "lucide-react"
 import {
   Sidebar,
   SidebarContent,
@@ -33,25 +24,19 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarSeparator,
-} from "@/components/ui/sidebar";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
-import { useAuth } from "./auth-provider";
-import { Button } from "./ui/button";
-import { usePathname } from "next/navigation";
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  DialogTrigger,
-} from "@radix-ui/react-dialog";
-import { DialogHeader } from "./ui/dialog";
-import { useState } from "react";
+} from "@/components/ui/sidebar"
+import { Badge } from "@/components/ui/badge"
+import { useAuth } from "./auth-provider"
+import { Button } from "./ui/button"
+import { usePathname } from "next/navigation"
+import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@radix-ui/react-dialog"
+import { DialogHeader } from "./ui/dialog"
+import { useState } from "react"
 
 export function AppSidebar() {
-  const { user, signOut } = useAuth();
-  const pathname = usePathname();
-  const [isOpen, setIsOpen] = useState(false);
+  const { user, signOut } = useAuth()
+  const pathname = usePathname()
+  const [isOpen, setIsOpen] = useState(false)
   console.log(user)
   const navigation = [
     {
@@ -74,7 +59,7 @@ export function AppSidebar() {
           },
         ]
       : []),
-  ];
+  ]
   return (
     <Sidebar className="animate-slide-in-right bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 border-r border-slate-700/50">
       <SidebarHeader className="border-b border-slate-700/50 bg-gradient-to-b from-slate-900/95 to-slate-800/95 backdrop-blur-sm">
@@ -91,9 +76,7 @@ export function AppSidebar() {
             <span className="text-2xl font-bold bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
               radiuAI
             </span>
-            <span className="text-xs text-slate-300/80 font-medium tracking-wide">
-              AI Market Intelligence
-            </span>
+            <span className="text-xs text-slate-300/80 font-medium tracking-wide">AI Market Intelligence</span>
           </div>
         </div>
       </SidebarHeader>
@@ -118,9 +101,7 @@ export function AppSidebar() {
                       <div className="flex items-center gap-3">
                         <div
                           className={`p-2 rounded-lg group-hover:from-blue-500/20 group-hover:to-purple-500/20 transition-all duration-300 ${
-                            item.url === pathname
-                              ? "from-blue-500/30 to-purple-500/30"
-                              : ""
+                            item.url === pathname ? "from-blue-500/30 to-purple-500/30" : ""
                           }`}
                         >
                           <item.icon className="h-4 w-4 text-slate-300 group-hover:text-white transition-colors" />
@@ -158,9 +139,7 @@ export function AppSidebar() {
           <div className="text-center">
             <div className="flex items-center justify-center gap-2 mb-2">
               <TrendingUp className="h-4 w-4 text-green-400" />
-              <span className="text-xs font-semibold text-green-400">
-                PRO ACTIVE
-              </span>
+              <span className="text-xs font-semibold text-green-400">PRO ACTIVE</span>
             </div>
             <p className="text-xs text-slate-400 mb-3">AI Analysis Ready</p>
             <div className="flex justify-between text-xs">
@@ -188,17 +167,11 @@ export function AppSidebar() {
             <DialogTrigger asChild>
               <div className="flex items-center gap-3 cursor-pointer hover:bg-white/5 p-3 rounded-xl transition-all duration-300 group border border-transparent hover:border-white/10 mx-2 my-2">
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-white truncate">
-                    {user?.name}
-                  </p>
-                  <p className="text-xs text-slate-400 truncate">
-                    {user?.email}
-                  </p>
+                  <p className="text-sm font-semibold text-white truncate">{user?.name}</p>
+                  <p className="text-xs text-slate-400 truncate">{user?.email}</p>
                   <div className="flex items-center gap-1 mt-1">
                     <Shield className="h-3 w-3 text-blue-400" />
-                    <span className="text-xs text-slate-500">
-                      Verified Account
-                    </span>
+                    <span className="text-xs text-slate-500">Verified Account</span>
                   </div>
                 </div>
 
@@ -215,16 +188,13 @@ export function AppSidebar() {
               </DialogHeader>
 
               <div className="p-4 space-y-2">
-
                 <Button
                   variant="ghost"
                   className="w-full justify-start p-4 rounded-xl hover:bg-slate-700/50 transition-all duration-300 group"
                   onClick={() => setIsOpen(false)}
                 >
                   <HelpCircle className="mr-3 h-4 w-4 text-slate-400 group-hover:text-green-400 transition-colors" />
-                  <span className="text-slate-200 group-hover:text-white">
-                    Help & Support
-                  </span>
+                  <span className="text-slate-200 group-hover:text-white">Help & Support</span>
                 </Button>
                 <Button
                   variant="ghost"
@@ -232,9 +202,7 @@ export function AppSidebar() {
                   onClick={() => setIsOpen(false)}
                 >
                   <MessageSquare className="mr-3 h-4 w-4 text-slate-400 group-hover:text-purple-400 transition-colors" />
-                  <span className="text-slate-200 group-hover:text-white">
-                    Contact Us
-                  </span>
+                  <span className="text-slate-200 group-hover:text-white">Contact Us</span>
                 </Button>
 
                 <div className="pt-2 border-t border-slate-700">
@@ -242,8 +210,8 @@ export function AppSidebar() {
                     variant="ghost"
                     className="w-full justify-start p-4 rounded-xl hover:bg-red-500/20 transition-all duration-300 group text-red-400 hover:text-red-300"
                     onClick={() => {
-                      signOut();
-                      setIsOpen(false);
+                      signOut()
+                      setIsOpen(false)
                     }}
                   >
                     <LogOut className="mr-3 h-4 w-4" />
@@ -256,5 +224,5 @@ export function AppSidebar() {
         </SidebarFooter>
       )}
     </Sidebar>
-  );
+  )
 }

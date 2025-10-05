@@ -6,13 +6,15 @@ import { useAuth } from "@/components/auth-provider";
 
 declare global {
   interface Window {
-    google?: {
+    google: {
       accounts: {
         id: {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           initialize: (config: any) => void;
-          renderButton: (element: HTMLElement, config: never) => void;
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          renderButton: (element: HTMLElement, config: any) => void;
           prompt: () => void;
+          disableAutoSelect: () => void;
         };
       };
     };
@@ -89,7 +91,7 @@ export function GoogleAuth() {
 
   const sendOtp = async (email: string): Promise<boolean> => {
     try {
-      const res = await fetch("https://radiuai.onrender.com/api/auth/send-otp", {
+      const res = await fetch("http://localhost:8000/api/auth/send-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

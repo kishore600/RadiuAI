@@ -5,23 +5,15 @@ import { useAuth } from "@/components/auth-provider";
 import { useEffect, useState } from "react";
 
 export default function ProfilePage() {
-  const { user, fetchSavedReports, savedReports } = useAuth();
+  const { user, fetchSavedReports, savedReports, reportLoading } = useAuth();
   const [activeTab, setActiveTab] = useState("profile");
   const [expandedReport, setExpandedReport] = useState<string | null>(null);
   const [selectedSection, setSelectedSection] = useState<string | null>(null);
-
-  // useEffect(() =>{
-  //   if(!user){
-  //     router.push('/')
-  //   }
-  // },[user,router])
-
 
   useEffect(() => {
     console.log("in");
     fetchSavedReports();
   }, [user]);
-
 
   const toggleReport = (reportId: string) => {
     setExpandedReport(expandedReport === reportId ? null : reportId);
@@ -32,10 +24,13 @@ export default function ProfilePage() {
     setSelectedSection(selectedSection === section ? null : section);
   };
   const handleExpandReport = (reportId: string, report: any) => {
+    console.log(report);
     if (expandedReport === reportId) {
       setExpandedReport(null);
     } else {
       setExpandedReport(reportId);
+
+      console.log(report);
 
       // Define priority order
       const sectionOrder = [
@@ -44,22 +39,33 @@ export default function ProfilePage() {
         "cultural",
         "recommendation",
       ];
-
-      // Find first section that actually has data
       const defaultSection =
         sectionOrder.find((section) => {
-          if (section === "market-intel") return report.marketIntel?.length > 0;
-          if (section === "opportunity") return report.opportunity?.length > 0;
-          if (section === "cultural") return report.cultural?.length > 0;
+          if (section === "market-intel")
+            return report.data.retailMarketIntelligence != null;
+          if (section === "opportunity")
+            return report.data.marketOpportunityScore != null;
+          if (section === "cultural")
+            return report.data.culturalIntelligence != null;
           if (section === "recommendation")
-            return report.recommendation?.length > 0;
+            return report.data.businessRecommendation != null;
           return false;
-        }) || "market-intel"; // fallback if none found
+        }) ||
+        (report.data.retailMarketIntelligence != null
+          ? "market-intel"
+          : report.data.marketOpportunityScore != null
+          ? "opportunity"
+          : report.data.culturalIntelligence != null
+          ? "cultural"
+          : report.data.businessRecommendation != null
+          ? "recommendation"
+          : "market-intel"); // Ultimate fallback
 
+      console.log(defaultSection);
       setSelectedSection(defaultSection);
     }
   };
-
+  // console.log(selectedSection)
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
@@ -1185,6 +1191,7 @@ export default function ProfilePage() {
       </div>
     );
   };
+
   const renderCulturalIntelligence = (report: any) => {
     const cultural = report.data.culturalIntelligence;
     if (!cultural) return null;
@@ -1913,28 +1920,29 @@ export default function ProfilePage() {
       </div>
     );
   };
-const CustomAvatar = ({ src, alt, fallback, className = "" }:any) => {
-  const [imgError, setImgError] = useState(false);
+  const CustomAvatar = ({ src, alt, fallback, className = "" }: any) => {
+    const [imgError, setImgError] = useState(false);
 
-  return (
-    <div className={`relative ${className}`}>
-      {!imgError && src ? (
-        <img
-          src={src}
-          alt={alt}
-          className="w-full h-full object-cover rounded-2xl border-4 border-blue-100 shadow-lg"
-          onError={() => setImgError(true)}
-        />
-      ) : (
-        <div className="w-full h-full rounded-2xl border-4 border-blue-100 shadow-lg bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center">
-          <span className="text-white font-bold text-2xl">
-            {fallback?.charAt(0).toUpperCase() || "U"}
-          </span>
-        </div>
-      )}
-    </div>
-  );
-};
+    return (
+      <div className={`relative ${className}`}>
+        {!imgError && src ? (
+          <img
+            src={src}
+            alt={alt}
+            className="w-full h-full object-cover rounded-2xl border-4 border-blue-100 shadow-lg"
+            onError={() => setImgError(true)}
+          />
+        ) : (
+          <div className="w-full h-full rounded-2xl border-4 border-blue-100 shadow-lg bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center">
+            <span className="text-white font-bold text-2xl">
+              {fallback?.charAt(0).toUpperCase() || "U"}
+            </span>
+          </div>
+        )}
+      </div>
+    );
+  };
+
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-gray-50 to-blue-50/30 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -1942,12 +1950,12 @@ const CustomAvatar = ({ src, alt, fallback, className = "" }:any) => {
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8 mb-8 transform hover:shadow-xl transition-all duration-300">
           <div className="flex items-center space-x-6">
             <div className="relative">
-      <CustomAvatar
-  src={user?.picture}
-  alt={user?.name || "User Avatar"}
-  fallback={user?.name || "User"}
-  className="w-20 h-20"
-/>
+              <CustomAvatar
+                src={user?.picture}
+                alt={user?.name || "User Avatar"}
+                fallback={user?.name || "User"}
+                className="w-20 h-20"
+              />
               <div className="absolute -bottom-2 -right-2 w-6 h-6 bg-green-400 rounded-full border-2 border-white shadow-lg"></div>
             </div>
             <div className="flex-1">
@@ -2131,7 +2139,39 @@ const CustomAvatar = ({ src, alt, fallback, className = "" }:any) => {
                     </span>
                   </div>
                 </div>
+{reportLoading && (
+        <div>
+                                <div className="min-h-[400px] flex items-center justify-center">
+                                  <div className="text-center">
+                                    {/* Animated Spinner */}
+                                    <div className="w-16 h-16 border-4 border-blue-200 border-t-blue-500 rounded-full animate-spin mx-auto mb-4"></div>
+                                    <h4 className="text-xl font-semibold text-gray-700 mb-2">
+                                      Loading Report Data
+                                    </h4>
+                                    <p className="text-gray-500">
+                                      Please wait while we prepare your
+                                      analysis...
+                                    </p>
 
+                                    {/* Optional: Progress dots animation */}
+                                    <div className="flex justify-center space-x-1 mt-4">
+                                      <div
+                                        className="w-2 h-2 bg-blue-500 rounded-full animate-bounce"
+                                        style={{ animationDelay: "0ms" }}
+                                      ></div>
+                                      <div
+                                        className="w-2 h-2 bg-blue-500 rounded-full animate-bounce"
+                                        style={{ animationDelay: "150ms" }}
+                                      ></div>
+                                      <div
+                                        className="w-2 h-2 bg-blue-500 rounded-full animate-bounce"
+                                        style={{ animationDelay: "300ms" }}
+                                      ></div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+)}
                 {!savedReports || savedReports.length === 0 ? (
                   <div className="text-center py-16">
                     <div className="w-24 h-24 bg-gradient-to-br from-blue-100 to-purple-100 rounded-3xl flex items-center justify-center mx-auto mb-6">
@@ -2272,114 +2312,79 @@ const CustomAvatar = ({ src, alt, fallback, className = "" }:any) => {
                         {expandedReport === report._id && (
                           <div className="border-t border-gray-200 bg-gradient-to-br from-gray-50 to-blue-50/30 p-8">
                             {/* Enhanced Section Navigation */}
-                            <div className="flex flex-wrap gap-3 mb-8">
-                              <button
-                                onClick={() => toggleSection("market-intel")}
-                                className={`px-6 py-3 text-sm font-semibold rounded-xl transition-all duration-300 flex items-center space-x-2 ${
-                                  selectedSection === "market-intel"
-                                    ? "bg-blue-500 text-white shadow-lg shadow-blue-200"
-                                    : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 hover:shadow-md"
-                                }`}
-                              >
-                                <svg
-                                  className="w-4 h-4"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  viewBox="0 0 24 24"
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-                                  />
-                                </svg>
-                                <span>Market Intelligence</span>
-                              </button>
-                              <button
-                                onClick={() => toggleSection("opportunity")}
-                                className={`px-6 py-3 text-sm font-semibold rounded-xl transition-all duration-300 flex items-center space-x-2 ${
-                                  selectedSection === "opportunity"
-                                    ? "bg-green-500 text-white shadow-lg shadow-green-200"
-                                    : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 hover:shadow-md"
-                                }`}
-                              >
-                                <svg
-                                  className="w-4 h-4"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  viewBox="0 0 24 24"
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
-                                  />
-                                </svg>
-                                <span>Market Opportunity</span>
-                              </button>
-                              <button
-                                onClick={() => toggleSection("cultural")}
-                                className={`px-6 py-3 text-sm font-semibold rounded-xl transition-all duration-300 flex items-center space-x-2 ${
-                                  selectedSection === "cultural"
-                                    ? "bg-purple-500 text-white shadow-lg shadow-purple-200"
-                                    : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 hover:shadow-md"
-                                }`}
-                              >
-                                <svg
-                                  className="w-4 h-4"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  viewBox="0 0 24 24"
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                                  />
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                                  />
-                                </svg>
-                                <span>Cultural Intelligence</span>
-                              </button>
-                              <button
-                                onClick={() => toggleSection("recommendation")}
-                                className={`px-6 py-3 text-sm font-semibold rounded-xl transition-all duration-300 flex items-center space-x-2 ${
-                                  selectedSection === "recommendation"
-                                    ? "bg-orange-500 text-white shadow-lg shadow-orange-200"
-                                    : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 hover:shadow-md"
-                                }`}
-                              >
-                                <svg
-                                  className="w-4 h-4"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  viewBox="0 0 24 24"
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                                  />
-                                </svg>
-                                <span>Recommendation</span>
-                              </button>
-                            </div>
+                            {reportLoading ? (
+                              <div>
+                                <div className="min-h-[400px] flex items-center justify-center">
+                                  <div className="text-center">
+                                    {/* Animated Spinner */}
+                                    <div className="w-16 h-16 border-4 border-blue-200 border-t-blue-500 rounded-full animate-spin mx-auto mb-4"></div>
+                                    <h4 className="text-xl font-semibold text-gray-700 mb-2">
+                                      Loading Report Data
+                                    </h4>
+                                    <p className="text-gray-500">
+                                      Please wait while we prepare your
+                                      analysis...
+                                    </p>
 
-                            {/* Section Content */}
-                            <div className="min-h-[400px]">
-                              {!selectedSection ? (
-                                <div className="text-center py-16">
-                                  <div className="w-20 h-20 bg-gradient-to-br from-blue-100 to-purple-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                                    {/* Optional: Progress dots animation */}
+                                    <div className="flex justify-center space-x-1 mt-4">
+                                      <div
+                                        className="w-2 h-2 bg-blue-500 rounded-full animate-bounce"
+                                        style={{ animationDelay: "0ms" }}
+                                      ></div>
+                                      <div
+                                        className="w-2 h-2 bg-blue-500 rounded-full animate-bounce"
+                                        style={{ animationDelay: "150ms" }}
+                                      ></div>
+                                      <div
+                                        className="w-2 h-2 bg-blue-500 rounded-full animate-bounce"
+                                        style={{ animationDelay: "300ms" }}
+                                      ></div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            ) : (
+                              <>
+                                <div className="flex flex-wrap gap-3 mb-8">
+                                  {report.data.retailMarketIntelligence && (
+                                    <button
+                                      onClick={() =>
+                                        toggleSection("market-intel")
+                                      }
+                                      className={`px-6 py-3 text-sm font-semibold rounded-xl transition-all duration-300 flex items-center space-x-2 ${
+                                        selectedSection === "market-intel"
+                                          ? "bg-blue-500 text-white shadow-lg shadow-blue-200"
+                                          : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 hover:shadow-md"
+                                      }`}
+                                    >
+                                      <svg
+                                        className="w-4 h-4"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                      >
+                                        <path
+                                          strokeLinecap="round"
+                                          strokeLinejoin="round"
+                                          strokeWidth={2}
+                                          d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                                        />
+                                      </svg>
+                                      <span>Market Intelligence</span>
+                                    </button>
+                                  )}
+
+                                  <button
+                                    onClick={() => toggleSection("opportunity")}
+                                    className={`px-6 py-3 text-sm font-semibold rounded-xl transition-all duration-300 flex items-center space-x-2 ${
+                                      selectedSection === "opportunity"
+                                        ? "bg-green-500 text-white shadow-lg shadow-green-200"
+                                        : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 hover:shadow-md"
+                                    }`}
+                                  >
                                     <svg
-                                      className="w-10 h-10 text-blue-400"
+                                      className="w-4 h-4"
                                       fill="none"
                                       stroke="currentColor"
                                       viewBox="0 0 24 24"
@@ -2387,91 +2392,170 @@ const CustomAvatar = ({ src, alt, fallback, className = "" }:any) => {
                                       <path
                                         strokeLinecap="round"
                                         strokeLinejoin="round"
-                                        strokeWidth={1.5}
-                                        d="M19 9l-7 7-7-7"
+                                        strokeWidth={2}
+                                        d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
                                       />
                                     </svg>
-                                  </div>
-                                  <h4 className="text-2xl font-bold text-gray-900 mb-3">
-                                    Select a Section
-                                  </h4>
-                                  <p className="text-gray-600 max-w-md mx-auto">
-                                    Choose from the sections above to explore
-                                    detailed market analysis, opportunities, and
-                                    recommendations for this location.
-                                  </p>
+                                    <span>Market Opportunity</span>
+                                  </button>
+                                  <button
+                                    onClick={() => toggleSection("cultural")}
+                                    className={`px-6 py-3 text-sm font-semibold rounded-xl transition-all duration-300 flex items-center space-x-2 ${
+                                      selectedSection === "cultural"
+                                        ? "bg-purple-500 text-white shadow-lg shadow-purple-200"
+                                        : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 hover:shadow-md"
+                                    }`}
+                                  >
+                                    <svg
+                                      className="w-4 h-4"
+                                      fill="none"
+                                      stroke="currentColor"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                                      />
+                                      <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                                      />
+                                    </svg>
+                                    <span>Cultural Intelligence</span>
+                                  </button>
+                                  <button
+                                    onClick={() =>
+                                      toggleSection("recommendation")
+                                    }
+                                    className={`px-6 py-3 text-sm font-semibold rounded-xl transition-all duration-300 flex items-center space-x-2 ${
+                                      selectedSection === "recommendation"
+                                        ? "bg-orange-500 text-white shadow-lg shadow-orange-200"
+                                        : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 hover:shadow-md"
+                                    }`}
+                                  >
+                                    <svg
+                                      className="w-4 h-4"
+                                      fill="none"
+                                      stroke="currentColor"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                                      />
+                                    </svg>
+                                    <span>Recommendation</span>
+                                  </button>
                                 </div>
-                              ) : (
-                                <>
-                                  {selectedSection === "market-intel" &&
-                                    renderMarketIntelligence(report)}
-                                  {selectedSection === "opportunity" &&
-                                    renderMarketOpportunity(report)}
-                                  {selectedSection === "cultural" &&
-                                    renderCulturalIntelligence(report)}
-                                  {selectedSection === "recommendation" &&
-                                    renderBusinessRecommendation(report)}
-                                </>
-                              )}
-                            </div>
 
-                            {/* Enhanced Action Buttons */}
-                            <div className="flex justify-end space-x-4 mt-8 pt-6 border-t border-gray-300">
-                              <button className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-xl hover:shadow-lg transition-all duration-300 font-semibold flex items-center space-x-2">
-                                <svg
-                                  className="w-4 h-4"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  viewBox="0 0 24 24"
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                                  />
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                                  />
-                                </svg>
-                                <span>View Full Report</span>
-                              </button>
-                              <button className="px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-xl hover:shadow-lg transition-all duration-300 font-semibold flex items-center space-x-2">
-                                <svg
-                                  className="w-4 h-4"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  viewBox="0 0 24 24"
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                                  />
-                                </svg>
-                                <span>Download PDF</span>
-                              </button>
-                              <button className="px-6 py-3 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-xl hover:shadow-lg transition-all duration-300 font-semibold flex items-center space-x-2">
-                                <svg
-                                  className="w-4 h-4"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  viewBox="0 0 24 24"
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                                  />
-                                </svg>
-                                <span>Delete Report</span>
-                              </button>
-                            </div>
+                                {/* Section Content */}
+                                <div className="min-h-[400px]">
+                                  {!selectedSection ? (
+                                    <div className="text-center py-16">
+                                      <div className="w-20 h-20 bg-gradient-to-br from-blue-100 to-purple-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                                        <svg
+                                          className="w-10 h-10 text-blue-400"
+                                          fill="none"
+                                          stroke="currentColor"
+                                          viewBox="0 0 24 24"
+                                        >
+                                          <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={1.5}
+                                            d="M19 9l-7 7-7-7"
+                                          />
+                                        </svg>
+                                      </div>
+                                      <h4 className="text-2xl font-bold text-gray-900 mb-3">
+                                        Select a Section
+                                      </h4>
+                                      <p className="text-gray-600 max-w-md mx-auto">
+                                        Choose from the sections above to
+                                        explore detailed market analysis,
+                                        opportunities, and recommendations for
+                                        this location.
+                                      </p>
+                                    </div>
+                                  ) : (
+                                    <>
+                                      {selectedSection === "market-intel" &&
+                                        renderMarketIntelligence(report)}
+                                      {selectedSection === "opportunity" &&
+                                        renderMarketOpportunity(report)}
+                                      {selectedSection === "cultural" &&
+                                        renderCulturalIntelligence(report)}
+                                      {selectedSection === "recommendation" &&
+                                        renderBusinessRecommendation(report)}
+                                    </>
+                                  )}
+                                </div>
+
+                                {/* Enhanced Action Buttons */}
+                                <div className="flex justify-end space-x-4 mt-8 pt-6 border-t border-gray-300">
+                                  <button className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-xl hover:shadow-lg transition-all duration-300 font-semibold flex items-center space-x-2">
+                                    <svg
+                                      className="w-4 h-4"
+                                      fill="none"
+                                      stroke="currentColor"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                                      />
+                                      <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                                      />
+                                    </svg>
+                                    <span>View Full Report</span>
+                                  </button>
+                                  <button className="px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-xl hover:shadow-lg transition-all duration-300 font-semibold flex items-center space-x-2">
+                                    <svg
+                                      className="w-4 h-4"
+                                      fill="none"
+                                      stroke="currentColor"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                                      />
+                                    </svg>
+                                    <span>Download PDF</span>
+                                  </button>
+                                  <button className="px-6 py-3 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-xl hover:shadow-lg transition-all duration-300 font-semibold flex items-center space-x-2">
+                                    <svg
+                                      className="w-4 h-4"
+                                      fill="none"
+                                      stroke="currentColor"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                                      />
+                                    </svg>
+                                    <span>Delete Report</span>
+                                  </button>
+                                </div>
+                              </>
+                            )}
                           </div>
                         )}
                       </div>
