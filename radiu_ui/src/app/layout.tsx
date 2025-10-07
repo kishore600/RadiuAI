@@ -34,7 +34,7 @@ export default function RootLayout({
                     <SidebarTrigger className="text-white flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 shadow-2xl animate-pulse-glow" />
                   </div>
                 </div>
-                <div className="p-4 md:p-6 lg:p-8">{children}</div>
+                <div className="p-0">{children}</div>
               </main>
             </SidebarProvider>
           </AuthProvider>
