@@ -27,12 +27,6 @@ import { Label } from "@/components/ui/label";
 import { MapPin, Search, Crosshair, Shield } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
-declare global {
-  interface Window {
-    google: typeof google.accounts;
-  }
-}
-
 interface GoogleMapsPickerProps {
   lat: string;
   lon: string;

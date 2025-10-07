@@ -16,26 +16,12 @@ interface MarketData {
 export default function ReportActions({ data }: any) {
   const [shareLink, setShareLink] = useState(null);
 
-  // ✅ Download All Reports as JSON
-  const handleDownloadAll = () => {
-    const blob = new Blob([JSON.stringify(data, null, 2)], {
-      type: "application/json",
-    });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = "market_reports.json";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
   // ✅ Share Results (Generate temporary link)
   const handleShare = () => {
     const encoded = encodeURIComponent(JSON.stringify(data));
     const fakeLink = `${window.location.origin}/shared?data=${encoded}`;
-    setShareLink(fakeLink);
-    navigator.clipboard.writeText(fakeLink);
+    // setShareLink(fakeLink);
+    // navigator.clipboard.writeText(fakeLink);
     alert("Share link copied to clipboard! ✅");
   };
 
@@ -70,11 +56,11 @@ const handleExportPDF = () => {
   // Section Header
   const addSection = (title: string, emoji: string = "") => {
     doc.setFontSize(16);
-    doc.setTextColor(...primary);
-    doc.setFont(undefined, "bold");
+    doc.setTextColor(primary[0], primary[1], primary[2]);
+    doc.setFont("helvetica", "bold");
     doc.text(`${emoji} ${title}`, 20, yPos);
     yPos += 6;
-    doc.setDrawColor(...primary);
+    doc.setDrawColor(primary[0], primary[1], primary[2]);
     doc.setLineWidth(0.5);
     doc.line(20, yPos, 190, yPos);
     yPos += 10;
@@ -83,10 +69,10 @@ const handleExportPDF = () => {
   // Key-Value Pairs
   const addKeyValue = (key: string, value: string) => {
     doc.setFontSize(11);
-    doc.setTextColor(...textDark);
-    doc.setFont(undefined, "bold");
+    // doc.setTextColor(...textDark);
+    // doc.setFont(undefined, "bold");
     doc.text(`${key}:`, 25, yPos);
-    doc.setFont(undefined, "normal");
+    doc.setFont("helvetica", "normal");
     const wrapped = doc.splitTextToSize(value, 150);
     doc.text(wrapped, 60, yPos);
     yPos += wrapped.length * 6 + 4;
@@ -98,7 +84,7 @@ const handleExportPDF = () => {
     for (let i = 1; i <= pageCount; i++) {
       doc.setPage(i);
       doc.setFontSize(9);
-      doc.setTextColor(...textLight);
+      doc.setTextColor(textLight[0], textLight[1], textLight[2]);
       doc.text(`Page ${i} of ${pageCount}`, 200 - 20, 290, { align: "right" });
       doc.text("Confidential - For Internal Use Only", 105, 290, { align: "center" });
     }
@@ -126,7 +112,7 @@ const handleExportPDF = () => {
       <Button
         variant="outline"
         className="border-purple-200 text-purple-700 hover:bg-purple-50 hover:text-black"
-        onClick={handleShare}
+        // onClick={handleShare}
       >
         <Share className="h-4 w-4 mr-2" />
         Share Results

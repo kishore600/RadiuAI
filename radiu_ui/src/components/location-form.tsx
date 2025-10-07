@@ -1,17 +1,22 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState } from "react";
 
 type Props = {
   onSearch: (params: {
-    latitude: number;
-    longitude: number;
-    radius_km: number;
+    latitude: any;
+    longitude: any;
+    radius_km: any;
     business_type: string;
   }) => void;
 };
 
 export default function LocationForm({ onSearch }: Props) {
+  const [latitude, setLatitude] = useState<number>(0);
+  const [longitude, setLongitude] = useState<number>(0);
+  const [radius, setRadius] = useState<number>(0);
+  const [businessType, setBusinessType] = useState<string>("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
