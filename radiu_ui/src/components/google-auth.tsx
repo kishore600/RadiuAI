@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/components/auth-provider";
-import LoginForm from "./login-form";
 
 declare global {
   interface Window {
@@ -122,14 +121,9 @@ export function GoogleAuth() {
     }
   };
 
-
   return (
     <div className="flex flex-col items-center space-y-4">
       <div ref={googleButtonRef} className="w-full min-h-[44px]" />
-      {error && <p className="text-red-500 text-sm">{error}</p>}
-      {!isGoogleLoaded && (
-          <LoginForm />
-      )}
     </div>
   );
 }
