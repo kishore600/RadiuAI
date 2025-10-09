@@ -25,17 +25,11 @@ import {
 import CommonHeader from "@/components/common-header";
 import CommonParameterControl from "@/components/common-parameter-control";
 import { AuthProvider, useAuth } from "@/components/auth-provider";
+import LoginForm from "@/components/login-form";
 
 export default function Home() {
-  const [activeFeature, setActiveFeature] = useState(0);
   const { user } = useAuth();
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setActiveFeature((prev) => (prev + 1) % features.length);
-    }, 4000);
-    return () => clearInterval(interval);
-  }, []);
 
   const features = [
     {
@@ -102,73 +96,6 @@ export default function Home() {
       ],
       insights:
         "Receive a definitive go/no-go decision backed by comprehensive data analysis",
-    },
-  ];
-
-  const pricingTiers = [
-    {
-      name: "Free",
-      price: "$0",
-      period: "day",
-      description: "Perfect for initial exploration",
-      features: [
-        "1 comprehensive report per day",
-        "Basic market insights",
-        "Standard competitor analysis",
-        "Essential demographic data",
-        "Email support",
-      ],
-      cta: "Get Started Free",
-      popular: false,
-      color: "from-gray-500 to-gray-600",
-    },
-    {
-      name: "Single Report",
-      price: "$1",
-      period: "report",
-      description: "One-time detailed analysis",
-      features: [
-        "Download full PDF report",
-        "Complete market intelligence",
-        "Detailed competitor mapping",
-        "Cultural fit analysis",
-        "Priority processing",
-      ],
-      cta: "Buy Single Report",
-      popular: false,
-      color: "from-blue-500 to-cyan-500",
-    },
-    {
-      name: "5-Pack",
-      price: "$5",
-      period: "bundle",
-      description: "Most popular - Save 20%",
-      features: [
-        "5 detailed market reports",
-        "Bonus comparative insights",
-        "Advanced visualization",
-        "Export capabilities",
-        "Dedicated support",
-      ],
-      cta: "Buy 5-Pack",
-      popular: true,
-      color: "from-purple-500 to-pink-500",
-    },
-    {
-      name: "12-Pack",
-      price: "$10",
-      period: "bundle",
-      description: "Best value - Save 58%",
-      features: [
-        "12 comprehensive reports",
-        "Advanced AI insights",
-        "Custom analysis parameters",
-        "API access (basic)",
-        "Premium support",
-      ],
-      cta: "Buy 12-Pack",
-      popular: false,
-      color: "from-green-500 to-emerald-500",
     },
   ];
 
@@ -244,6 +171,8 @@ export default function Home() {
                 >
                   <div className="w-full max-w-md">
                     <AuthProvider>
+                      <LoginForm />
+                      <p className="text-center my-5">or</p>
                       <CommonHeader
                         data={{
                           headerTitle: "Home - Radiu AI",

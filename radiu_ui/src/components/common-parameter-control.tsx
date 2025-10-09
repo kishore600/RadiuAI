@@ -57,8 +57,6 @@ const CommonParameterControl = () => {
     culturalIntelligence: null,
     businessRecommendation: null,
   });
-  const [savedReports, setSavedReports] = useState<any[]>([]);
-  const [showReports, setShowReports] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [reportName, setReportName] = useState("");
   const [saveloading, setSaveLoading] = useState(false);
@@ -66,12 +64,12 @@ const CommonParameterControl = () => {
   const [loading, setLoading] = useState<{ [key: string]: boolean }>({});
   const [error, setError] = useState<string | null>(null);
   const [lastAnalysis, setLastAnalysis] = useState<string>("Never");
-  const [activeModels, setActiveModels] = useState<{ [key: string]: boolean }>({
+  const activeModels = {
     retailMarketIntelligence: true,
     marketOpportunityScore: true,
     culturalIntelligence: true,
     businessRecommendation: true,
-  });
+  };
 
   const [lat, setLat] = useState("40.7128");
   const [lon, setLon] = useState("-74.0060");
@@ -88,7 +86,6 @@ const CommonParameterControl = () => {
         const userData = JSON.parse(savedUser);
         console.log("[v0] Restored user from localStorage:", userData);
         setuser(userData);
-        fetchSavedReports();
         return;
       } catch (error) {
         console.error("Failed to parse saved user:", error);
@@ -201,21 +198,6 @@ const CommonParameterControl = () => {
     }
   };
 
-  const fetchSavedReports = async () => {
-    console.log(user);
-    if (!user?.id) return;
-    try {
-      const response = await axios.get(
-        `https://radiuai.onrender.com/api/reports/user/${user.id}`
-      );
-      setSavedReports(response.data.reports || []);
-      setShowReports(true);
-    } catch (err) {
-      console.error(err);
-      alert("Failed to fetch saved reports.");
-    }
-  };
-
   const handleSaveReport = async () => {
     if (!user?.id) return toast("User not logged in");
     if (!reportName.trim()) return toast("Please enter a report name");
@@ -230,7 +212,6 @@ const CommonParameterControl = () => {
 
       toast(`Your report "${reportName}" has been saved successfully.`);
 
-      fetchSavedReports(); // refresh the list
       setShowModal(false); // close modal
       setReportName(""); // reset
     } catch (err) {
@@ -270,25 +251,6 @@ const CommonParameterControl = () => {
     }
   };
 
-  const toggleModel = (modelName: keyof typeof activeModels) => {
-    setActiveModels((prev) => {
-      const newState = {
-        ...prev,
-        [modelName]: !prev[modelName],
-      };
-
-      // Enable business recommendation if at least 2 other models are selected
-      const otherModelsSelected = Object.entries(newState)
-        .filter(([key]) => key !== "businessRecommendation")
-        .filter(([_, isActive]) => isActive).length;
-
-      if (otherModelsSelected >= 2 && !newState.businessRecommendation) {
-        newState.businessRecommendation = true;
-      }
-
-      return newState;
-    });
-  };
   const ModelToggle = ({
     name,
     displayName,
@@ -344,7 +306,6 @@ const CommonParameterControl = () => {
     </Card>
   );
 
-  console.log(data);
   return (
     <div className="lg:p-6 space-y-6 sm:p-4">
       <ParameterControls

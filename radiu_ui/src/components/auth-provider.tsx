@@ -41,9 +41,13 @@ interface AuthContextType {
   fetchSavedReports: any;
   savedReports: any;
   reportLoading: any;
+  signInwithemail: any;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+// API base URL from environment variable
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
@@ -54,6 +58,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [currentPicture, setCurrentPicture] = useState("");
   const [savedReports, setSavedReports] = useState<any[]>([]);
   const [reportLoading, setReportLoading] = useState<boolean>(false);
+
   const { push } = useRouter();
 
   const fetchSavedReports = async () => {
@@ -62,7 +67,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       console.log(user);
       setReportLoading(true);
       const response = await axios.get(
-        `https://radiuai.onrender.com/api/reports/user/${user.id}`
+        `${API_BASE_URL}/reports/user/${user.id}`
       );
       setSavedReports(response.data || []);
     } catch (err) {
@@ -73,6 +78,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setReportLoading(false);
     }
   };
+
   useEffect(() => {
     const savedUser = localStorage.getItem("radiu_ai_user");
     if (savedUser) {
@@ -147,7 +153,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       // Send OTP to the user's email with picture data
       const res = await fetch(
-        "https://radiuai.onrender.com/api/auth/send-otp",
+        `${API_BASE_URL}/auth/send-otp`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -182,7 +188,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   ): Promise<boolean> => {
     try {
       const res = await fetch(
-        "https://radiuai.onrender.com/api/auth/verify-otp",
+        `${API_BASE_URL}/auth/verify-otp`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -227,7 +233,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const resendOtp = async (email: string): Promise<boolean> => {
     try {
       const res = await fetch(
-        "https://radiuai.onrender.com/api/auth/send-otp",
+        `${API_BASE_URL}/auth/send-otp`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -272,6 +278,47 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     push("/");
   };
 
+  const signInwithemail = async (
+    email: string
+  ): Promise<{ success: boolean; message: string }> => {
+    try {
+      // Validate email format
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        return {
+          success: false,
+          message: "Please enter a valid email address",
+        };
+      }
+
+      // Send OTP to the user's email
+      const res = await fetch(
+        `${API_BASE_URL}/auth/send-otp`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email }),
+        }
+      );
+
+      if (res.ok) {
+        // Show OTP modal
+        setCurrentEmail(email);
+        setShowOtpModal(true);
+        return { success: true, message: "OTP sent successfully!" };
+      } else {
+        const errorData = await res.json();
+        return {
+          success: false,
+          message: errorData.error || "Failed to send OTP",
+        };
+      }
+    } catch (error) {
+      console.error("Failed to send OTP:", error);
+      return { success: false, message: "Network error. Please try again." };
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -292,6 +339,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         fetchSavedReports,
         savedReports,
         reportLoading,
+        signInwithemail,
       }}
     >
       {children}
@@ -481,7 +529,9 @@ function OtpVerificationModal() {
               {otp.map((digit, index) => (
                 <Input
                   key={index}
-                  ref={(el) => { inputRefs.current[index] = el; }}
+                  ref={(el) => {
+                    inputRefs.current[index] = el;
+                  }}
                   type="text"
                   inputMode="numeric"
                   maxLength={1}
