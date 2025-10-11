@@ -6,7 +6,9 @@ const connectDB = require("./config/db.config.js");
 const analyze_model_py = require("./routes/python.AImodel.route.js");
 const authRoutes = require("./routes/auth.Routes.js");
 const reportRoutes = require("./routes/report.routes.js");
+const paymentRoutes = require("./routes/payment.route.js");
 
+const bodyParser = require("body-parser");
 require("dotenv").config();
 connectDB();
 
@@ -17,6 +19,8 @@ app.use(express.json());
 app.use("/analyze", analyze_model_py);
 app.use("/api/auth", authRoutes);
 app.use("/api/reports", reportRoutes);
+app.use("/api/payment/webhook", bodyParser.raw({ type: "application/json" }));
+app.use("/api/payment", paymentRoutes);
 
 // Use Render's PORT if available, otherwise fallback to 5000 (for local dev)
 const PORT = process.env.PORT || 5000;

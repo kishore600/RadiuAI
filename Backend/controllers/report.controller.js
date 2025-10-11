@@ -60,4 +60,30 @@ const deleteReport = async (req, res) => {
   }
 };
 
-module.exports = { saveReport, getReports, deleteReport };
+const downloadReport = async (req, res) => {
+  try {
+    const { userId, reportName, reportData } = req.body;
+
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    if (user.tokens <= 0) {
+      return res.status(403).json({ error: "No tokens left. Please purchase a plan." });
+    }
+
+    // Save report
+    user.savedReports.push({ reportName, data: reportData });
+    user.tokens -= 1; // reduce 1 token per download
+    await user.save();
+
+    res.json({
+      message: "Report downloaded successfully",
+      remainingTokens: user.tokens,
+    });
+  } catch (error) {
+    console.error("Download error:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+module.exports = { saveReport, getReports, deleteReport,downloadReport };

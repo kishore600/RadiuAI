@@ -1,7 +1,13 @@
 // app/pricing/page.tsx
-'use client';
+"use client";
 
-import { CheckIcon, StarIcon, BoltIcon, GiftIcon } from '@heroicons/react/24/outline';
+import { useAuth } from "@/components/auth-provider";
+import {
+  CheckIcon,
+  StarIcon,
+  BoltIcon,
+  GiftIcon,
+} from "@heroicons/react/24/outline";
 
 const pricingTiers = [
   {
@@ -132,16 +138,46 @@ const pricingTiers = [
 ];
 
 export default function Pricing() {
+  const { user: userId } = useAuth();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handleCheckout = async (tier: any) => {
+    try {
+      const response = await fetch(
+        "http://localhost:8000/api/payment/create-checkout-session",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ plan: tier, userId }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (data.url) {
+        window.location.href = data.url; // Redirect to Stripe Checkout
+      } else {
+        alert("Failed to start checkout session");
+      }
+    } catch (error) {
+      console.error("Checkout error:", error);
+      alert("Something went wrong. Please try again.");
+    }
+  };
+
   return (
     <div className="bg-gradient-to-b from-slate-50 to-white min-h-screen py-12">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center">
           <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl lg:text-6xl">
-            Choose Your <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">Report Pack</span>
+            Choose Your{" "}
+            <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+              Report Pack
+            </span>
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-lg text-gray-600">
-            Get more value with every bundle. The larger the pack, the more you save per report!
+            Get more value with every bundle. The larger the pack, the more you
+            save per report!
           </p>
         </div>
 
@@ -151,7 +187,7 @@ export default function Pricing() {
             <div
               key={tier.name}
               className={`relative flex flex-col rounded-3xl bg-white p-8 shadow-2xl ring-1 ring-gray-200/60 ${
-                tier.popular ? 'ring-2 ring-purple-500 scale-105' : ''
+                tier.popular ? "ring-2 ring-purple-500 scale-105" : ""
               } transition-all duration-300 hover:scale-[1.02] hover:shadow-xl`}
             >
               {/* Popular Badge */}
@@ -180,7 +216,7 @@ export default function Pricing() {
                   <h3 className="text-lg font-semibold leading-8 text-gray-900">
                     {tier.name}
                   </h3>
-                  
+
                   {/* Price */}
                   <div className="mt-4 flex items-baseline justify-center gap-x-1">
                     <span className="text-5xl font-bold tracking-tight text-gray-900">
@@ -226,10 +262,11 @@ export default function Pricing() {
               {/* CTA Button */}
               <div className="mt-8">
                 <button
+                  onClick={() => handleCheckout(tier)}
                   className={`w-full rounded-xl px-3 py-3 text-sm font-semibold shadow-lg transition-all duration-200 ${
                     tier.popular
-                      ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 hover:shadow-xl'
-                      : 'bg-gradient-to-r from-gray-800 to-gray-900 text-white hover:from-gray-700 hover:to-gray-800'
+                      ? "bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 hover:shadow-xl"
+                      : "bg-gradient-to-r from-gray-800 to-gray-900 text-white hover:from-gray-700 hover:to-gray-800"
                   }`}
                 >
                   {tier.cta}
@@ -254,55 +291,125 @@ export default function Pricing() {
             <table className="min-w-full divide-y divide-gray-300">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Plan</th>
-                  <th className="px-6 py-4 text-center text-sm font-semibold text-gray-900">Total Reports</th>
-                  <th className="px-6 py-4 text-center text-sm font-semibold text-gray-900">Price</th>
-                  <th className="px-6 py-4 text-center text-sm font-semibold text-gray-900">Cost per Report</th>
-                  <th className="px-6 py-4 text-center text-sm font-semibold text-gray-900">Savings</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
+                    Plan
+                  </th>
+                  <th className="px-6 py-4 text-center text-sm font-semibold text-gray-900">
+                    Total Reports
+                  </th>
+                  <th className="px-6 py-4 text-center text-sm font-semibold text-gray-900">
+                    Price
+                  </th>
+                  <th className="px-6 py-4 text-center text-sm font-semibold text-gray-900">
+                    Cost per Report
+                  </th>
+                  <th className="px-6 py-4 text-center text-sm font-semibold text-gray-900">
+                    Savings
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 bg-white">
                 <tr>
-                  <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900">Free Trial</td>
-                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-gray-500">1</td>
-                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-gray-500">$0</td>
-                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-gray-500">$0</td>
-                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-gray-500">-</td>
+                  <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900">
+                    Free Trial
+                  </td>
+                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-gray-500">
+                    1
+                  </td>
+                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-gray-500">
+                    $0
+                  </td>
+                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-gray-500">
+                    $0
+                  </td>
+                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-gray-500">
+                    -
+                  </td>
                 </tr>
                 <tr className="bg-gray-50">
-                  <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900">Starter Pack</td>
-                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-gray-500">6</td>
-                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-gray-500">$5</td>
-                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-gray-500">$0.83</td>
-                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-green-600 font-semibold">17%</td>
+                  <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900">
+                    Starter Pack
+                  </td>
+                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-gray-500">
+                    6
+                  </td>
+                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-gray-500">
+                    $5
+                  </td>
+                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-gray-500">
+                    $0.83
+                  </td>
+                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-green-600 font-semibold">
+                    17%
+                  </td>
                 </tr>
                 <tr className="bg-purple-50">
-                  <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900">Pro Bundle</td>
-                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-gray-500">12</td>
-                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-gray-500">$10</td>
-                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-gray-500">$0.83</td>
-                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-green-600 font-semibold">33%</td>
+                  <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900">
+                    Pro Bundle
+                  </td>
+                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-gray-500">
+                    12
+                  </td>
+                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-gray-500">
+                    $10
+                  </td>
+                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-gray-500">
+                    $0.83
+                  </td>
+                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-green-600 font-semibold">
+                    33%
+                  </td>
                 </tr>
                 <tr>
-                  <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900">Power User</td>
-                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-gray-500">24</td>
-                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-gray-500">$24</td>
-                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-gray-500">$1.00</td>
-                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-green-600 font-semibold">50%</td>
+                  <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900">
+                    Power User
+                  </td>
+                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-gray-500">
+                    24
+                  </td>
+                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-gray-500">
+                    $24
+                  </td>
+                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-gray-500">
+                    $1.00
+                  </td>
+                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-green-600 font-semibold">
+                    50%
+                  </td>
                 </tr>
                 <tr>
-                  <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900">Business Pack</td>
-                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-gray-500">50</td>
-                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-gray-500">$49</td>
-                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-gray-500">$0.98</td>
-                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-green-600 font-semibold">51%</td>
+                  <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900">
+                    Business Pack
+                  </td>
+                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-gray-500">
+                    50
+                  </td>
+                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-gray-500">
+                    $49
+                  </td>
+                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-gray-500">
+                    $0.98
+                  </td>
+                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-green-600 font-semibold">
+                    51%
+                  </td>
                 </tr>
                 <tr>
-                  <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900">Enterprise Suite</td>
-                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-gray-500">100</td>
-                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-gray-500">$99</td>
-                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-gray-500">$0.99</td>
-                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-green-600 font-semibold">51%</td>
+                  <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900">
+                    Enterprise Suite
+                  </td>
+                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-gray-500">
+                    100
+                  </td>
+                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-gray-500">
+                    $99
+                  </td>
+                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-gray-500">
+                    $0.99
+                  </td>
+                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-green-600 font-semibold">
+                    51%
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -318,20 +425,40 @@ export default function Pricing() {
           </div>
           <dl className="mt-12 grid grid-cols-1 gap-8 sm:grid-cols-2">
             <div>
-              <dt className="text-lg font-semibold text-gray-900">Do reports expire?</dt>
-              <dd className="mt-2 text-gray-600">No, all purchased reports are yours forever and never expire. You can access them anytime from your dashboard.</dd>
+              <dt className="text-lg font-semibold text-gray-900">
+                Do reports expire?
+              </dt>
+              <dd className="mt-2 text-gray-600">
+                No, all purchased reports are yours forever and never expire.
+                You can access them anytime from your dashboard.
+              </dd>
             </div>
             <div>
-              <dt className="text-lg font-semibold text-gray-900">Can I share reports with my team?</dt>
-              <dd className="mt-2 text-gray-600">Yes! All plans allow you to share reports. Business and Enterprise plans include team collaboration features.</dd>
+              <dt className="text-lg font-semibold text-gray-900">
+                Can I share reports with my team?
+              </dt>
+              <dd className="mt-2 text-gray-600">
+                Yes! All plans allow you to share reports. Business and
+                Enterprise plans include team collaboration features.
+              </dd>
             </div>
             <div>
-              <dt className="text-lg font-semibold text-gray-900">What payment methods do you accept?</dt>
-              <dd className="mt-2 text-gray-600">We accept all major credit cards, PayPal, and bank transfers. All payments are processed securely.</dd>
+              <dt className="text-lg font-semibold text-gray-900">
+                What payment methods do you accept?
+              </dt>
+              <dd className="mt-2 text-gray-600">
+                We accept all major credit cards, PayPal, and bank transfers.
+                All payments are processed securely.
+              </dd>
             </div>
             <div>
-              <dt className="text-lg font-semibold text-gray-900">Can I upgrade my bundle later?</dt>
-              <dd className="mt-2 text-gray-600">Absolutely! You can upgrade anytime and only pay the difference between your current bundle and the new one.</dd>
+              <dt className="text-lg font-semibold text-gray-900">
+                Can I upgrade my bundle later?
+              </dt>
+              <dd className="mt-2 text-gray-600">
+                Absolutely! You can upgrade anytime and only pay the difference
+                between your current bundle and the new one.
+              </dd>
             </div>
           </dl>
         </div>

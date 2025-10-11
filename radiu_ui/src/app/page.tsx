@@ -172,8 +172,8 @@ export default function Home() {
                   <div className="w-full max-w-md">
                     <AuthProvider>
                       <LoginForm />
-                      <p className="text-center my-5">or</p>
-                      <CommonHeader
+                      {/* <p className="text-center my-5">or</p> */}
+                      {/* <CommonHeader
                         data={{
                           headerTitle: "Home - Radiu AI",
                           headerTitleSubtext:
@@ -182,7 +182,7 @@ export default function Home() {
                             "Analyze real market opportunities with comprehensive location-based intelligence",
                           modelComponent: <CommonParameterControl />,
                         }}
-                      />
+                      /> */}
                     </AuthProvider>
                   </div>
                 </motion.div>
