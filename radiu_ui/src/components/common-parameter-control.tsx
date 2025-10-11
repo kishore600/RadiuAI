@@ -339,12 +339,6 @@ const CommonParameterControl = () => {
         <CardContent className="p-3 xs:p-4 sm:p-6">
           <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-2 2xl:grid-cols-2 gap-3 xs:gap-4 sm:gap-6">
             <ModelToggle
-              name="retailMarketIntelligence"
-              displayName="Retail Market Intelligence"
-              description="Predict business success probability by analyzing multiple data dimensions simultaneously"
-              icon={Building}
-            />
-            <ModelToggle
               name="marketOpportunityScore"
               displayName="Market Opportunity Score"
               description="Provides an overall attractiveness score (1-100) for any location, helping users compare multiple locations."
@@ -361,6 +355,12 @@ const CommonParameterControl = () => {
               displayName="Business Recommendations"
               description="Analyzes location characteristics and recommends the top 5 most suitable business types."
               icon={Activity}
+            />
+            <ModelToggle
+              name="retailMarketIntelligence"
+              displayName="Retail Market Intelligence"
+              description="Predict business success probability by analyzing multiple data dimensions simultaneously"
+              icon={Building}
             />
           </div>
         </CardContent>
