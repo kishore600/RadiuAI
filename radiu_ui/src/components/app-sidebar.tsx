@@ -53,14 +53,14 @@ export function AppSidebar() {
       badge: "New",
       badgeColor: "bg-gradient-to-r from-green-500 to-emerald-500",
     },
-      {
-    title: "Pricing",
-    url: "/pricing",
-    icon: CreditCard, // or use CurrencyDollar, Tag, etc.
-    description: "Plans & features",
-    badge: "Save 58%",
-    badgeColor: "bg-gradient-to-r from-orange-500 to-red-500",
-  },
+  //     {
+  //   title: "Pricing",
+  //   url: "/pricing",
+  //   icon: CreditCard, // or use CurrencyDollar, Tag, etc.
+  //   description: "Plans & features",
+  //   badge: "Save 58%",
+  //   badgeColor: "bg-gradient-to-r from-orange-500 to-red-500",
+  // },
     ...(user
       ? [
           {

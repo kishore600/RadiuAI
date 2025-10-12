@@ -140,6 +140,7 @@ const pricingTiers = [
 export default function Pricing() {
   const { user } = useAuth();
   
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleCheckout = async (tier: any) => {
     if (!user) {
       alert("Please sign in to purchase reports");
@@ -331,7 +332,7 @@ export default function Pricing() {
                 Where are my reports saved?
               </dt>
               <dd className="mt-2 text-gray-600">
-                All reports are automatically saved to your profile dashboard. You can access them anytime under "My Reports".
+                All reports are automatically saved to your profile dashboard. You can access them anytime under &quot;My Reports&quot;.
               </dd>
             </div>
             <div>
