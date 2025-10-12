@@ -141,36 +141,36 @@ export default function Pricing() {
   const { user } = useAuth();
   
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleCheckout = async (tier: any) => {
-    if (!user) {
-      alert("Please sign in to purchase reports");
-      return;
-    }
+  // const handleCheckout = async (tier: any) => {
+  //   if (!user) {
+  //     alert("Please sign in to purchase reports");
+  //     return;
+  //   }
 
-    try {
-      const response = await fetch("/api/payment-intent", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          plan: tier,
-          userId: user.id,
-          userEmail: user.email 
-        }),
-      });
+  //   try {
+  //     const response = await fetch("/api/payment-intent", {
+  //       method: "POST",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify({ 
+  //         plan: tier,
+  //         userId: user.id,
+  //         userEmail: user.email 
+  //       }),
+  //     });
 
-      const data = await response.json();
+  //     const data = await response.json();
 
-      if (data.url) {
-        // Redirect to Stripe Checkout
-        window.location.href = data.url;
-      } else {
-        alert(data.error || "Failed to start checkout session");
-      }
-    } catch (error) {
-      console.error("Checkout error:", error);
-      alert("Something went wrong. Please try again.");
-    }
-  };
+  //     if (data.url) {
+  //       // Redirect to Stripe Checkout
+  //       window.location.href = data.url;
+  //     } else {
+  //       alert(data.error || "Failed to start checkout session");
+  //     }
+  //   } catch (error) {
+  //     console.error("Checkout error:", error);
+  //     alert("Something went wrong. Please try again.");
+  //   }
+  // };
 
   return (
     <div className="bg-gradient-to-b from-slate-50 to-white min-h-screen py-12">
@@ -269,7 +269,7 @@ export default function Pricing() {
               {/* CTA Button */}
               <div className="mt-8">
                 <button
-                  onClick={() => handleCheckout(tier)}
+                  // onClick={() => handleCheckout(tier)}
                   className={`w-full rounded-xl px-3 py-3 text-sm font-semibold shadow-lg transition-all duration-200 ${
                     tier.popular
                       ? "bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 hover:shadow-xl"
