@@ -2059,11 +2059,21 @@ export default function ProfilePage() {
                           {/* Profile Image with Aura */}
                           <div className="relative">
                             <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-blue-400 via-purple-400 to-pink-400 opacity-40 blur-md animate-pulse"></div>
-                            <img
-                              src={user?.picture}
-                              alt={user?.name || "User"}
-                              className="relative w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-full border-4 border-white shadow-xl object-cover"
-                            />
+
+                            {user?.picture ? (
+                              <img
+                                src={user.picture}
+                                alt={user.name || "User"}
+                                className="relative w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-full border-4 border-white shadow-xl object-cover"
+                              />
+                            ) : (
+                              <div className="relative flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-full border-4 border-white shadow-xl bg-gray-200 text-gray-600 text-3xl font-semibold">
+                                {user?.name
+                                  ? user.name.charAt(0).toUpperCase()
+                                  : "?"}
+                              </div>
+                            )}
+
                             <div className="absolute bottom-1 right-1 w-4 h-4 sm:w-5 sm:h-5 bg-green-400 border-2 border-white rounded-full shadow-md animate-pulse"></div>
                           </div>
 
