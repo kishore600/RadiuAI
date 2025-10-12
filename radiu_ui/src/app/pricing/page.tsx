@@ -31,23 +31,23 @@ const pricingTiers = [
   },
   {
     name: "Starter Pack",
-    price: "$5",
+    price: "$1",
     period: "one-time",
-    description: "Great for occasional research",
-    reports: "6 reports",
-    freeReports: "+1 free",
+    description: "Perfect for trying out our service",
+    reports: "1 report",
+    freeReports: "",
     features: [
-      "6 detailed market reports",
-      "Complete market intelligence",
-      "Detailed competitor mapping",
+      "1 detailed market report",
+      "Basic market intelligence",
+      "Essential competitor insights",
       "Cultural fit analysis",
-      "Priority processing",
-      "PDF export capabilities",
+      "Standard processing",
+      "Save to profile",
     ],
-    cta: "Buy Starter Pack",
+    cta: "Buy for $1",
     popular: false,
     color: "from-blue-500 to-cyan-500",
-    badge: "Save 17%",
+    badge: "Special Offer",
   },
   {
     name: "Pro Bundle",
@@ -60,7 +60,7 @@ const pricingTiers = [
       "12 comprehensive reports",
       "Advanced AI insights",
       "Custom analysis parameters",
-      "Export capabilities",
+      "Save to profile",
       "Dedicated support",
       "Comparative insights",
       "Advanced visualization",
@@ -84,7 +84,7 @@ const pricingTiers = [
       "Premium support",
       "Custom report templates",
       "Batch processing",
-      "Data export in multiple formats",
+      "Organize reports in folders",
     ],
     cta: "Buy Power Pack",
     popular: false,
@@ -103,7 +103,7 @@ const pricingTiers = [
       "All Power User features",
       "Advanced API access",
       "Dedicated account manager",
-      "White-label reports",
+      "Team report sharing",
       "Team collaboration",
       "Priority processing",
       "Custom analytics",
@@ -138,25 +138,32 @@ const pricingTiers = [
 ];
 
 export default function Pricing() {
-  const { user: userId } = useAuth();
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { user } = useAuth();
+  
   const handleCheckout = async (tier: any) => {
+    if (!user) {
+      alert("Please sign in to purchase reports");
+      return;
+    }
+
     try {
-      const response = await fetch(
-        "http://localhost:8000/api/payment/create-checkout-session",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ plan: tier, userId }),
-        }
-      );
+      const response = await fetch("/api/payment-intent", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          plan: tier,
+          userId: user.id,
+          userEmail: user.email 
+        }),
+      });
 
       const data = await response.json();
 
       if (data.url) {
-        window.location.href = data.url; // Redirect to Stripe Checkout
+        // Redirect to Stripe Checkout
+        window.location.href = data.url;
       } else {
-        alert("Failed to start checkout session");
+        alert(data.error || "Failed to start checkout session");
       }
     } catch (error) {
       console.error("Checkout error:", error);
@@ -176,8 +183,7 @@ export default function Pricing() {
             </span>
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-lg text-gray-600">
-            Get more value with every bundle. The larger the pack, the more you
-            save per report!
+            All reports are automatically saved to your profile. Access them anytime, from any device.
           </p>
         </div>
 
@@ -276,143 +282,39 @@ export default function Pricing() {
           ))}
         </div>
 
-        {/* Comparison Table */}
-        <div className="mt-24">
-          <div className="text-center">
-            <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-              Compare Plans
-            </h2>
-            <p className="mx-auto mt-4 max-w-2xl text-lg text-gray-600">
-              See how much you save with each bundle
-            </p>
-          </div>
-
-          <div className="mt-12 overflow-hidden shadow ring-1 ring-black ring-opacity-5 rounded-2xl">
-            <table className="min-w-full divide-y divide-gray-300">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
-                    Plan
-                  </th>
-                  <th className="px-6 py-4 text-center text-sm font-semibold text-gray-900">
-                    Total Reports
-                  </th>
-                  <th className="px-6 py-4 text-center text-sm font-semibold text-gray-900">
-                    Price
-                  </th>
-                  <th className="px-6 py-4 text-center text-sm font-semibold text-gray-900">
-                    Cost per Report
-                  </th>
-                  <th className="px-6 py-4 text-center text-sm font-semibold text-gray-900">
-                    Savings
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200 bg-white">
-                <tr>
-                  <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900">
-                    Free Trial
-                  </td>
-                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-gray-500">
-                    1
-                  </td>
-                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-gray-500">
-                    $0
-                  </td>
-                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-gray-500">
-                    $0
-                  </td>
-                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-gray-500">
-                    -
-                  </td>
-                </tr>
-                <tr className="bg-gray-50">
-                  <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900">
-                    Starter Pack
-                  </td>
-                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-gray-500">
-                    6
-                  </td>
-                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-gray-500">
-                    $5
-                  </td>
-                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-gray-500">
-                    $0.83
-                  </td>
-                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-green-600 font-semibold">
-                    17%
-                  </td>
-                </tr>
-                <tr className="bg-purple-50">
-                  <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900">
-                    Pro Bundle
-                  </td>
-                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-gray-500">
-                    12
-                  </td>
-                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-gray-500">
-                    $10
-                  </td>
-                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-gray-500">
-                    $0.83
-                  </td>
-                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-green-600 font-semibold">
-                    33%
-                  </td>
-                </tr>
-                <tr>
-                  <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900">
-                    Power User
-                  </td>
-                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-gray-500">
-                    24
-                  </td>
-                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-gray-500">
-                    $24
-                  </td>
-                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-gray-500">
-                    $1.00
-                  </td>
-                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-green-600 font-semibold">
-                    50%
-                  </td>
-                </tr>
-                <tr>
-                  <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900">
-                    Business Pack
-                  </td>
-                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-gray-500">
-                    50
-                  </td>
-                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-gray-500">
-                    $49
-                  </td>
-                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-gray-500">
-                    $0.98
-                  </td>
-                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-green-600 font-semibold">
-                    51%
-                  </td>
-                </tr>
-                <tr>
-                  <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900">
-                    Enterprise Suite
-                  </td>
-                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-gray-500">
-                    100
-                  </td>
-                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-gray-500">
-                    $99
-                  </td>
-                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-gray-500">
-                    $0.99
-                  </td>
-                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-green-600 font-semibold">
-                    51%
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+        {/* Features Highlight */}
+        <div className="mt-24 text-center">
+          <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+            Your Reports, Always Accessible
+          </h2>
+          <div className="mt-12 grid grid-cols-1 gap-8 sm:grid-cols-3">
+            <div className="text-center">
+              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
+                <svg className="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <h3 className="mt-4 text-lg font-semibold text-gray-900">Auto-Save to Profile</h3>
+              <p className="mt-2 text-gray-600">All reports automatically saved to your personal dashboard</p>
+            </div>
+            <div className="text-center">
+              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
+                <svg className="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+              </div>
+              <h3 className="mt-4 text-lg font-semibold text-gray-900">Secure Storage</h3>
+              <p className="mt-2 text-gray-600">Your data is encrypted and securely stored in the cloud</p>
+            </div>
+            <div className="text-center">
+              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-purple-100">
+                <svg className="h-6 w-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                </svg>
+              </div>
+              <h3 className="mt-4 text-lg font-semibold text-gray-900">Easy Access</h3>
+              <p className="mt-2 text-gray-600">Retrieve and review your reports anytime from any device</p>
+            </div>
           </div>
         </div>
 
@@ -426,38 +328,34 @@ export default function Pricing() {
           <dl className="mt-12 grid grid-cols-1 gap-8 sm:grid-cols-2">
             <div>
               <dt className="text-lg font-semibold text-gray-900">
+                Where are my reports saved?
+              </dt>
+              <dd className="mt-2 text-gray-600">
+                All reports are automatically saved to your profile dashboard. You can access them anytime under "My Reports".
+              </dd>
+            </div>
+            <div>
+              <dt className="text-lg font-semibold text-gray-900">
+                Can I organize my saved reports?
+              </dt>
+              <dd className="mt-2 text-gray-600">
+                Yes! You can create folders, add tags, and search through all your saved reports for easy organization.
+              </dd>
+            </div>
+            <div>
+              <dt className="text-lg font-semibold text-gray-900">
                 Do reports expire?
               </dt>
               <dd className="mt-2 text-gray-600">
-                No, all purchased reports are yours forever and never expire.
-                You can access them anytime from your dashboard.
+                No, all purchased reports are saved permanently to your profile and never expire.
               </dd>
             </div>
             <div>
               <dt className="text-lg font-semibold text-gray-900">
-                Can I share reports with my team?
+                Can I share saved reports with my team?
               </dt>
               <dd className="mt-2 text-gray-600">
-                Yes! All plans allow you to share reports. Business and
-                Enterprise plans include team collaboration features.
-              </dd>
-            </div>
-            <div>
-              <dt className="text-lg font-semibold text-gray-900">
-                What payment methods do you accept?
-              </dt>
-              <dd className="mt-2 text-gray-600">
-                We accept all major credit cards, PayPal, and bank transfers.
-                All payments are processed securely.
-              </dd>
-            </div>
-            <div>
-              <dt className="text-lg font-semibold text-gray-900">
-                Can I upgrade my bundle later?
-              </dt>
-              <dd className="mt-2 text-gray-600">
-                Absolutely! You can upgrade anytime and only pay the difference
-                between your current bundle and the new one.
+                Yes! Business and Enterprise plans include team sharing features. All plans allow basic report sharing.
               </dd>
             </div>
           </dl>

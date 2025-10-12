@@ -146,7 +146,7 @@ export default function Home() {
                   <div className="grid grid-cols-2 gap-6 mb-8">
                     {[
                       { number: "10K+", label: "Market Analytics" },
-                      { number: "99.9%", label: "Accuracy Rate" },
+                      { number: "74.9%", label: "Accuracy Rate" },
                       { number: "24/7", label: "All Monitoring" },
                       { number: "50+", label: "Cities Covered" },
                     ].map((stat, index) => (
